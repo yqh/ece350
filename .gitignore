@@ -1,26 +1,20 @@
-# Prerequisites
-*.d
+#LaTex generated files
+manual/*.aux
+manual/*.blg
+manual/*.brf
+manual/*.dvi
+manual/*.lof
+manual/*.lot
+manual/*.log
+manual/*.synctex.gz
+manual/*.toc
 
 # Object files
 *.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
 
 # Libraries
 *.lib
 *.a
-*.la
-*.lo
 
 # Shared objects (inc. Windows DLLs)
 *.dll
@@ -32,21 +26,26 @@
 *.exe
 *.out
 *.app
-*.i*86
-*.x86_64
-*.hex
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# files from Keil IDE
+*.axf
+*.crf
+*.d
+*.plg
+# *.sct
+*.tra
+*.lnp
+*.dep
+*.__i
+*.iex
+*.scvd
+# *.lst
+# *.map
+*.uvguix.*
+*.build_log.htm
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# backup from from editor
+*~
+*.bak
+*.Bak
+.#*
