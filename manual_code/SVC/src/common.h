@@ -1,7 +1,7 @@
 /* @brief: common defines and structs for both kernel and user 
  * @file: common.h 
  * @author: Yiqing Huang
- * @date: 2020/09/03
+ * @date: 2020/09/11
  */
 
 #ifndef _COMMON_H_
@@ -45,26 +45,26 @@ typedef unsigned char   task_t;
 #define LOWEST  3
 
 /* task state macro */
-#define DORMANT         0    
-#define READY           1
-#define RUNNING         2
-#define WAIT_MEM        3 
-#define WAIT_SEM        4
-#define WAIT_ISR        5
+#define DORMANT        0    
+#define READY          1
+#define RUNNING        2
+#define BLK_MEM        3 
+#define BLK_SEM        4
+#define BLK_ISR        5
 
 /* Structures */
 
 /* common data structures in both kernel and user spaces */
 /* Task information structure */
 typedef struct rtx_task_info {
-  void   (*ptask)();              /* Task entry address                      */ 
-  U32    stack_pointer;           /* The current stack pointer value         */
-	U32    stack_hi;                /* stack starting addr. (high addr.)       */
-	U16    stack_size;              /* The stack size in bytes                 */
-	U8     state;                   /* Task state                              */
-  U8     prio;                    /* Execution priority                      */
-  U8     task_id;                 /* Task ID                                 */
-	/* note 3 padding bytes will be added by the compiler to this structure */
+  void   (*ptask)();          /* Task entry address                      */ 
+  U32    stack_pointer;       /* The current stack pointer value         */
+  U32    stack_hi;            /* stack starting addr. (high addr.)       */
+  U16    stack_size;          /* The stack size in bytes                 */
+  U8     state;               /* Task state                              */
+  U8     prio;                /* Execution priority                      */
+  U8     task_id;             /* Task ID                                 */
+  /* note 3 padding bytes will be added by the compiler to this structure*/
 } RTX_TASK_INFO;
 
 #endif // _COMMON_H_
