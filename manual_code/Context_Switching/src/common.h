@@ -22,7 +22,6 @@ typedef unsigned int    size_t;
 typedef unsigned char   task_t;
 
 /* ----- Definitions ----- */
-#define NUM_TASKS 2     /* maximum number tasks the OS supports, not includng the null task */
 #define TRUE 1
 #define FALSE 0
 #define NULL 0
