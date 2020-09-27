@@ -2,7 +2,7 @@
  * @file:   k_task.h
  * @brief:  task management hearder file
  * @author: Yiqing Huang
- * @date:   2020/09/20
+ * @date:   2020/09/26
  * NOTE: Assuming there are only two user tasks in the system
  */
 
@@ -17,7 +17,7 @@
 
 /* ----- Functions ----- */
 
-void k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks);    /* initialize all tasks in the system */
+int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks);    /* initialize all tasks in the system */
 TCB *dummy_scheduler(void);      /* pick the tid of the next to run task */
 int k_tsk_yield(void);           /* kernel tsk_yield function */
 

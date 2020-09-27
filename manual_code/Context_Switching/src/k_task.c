@@ -73,7 +73,7 @@ The meory map of the OS image may look like the following:
  * @return: none
  * PRE: memory has been properly initialized
  */
-void k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks) 
+int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks) 
 {
     int i;
     U32 *sp;
@@ -97,6 +97,7 @@ void k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
         }
         p_taskinfo++;
     }
+    return RTX_OK;
 }
 
 /*@brief: scheduler, pick the tid of the next to run task
