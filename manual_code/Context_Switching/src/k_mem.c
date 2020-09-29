@@ -2,7 +2,7 @@
  * @file:   k_mem.c
  * @brief:  kernel memory managment routines
  * @author: Yiqing Huang
- * @date:   2020/09/20
+ * @date:   2020/09/28
  */
 
 #include "k_mem.h"
@@ -31,19 +31,6 @@
 
 */
 
-#if 0
-/* ----- Global Variables ----- */
-U32 *gp_stack; /* The next allocatable task high stack address. 8 bytes aligned */
-               /* stack grows down. Fully decremental stack */
-U32 *gp_heap;  /* The starting addr. of free space in heap */
-#endif 
-/**
- * @brief: allocate stack for a process, align to 8 bytes boundary
- * @param: size, stack size in bytes
- * @return: The top of the stack (i.e. high address)
- * POST:  gp_stack is updated.
- */
-
 
 int k_mem_init(size_t blk_size, int algo) {
     U32 end_addr = (unsigned int) &Image$$RW_IRAM1$$ZI$$Limit;
@@ -52,13 +39,6 @@ int k_mem_init(size_t blk_size, int algo) {
     printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
     printf("k_mem_init: IRAM1 ends at 0x%x\r\n", IRAM1_END);
 #endif /* DEBUG_0 */
-    #if 0
-    gp_heap = (U32 *) ((end_addr+11) & 0xFFFFFFF8); /*4B padding, 8B alignment */
-    gp_stack = (U32 *) IRAM1_END;
-    if ((U32)gp_stack & 0x04) { /* 8B alignment */
-        --gp_stack; 
-    }
-    #endif
     return 0;
 }
 
