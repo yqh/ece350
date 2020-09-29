@@ -20,7 +20,7 @@ extern U32 Image$$RW_IRAM1$$ZI$$Limit;
 /* ----- Functions ------ */
 int k_mem_init(size_t blk_size, int algo);
 void *k_mem_alloc(size_t size);
-void k_mem_dealloc(void *ptr);
+int k_mem_dealloc(void *ptr);
 int k_mem_count_extfrag(size_t size);
 
 #endif /* ! K_MEM_H_ */

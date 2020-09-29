@@ -49,11 +49,11 @@ void *k_mem_alloc(size_t size) {
     return NULL;
 }
 
-void k_mem_dealloc(void *ptr) {
+int k_mem_dealloc(void *ptr) {
 #ifdef DEBUG_0
     printf("k_mem_dealloc: freeing 0x%x\r\n", (U32) ptr);
 #endif /* DEBUG_0 */
-    return;
+    return 0;
 }
 
 int k_mem_count_extfrag(size_t size) {
