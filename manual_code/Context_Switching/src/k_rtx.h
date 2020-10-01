@@ -11,13 +11,7 @@
 #include "common.h"
 
 /*----- Definitations -----*/
-#define NUM_TEST_PROCS 2
 
-#ifdef DEBUG_0
-#define USR_SZ_STACK 0x200         /* user proc stack size 512B   */
-#else
-#define USR_SZ_STACK 0x100         /* user proc stack size 256B  */
-#endif /* DEBUG_0 */
 
 /*----- Types -----*/
 

@@ -20,7 +20,7 @@
 #endif /* DEBUG_0 */
 
 /* ----- Global Variables ----- */
-TCB *gp_current_task = NULL;    /* always point to the current RUN process */
+TCB *gp_current_task = NULL;    /* always point to the current RUNNING task */
 
 /* TCBs and Kernel stacks are statically allocated and is inside the OS image */
 TCB g_tcbs[MAX_TASKS];
@@ -150,9 +150,9 @@ int task_switch(TCB *p_tcb_old)
     if (gp_current_task != p_tcb_old) {
         if (state == READY){         
             p_tcb_old->state = READY; 
-            p_tcb_old->msp = (U32 *) __get_MSP(); // save the old process's sp
+            p_tcb_old->msp = (U32 *) __get_MSP(); // save the sp of the old task
             gp_current_task->state = RUNNING;
-            __set_MSP((U32) gp_current_task->msp); //switch to the new proc's stack    
+            __set_MSP((U32) gp_current_task->msp); //switch to the stack of the new task    
         } else {
             gp_current_task = p_tcb_old; // revert back to the old proc on error
             return RTX_ERR;
@@ -163,7 +163,7 @@ int task_switch(TCB *p_tcb_old)
 /**
  * @brief yield the processor. The caller becomes READY and the scheduler picsk the next ready to run task.
  * @return RTX_ERR on error and zero on success
- * POST: gp_current_task gets updated to next to run process
+ * POST: gp_current_task gets updated to next to run task
  */
 int k_tsk_yield(void)
 {
