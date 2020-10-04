@@ -436,8 +436,8 @@ ork --depend=.\objects\sim\startup_lpc17xx.d -o.\objects\sim\startup_lpc17xx.o
 \5.7.0\CMSIS\Core\Include -IC:\opt\Keil5\Arm\Pack\Keil\LPC1700_DFP\2.6.0\Device
 \Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 530" -
 -predefine="_RTE_ SETA 1" --predefine="LPC175x_6x SETA 1" --predefine="_RTE_ SE
-TA 1" --list=.\listings\startup_lpc17xx.lst RTE\Device\LPC1768\startup_LPC17xx.
-s
+TA 1" --list=.\listings\sim\startup_lpc17xx.lst RTE\Device\LPC1768\startup_LPC1
+7xx.s
 
 
 
