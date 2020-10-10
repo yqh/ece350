@@ -1,0 +1,26 @@
+The Context_Switching_UART0_IRQ project is to demonstrate how to context switch between two privileged tasks by both sofware and hardware interrupts.
+The Context_Switching_UART0_IRQ program is available in different targets:
+
+ - CS SIM:
+   - Compiler:                  ARM Compiler Default Version 5
+   - Configured for simulator debugger
+
+ - CS RAM:
+   - Compiler:                  ARM Compiler Default Version 5
+   - Runs from Internal RAM located on chip
+     (may be used for target debugging)
+
+There are two tasks in the system: priv_task1 and priv_task2. Both output to COM1.
+
+The COM1 terminal uses polling mechanism and outputs the debugging messages when DEBUG_0 macro is defined.
+The privileged priv_task1 and priv_task2 outputs to the debugging terminal..
+
+The COM0 terminal is interrupt driven and and reads the keyboard input. When "s" is pressed, it causes task switching.
+
+Expected behavior:
+
+priv_task1 and priv_task2  switch between each other after six lines are printed or "s" is pressed  on the keyboard in UART0 terminal emulator.
+priv_task1 prints six lines of upper case letters. Each line repeats a letter 5 times.
+priv_task2 prints six lines of digits. Each line repeats a single digit 5 times.
+
+Note there is a dummy loop added to introduce some delay.
