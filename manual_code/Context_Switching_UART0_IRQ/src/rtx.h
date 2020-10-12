@@ -61,7 +61,7 @@ extern int __SVC_0 _tsk_ls(U32 p_func, task_t *buf, int count);
 
 
 /* message passing */
-extern int k_mbx_create(ssize_t size);
+extern int k_mbx_create(size_t size);
 #define mbx_create(size) _mbx_create((U32)k_mbx_create, size)
 extern int __SVC_0 _mbx_create(U32 p_func, size_t size);
 
