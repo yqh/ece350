@@ -58,10 +58,14 @@ void task2(void)
     ptr->type = KCD_REG;
     buf += msg_hdr_size;
     *buf = 'W';
-    send_msg(TID_KCD, (void *)buf);
+    send_msg(TID_KCD, (void *)ptr);
     recv_msg(&sender_tid, g_buf2, 128);
     
-    /* terminating */
+    /* do command processing */
+    
+    /* Terminate if you are not a daemon task.
+       For a deamon task, it should be in an infinite loop and never terminate.
+    */
     tsk_exit();
 }
 

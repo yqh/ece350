@@ -30,9 +30,9 @@ extern int _mem_count_extfrag(U32 p_func, size_t size) __SVC_0;
 
 /* Note __SVC_0 can also be put in the front of the function name*/
 /*task manamgement */
-extern void k_rtx_init(size_t blk_size, int algo, RTX_TASK_INFO *tsk_info, int num_tasks);
+extern int k_rtx_init(size_t blk_size, int algo, RTX_TASK_INFO *tsk_info, int num_tasks);
 #define rtx_init(blk_size, algo, tsk_info, num_tasks) _rtx_init((U32)k_rtx_init, blk_size, algo, tsk_info, num_tasks)
-extern void __SVC_0 _rtx_init(U32 p_func, size_t blk_size, int algo, RTX_TASK_INFO *tsk_info, int num_tasks);
+extern int __SVC_0 _rtx_init(U32 p_func, size_t blk_size, int algo, RTX_TASK_INFO *tsk_info, int num_tasks);
 
 extern int k_tsk_yield(void);
 #define tsk_yield() _tsk_yield((U32)k_tsk_yield)

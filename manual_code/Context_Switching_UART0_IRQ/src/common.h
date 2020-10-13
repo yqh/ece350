@@ -1,7 +1,7 @@
 /* @brief: common defines and structs for both kernel and user 
  * @file: common.h 
  * @author: Yiqing Huang
- * @date: 2020/10/05
+ * @date: 2020/10/13
  */
 
 #ifndef _COMMON_H_
@@ -52,11 +52,12 @@ typedef unsigned char   task_t;
 
 /* task state macro */
 #define DORMANT        0  /* terminated task state */
-#define READY          1  
-#define RUNNING        2
-#define BLK_MEM        3 
-#define BLK_MSG        4
-#define NEW            15
+#define READY          1  /* A ready torun task that has been executed */
+#define RUNNING        2  /* Executing */
+#define BLK_MEM        3  /* blocked on requesting memory, not used in labs 1-3 */
+#define BLK_MSG        4  /* blocked on receiving a message */
+#define UART_INT       5  /* Interrupted by UART IRQ Handler */
+#define NEW            15 /* A ready to run task that has never been executed */
 
 /* message passing macros */
 /* message types */
