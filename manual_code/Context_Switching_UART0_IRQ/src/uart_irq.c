@@ -242,20 +242,3 @@ void c_UART0_IRQHandler(void)
         return;
     }    
 }
-
-ssize_t k_uart_read(void *buf, size_t count)
-{
-    /* not implemented yet */
-#ifdef DEBUG_0
-    printf("k_uart_read: buf =0x%x, count=%d\r\n", buf, count);
-#endif /* DEBUG_0 */
-    return 0;
-}
-ssize_t k_uart_write(const void *buf, size_t count)
-{
-    /* not implemented yet */
-#ifdef DEBUG_0
-    printf("k_uart_write: buf =0x%x, count=%d\r\n", buf, count);
-#endif /* DEBUG_0 */
-    return 0;
-}
