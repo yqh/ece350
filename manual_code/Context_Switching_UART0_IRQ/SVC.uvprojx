@@ -391,7 +391,17 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Kernel code</GroupName>
+          <GroupName>Kernel IRQ code</GroupName>
+          <Files>
+            <File>
+              <FileName>uart_irq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\uart_irq.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Kernel sys call code</GroupName>
           <Files>
             <File>
               <FileName>HAL.c</FileName>
@@ -424,6 +434,11 @@
           <GroupName>Kernel Tasks</GroupName>
           <Files>
             <File>
+              <FileName>lcd_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\lcd_task.c</FilePath>
+            </File>
+            <File>
               <FileName>priv_tasks.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\priv_tasks.c</FilePath>
@@ -444,11 +459,6 @@
               <FilePath>.\src\printf.c</FilePath>
             </File>
             <File>
-              <FileName>uart_irq.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\uart_irq.c</FilePath>
-            </File>
-            <File>
               <FileName>uart_polling.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\uart_polling.c</FilePath>
@@ -456,8 +466,18 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>User code</GroupName>
+          <GroupName>User Tasks</GroupName>
           <Files>
+            <File>
+              <FileName>kcd_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\kcd_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>null_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\null_task.c</FilePath>
+            </File>
             <File>
               <FileName>usr_tasks.c</FileName>
               <FileType>1</FileType>
@@ -858,7 +878,17 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Kernel code</GroupName>
+          <GroupName>Kernel IRQ code</GroupName>
+          <Files>
+            <File>
+              <FileName>uart_irq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\uart_irq.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Kernel sys call code</GroupName>
           <Files>
             <File>
               <FileName>HAL.c</FileName>
@@ -891,6 +921,11 @@
           <GroupName>Kernel Tasks</GroupName>
           <Files>
             <File>
+              <FileName>lcd_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\lcd_task.c</FilePath>
+            </File>
+            <File>
               <FileName>priv_tasks.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\priv_tasks.c</FilePath>
@@ -911,11 +946,6 @@
               <FilePath>.\src\printf.c</FilePath>
             </File>
             <File>
-              <FileName>uart_irq.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\uart_irq.c</FilePath>
-            </File>
-            <File>
               <FileName>uart_polling.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\uart_polling.c</FilePath>
@@ -923,8 +953,18 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>User code</GroupName>
+          <GroupName>User Tasks</GroupName>
           <Files>
+            <File>
+              <FileName>kcd_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\kcd_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>null_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\null_task.c</FilePath>
+            </File>
             <File>
               <FileName>usr_tasks.c</FileName>
               <FileType>1</FileType>

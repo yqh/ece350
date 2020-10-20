@@ -2,8 +2,9 @@
  * @file:   priv_tasks.c
  * @brief:  Two kernel tasks: priv_task1 and priv_task2
  * @author: Yiqing Huang
- * @date:   2020/09/24
+ * @date:   2020/10/20
  * NOTE: Each task is in an infinite loop. These Tasks never terminate.
+ * IMPORTANT: This file will be replaced by anothe file in automated testing.
  */
 
 #include "uart_polling.h"

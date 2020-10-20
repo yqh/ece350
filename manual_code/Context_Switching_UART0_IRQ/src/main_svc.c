@@ -2,7 +2,7 @@
  * @file:   main_svc.c
  * @brief:  main routine to start up the RTX and two initial tasks
  * @author: Yiqing Huang
- * @date:   2020/09/24
+ * @date:   2020/10/20
  * NOTE: standard C library is not allowed in the final kernel code.
  *       A tiny printf function for embedded application development
  *       taken from http://www.sparetimelabs.com/tinyprintf/tinyprintf.php
@@ -10,6 +10,7 @@
  *       Check target option->C/C++ to see the DEBUG_0 definition.
  *       Note that init_printf(NULL, putc) must be called to initialize 
  *       the printf function.
+ * IMPORTANT: This file will be replaced by another file in automted testing.
  */
 
 #include <LPC17xx.h>
@@ -26,9 +27,37 @@
 #define IROM_BASE  0x0
 #endif
 
+extern void lcd_task(void);
+extern void kcd_task(void);
+extern void null_task(void);
+
+int set_fixed_tasks(RTX_TASK_INFO *tasks, int num_tasks){
+
+    if (num_tasks !=3) {
+        return RTX_ERR;
+    }
+    
+    tasks[0].ptask = &lcd_task;
+    tasks[0].u_stack_size = 0x0;
+    tasks[0].prio = HIGH;
+    tasks[0].priv = 1;
+    
+    tasks[1].ptask = &kcd_task;
+    tasks[1].u_stack_size = 0x100;
+    tasks[1].prio = HIGH;
+    tasks[1].priv = 0;
+    
+    tasks[2].ptask = &null_task;
+    tasks[2].u_stack_size = 0x100;
+    tasks[2].prio = PRIO_NULL;
+    tasks[2].priv = 0;
+
+    return RTX_OK;
+}
 int main() 
-{    
-    RTX_TASK_INFO task_info[2];    
+{      
+    RTX_TASK_INFO task_info[5];    /* 5 tasks, only 2 are used in uncommented code */
+   
     /* CMSIS system initialization */
     SystemInit();  /* initialize the system */
     __disable_irq();
@@ -46,8 +75,9 @@ int main()
 #endif /*DEBUG_0*/    
     /* sets task information */
     set_task_info(task_info, 2);
+    set_fixed_tasks(task_info + 2, 3);  /* kcd, lcd, null tasks */
     /* start the RTX and built-in tasks */
-    rtx_init(32, FIRST_FIT, task_info, 2);  
+    rtx_init(32, FIRST_FIT, task_info, 5); 
     /* We should never reach here!!! */
     return RTX_ERR;  
 }

@@ -29,4 +29,9 @@ int k_tsk_ls(task_t *buf, int count);
 
 extern void __rte(void);               /* pop exception stack frame */
 
+/* we do not implement these tasks in the starter code */
+extern void null_task(void);
+extern void kcd_task(void);
+extern void lcd_task(void);
+
 #endif /* ! K_TASK_H_ */

@@ -1,6 +1,7 @@
 /* @brief: rtx.h User API header file. Do not modify
  * @author: Yiqing Huang
  * @date: 2020/10/05
+ * IMPORTANT: DO NOT MODIFY
  */
 #ifndef _RTX_H_
 #define _RTX_H_

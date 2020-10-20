@@ -2,8 +2,9 @@
  * @file:   usr_tasks.c
  * @brief:  Two user/unprivileged  tasks: task1 and task2
  * @author: Yiqing Huang
- * @date:   2020/10/09
+ * @date:   2020/10/20
  * NOTE: Each task is in an infinite loop. Processes never terminate.
+ * IMPORTANT: This file will be replaced by another file in automated testing.
  */
 
 #include "rtx.h"
@@ -20,6 +21,25 @@
 U8 g_buf1[256];
 U8 g_buf2[256];
 task_t g_tasks[MAX_TASKS];
+
+/**
+ * @brief: fill the tasks array with information 
+ * @param: tasks, an array of RTX_TASK_INFO elements
+ * @param: num_tasks, length of the tasks array 
+ * NOTE: we do not use this in the starter code.
+ *       during testing, if we want to initialize a user task at boot time
+ *       we will write a similar function to provide task info. to kernel.
+ */
+int set_usr_task_info(RTX_TASK_INFO *tasks, int num_tasks) {
+    for (int i = 0; i < num_tasks; i++ ) {
+        tasks[i].u_stack_size = 0x0;
+        tasks[i].prio = HIGH;
+        tasks[i].priv = 1;
+    }
+    tasks[0].ptask = &task1;
+    tasks[1].ptask = &task2;
+    return 2;
+}    
 
 /**
  * @brief: a dummy task1

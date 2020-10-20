@@ -85,6 +85,15 @@ int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
     /* initilize exception stack frame (i.e. initial context) for each task */
     for ( i = 0; i < num_tasks; i++ ) {
         int j;
+        
+        if (p_taskinfo->ptask == lcd_task || 
+            p_taskinfo->ptask == kcd_task || 
+            p_taskinfo->ptask == null_task) {
+            continue; /* Because these three tasks are not implemented in the starter code,
+                         we skip them here. 
+                         You should not skip them since you will implement them */
+        }
+        
         TCB *p_tcb = &g_tcbs[i+1];
         p_tcb ->tid = i+1;
         p_tcb->state = NEW;
