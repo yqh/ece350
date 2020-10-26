@@ -28,7 +28,7 @@ uint32_t timer_init(uint8_t n_timer)
         Step 1: Power control configuration.
                 See table 46 pg63 in LPC17xx_UM
         -----------------------------------------------------
-        Enable UART0 power, this is the default setting
+        Enable TIMER0 power, this is the default setting
         done in system_LPC17xx.c under CMSIS.
         Enclose the code for your refrence
         //LPC_SC->PCONP |= BIT(1);
