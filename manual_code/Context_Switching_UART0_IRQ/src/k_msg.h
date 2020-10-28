@@ -12,7 +12,7 @@
 
 int k_mbx_create(size_t size);
 int k_send_msg(task_t receiver_tid, const void *buf);
-int k_recv_msg(task_t *sender_tid, void *buf, int len);
+int k_recv_msg(task_t *sender_tid, void *buf, size_t len);
 int k_mbx_ls(task_t *buf, int count);
 
 #endif /* ! K_MSG_H_ */

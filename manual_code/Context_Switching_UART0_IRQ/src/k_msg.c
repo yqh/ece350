@@ -25,7 +25,7 @@ int k_send_msg(task_t receiver_tid, const void *buf) {
     return 0;
 }
 
-int k_recv_msg(task_t *sender_tid, void *buf, int len) {
+int k_recv_msg(task_t *sender_tid, void *buf, size_t len) {
 #ifdef DEBUG_0
     printf("k_recv_msg: sender_tid  = 0x%x, buf=0x%x, len=%d\r\n", sender_tid, buf, len);
 #endif /* DEBUG_0 */
