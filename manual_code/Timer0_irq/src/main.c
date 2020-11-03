@@ -22,8 +22,8 @@ int main () {
     __enable_irq();
    
     while (1) {
-        /* g_timer_count gets updated every 1ms */
-        if (g_timer_count == 1000) { 
+        /* g_timer_count gets updated every 1 usec */
+        if (g_timer_count == 1000000) { 
             uart1_put_char('0'+ sec);
             sec = (sec + 1)%10;
             g_timer_count = 0; /* reset the counter */

@@ -40,9 +40,7 @@ uint32_t timer_init(uint8_t n_timer)
         -----------------------------------------------------
         Check the PLL0 configuration to see how XTAL=12.0MHZ 
         gets to CCLK=100MHZ in system_LPC17xx.c file.
-        PCLK = CCLK/4, default setting in system_LPC17xx.c.
-        Enclose the code for your reference
-        //LPC_SC->PCLKSEL0 &= ~(BIT(3)|BIT(2));    
+        PCLK = CCLK,  setting in system_LPC17xx.c.    
 
         -----------------------------------------------------
         Step 3: Pin Ctrl Block configuration. 
@@ -62,12 +60,12 @@ uint32_t timer_init(uint8_t n_timer)
     */
 
     /* Step 4.1: Prescale Register PR setting 
-       CCLK = 100 MHZ, PCLK = CCLK/4 = 25 MHZ
-       2*(12499 + 1)*(1/25) * 10^(-6) s = 10^(-3) s = 1 ms
+       CCLK = 100 MHZ, PCLK = CCLK = 100 MHZ
+       2*(49 + 1)* 1/100 * 10^(-6) s = 10^(-6) s = 1 usec
        TC (Timer Counter) toggles b/w 0 and 1 every 12500 PCLKs
        see MR setting below 
     */
-    pTimer->PR = 12499;  
+    pTimer->PR = 49;  
 
     /* Step 4.2: MR setting, see section 21.6.7 on pg496 of LPC17xx_UM. */
     pTimer->MR0 = 1;
