@@ -52,7 +52,7 @@ typedef unsigned char   task_t;
 #define KERN_STACK_SIZE 0x200 /* task kernel stack size in bytes */
 
 /* Real-time Task Priority. Highest in the system*/
-#define PRIO_RT 0    /* priority level for real-time tasks*/ 
+#define PRIO_RT 0    /* priority level for real-time tasks */ 
 #define HIGH    100
 #define MEDIUM  101
 #define LOW     102
@@ -89,6 +89,11 @@ typedef unsigned char   task_t;
 #define MIN_MBX_SIZE 1  /* minimum mailbox size in bytes */
 
 /* Structures */
+/* Timing structure */
+struct timeval_rt {
+    U32 sec;            /* seconds */
+    U32 usec;           /* microoseconds */
+};
 
 /* common data structures in both kernel and user spaces */
 /* Task information structure */
@@ -104,13 +109,9 @@ typedef struct rtx_task_info {
     U8     prio;         /* Execution priority                      */
     U8     state;        /* Task state                              */
     U8     priv;         /* = 0 unprivileged, =1 priviliged         */  
+    struct timeval_rt tv_cpu;  /* task execution cpu time */
+    struct timeval_rt tv_wall; /* task execution wall clock time */
 } RTX_TASK_INFO;
-
-/* Timing structure */
-struct timeval_rt {
-    U32 sec;            /* seconds */
-    U32 usec;           /* microoseconds */
-};
 
 /* Real-time task information structure */
 typedef struct task_rt {

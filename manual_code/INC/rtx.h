@@ -69,6 +69,9 @@ extern void k_tsk_rt_done(void);
 #define tsk_rt_done() _tsk_rt_done((U32)k_tsk_rt_done)
 extern void __SVC_0 _tsk_rt_done(U32 p_func);
 
+extern void k_tsk_suspend(struct timeval_rt);
+#define tsk_suspend(tv) _tsk_suspend((U32) k_tsk_suspend, tv)
+extern void _tsk_suspend(U32 p_func, struct timeval_rt tv);
 
 /* message passing */
 extern int k_mbx_create(size_t size);
@@ -95,5 +98,7 @@ extern int __SVC_0 _mbx_ls(U32 p_func, task_t *buf, int count);
 extern int k_get_time(struct timeval_rt *tv);
 #define get_time(tv, n_timer) _get_time((U32)k_get_time)
 extern int __SVC_0 _get_time(U32 p_func, struct timeval_rt *tv);
+
+
 
 #endif // !_RTX_H_
