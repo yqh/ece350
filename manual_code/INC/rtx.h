@@ -65,9 +65,9 @@ extern int k_tsk_create_rt(task_t *tid, TASK_RT *task, RTX_MSG_HDR *msg_hdr, U32
 #define tsk_create_rt(tid, task, msg_hdr, num_msgs) _tsk_create_rt((U32)k_tsk_create_rt, tid, task, msg_hdr, num_msgs)
 extern int __SVC_0 _tsk_create_rt(U32 p_func, task_t *tid, TASK_RT *task, RTX_MSG_HDR *msg_hdr, U32 num_msgs);
 
-extern void k_tsk_rt_done(void);
-#define tsk_rt_done() _tsk_rt_done((U32)k_tsk_rt_done)
-extern void __SVC_0 _tsk_rt_done(U32 p_func);
+extern void k_tsk_done_rt(void);
+#define tsk_done_rt() _tsk_done_rt((U32)k_tsk_done_rt)
+extern void __SVC_0 _tsk_done_rt(U32 p_func);
 
 extern void k_tsk_suspend(struct timeval_rt);
 #define tsk_suspend(tv) _tsk_suspend((U32) k_tsk_suspend, tv)
