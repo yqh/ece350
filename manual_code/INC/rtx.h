@@ -69,9 +69,9 @@ extern void k_tsk_done_rt(void);
 #define tsk_done_rt() _tsk_done_rt((U32)k_tsk_done_rt)
 extern void __SVC_0 _tsk_done_rt(U32 p_func);
 
-extern void k_tsk_suspend(struct timeval_rt);
+extern void k_tsk_suspend(struct timeval_rt *tv);
 #define tsk_suspend(tv) _tsk_suspend((U32) k_tsk_suspend, tv)
-extern void _tsk_suspend(U32 p_func, struct timeval_rt tv);
+extern void _tsk_suspend(U32 p_func, struct timeval_rt *tv);
 
 /* message passing */
 extern int k_mbx_create(size_t size);
