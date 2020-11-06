@@ -1,7 +1,6 @@
 /* @brief: common defines and structs for both kernel and user 
  * @file: common.h 
  * @author: Yiqing Huang
- * @date: 2020/11/01
  * IMPORTANT: DO NOT MODIFY
  */
 
@@ -88,7 +87,14 @@ typedef unsigned char   task_t;
 /* mailbox sizes */
 #define MIN_MBX_SIZE 1  /* minimum mailbox size in bytes */
 
+
 /* Structures */
+/* message buffer header struct */
+typedef struct rtx_msg_hdr {
+    U32 length;   /* length of the mssage including the message header size */
+    U32 type;     /* type of the message */
+} RTX_MSG_HDR;
+
 /* Timing structure */
 struct timeval_rt {
     U32 sec;            /* seconds */
@@ -111,6 +117,11 @@ typedef struct rtx_task_info {
     U8     priv;         /* = 0 unprivileged, =1 priviliged         */  
     struct timeval_rt tv_cpu;  /* task execution cpu time */
     struct timeval_rt tv_wall; /* task execution wall clock time */
+    
+    /* The following only applies to real-time tasks */
+    struct timeval_rt p_n;    /* period in seconds and microseconds */
+    RTX_MSG_HDR *msg_hdr;     /* real-time task message header      */
+    U32    num_msgs;          /* real-time task mailbox capacity    */
 } RTX_TASK_INFO;
 
 /* Real-time task information structure */
@@ -120,11 +131,5 @@ typedef struct task_rt {
     U16  u_stack_size;      /* The task user total stack space in bytes*/
     U8   priv;              /* = 0 unprivileged, =1 priviliged         */  
 } TASK_RT;
-
-/* message buffer header struct */
-typedef struct rtx_msg_hdr {
-    U32 length;   /* length of the mssage including the message header size */
-    U32 type;     /* type of the message */
-} RTX_MSG_HDR;
 
 #endif // _COMMON_H_
