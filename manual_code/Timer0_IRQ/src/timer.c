@@ -62,7 +62,7 @@ uint32_t timer_init(uint8_t n_timer)
     /* Step 4.1: Prescale Register PR setting 
        CCLK = 100 MHZ, PCLK = CCLK = 100 MHZ
        2*(49 + 1)* 1/100 * 10^(-6) s = 10^(-6) s = 1 usec
-       TC (Timer Counter) toggles b/w 0 and 1 every 12500 PCLKs
+       TC (Timer Counter) toggles b/w 0 and 1 every 50 PCLKs
        see MR setting below 
     */
     pTimer->PR = 49;  
