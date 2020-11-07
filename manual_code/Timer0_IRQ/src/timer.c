@@ -11,7 +11,7 @@
 
 #define BIT(X) (1<<X)
 
-volatile uint32_t g_timer_count = 0; /* increment every 1 ms */
+volatile uint32_t g_timer_count = 0; /* increment every 1 us */
 
 /**
  * @brief: initialize timer. Only timer 0 is supported
