@@ -87,7 +87,7 @@ extern int k_recv_msg(task_t *tid, void *buf, size_t len);
 extern int __SVC_0 _recv_msg(U32 p_func, task_t *tid, void *buf, size_t len);
 
 extern int k_recv_msg_nb(task_t *tid, void *buf, size_t len);
-#define recv_msg_nb(tid, buf, len) _recv_msg_nb((U32)k_recv_msg, tid, buf, len)
+#define recv_msg_nb(tid, buf, len) _recv_msg_nb((U32)k_recv_msg_nb, tid, buf, len)
 extern int __SVC_0 _recv_msg_nb(U32 p_func, task_t *tid, void *buf, size_t len);
 
 extern int k_mbx_ls(task_t *buf, int count);
