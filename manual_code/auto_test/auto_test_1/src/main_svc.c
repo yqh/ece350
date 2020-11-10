@@ -1,14 +1,6 @@
 /**
  * @file:   main_svc.c
  * @brief:  main routine to start up the RTX and two initial tasks
- * @date:   2020/10/20
- * NOTE: standard C library is not allowed in the final kernel code.
- *       A tiny printf function for embedded application development
- *       taken from http://www.sparetimelabs.com/tinyprintf/tinyprintf.php
- *       is configured to use UART0 to output when DEBUG_0 is defined.
- *       Check target option->C/C++ to see the DEBUG_0 definition.
- *       Note that init_printf(NULL, putc) must be called to initialize 
- *       the printf function.
  * IMPORTANT: This file will be replaced by another file in automted testing.
  */
 
@@ -17,7 +9,6 @@
 #include "priv_tasks.h"
 #include "uart_polling.h"
 #include "printf.h"
-#include "timer.h"
 
 #ifdef RAM_TARGET
 #define IROM_BASE  0x10000000
@@ -59,7 +50,6 @@ int main()
     /* CMSIS system initialization */
     SystemInit();  /* initialize the system */
     __disable_irq();
-    timer_init(0);
     uart_init(1);  /* uart1 uses polling for output */
     init_printf(NULL, putc);
     __enable_irq();

@@ -8,7 +8,6 @@
 #include "priv_tasks.h"
 #include "uart_polling.h"
 #include "printf.h"
-#include "timer.h"
 
 #ifdef RAM_TARGET
 #define IROM_BASE  0x10000000
@@ -50,7 +49,6 @@ int main()
     /* CMSIS system initialization */
     SystemInit();  /* initialize the system */
     __disable_irq();
-    timer_init(0);
     uart_init(1);  /* uart1 uses polling for output */
     init_printf(NULL, putc);
     __enable_irq();
