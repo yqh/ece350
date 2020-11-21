@@ -87,10 +87,6 @@ typedef unsigned char   task_t;
 /* mailbox sizes */
 #define MIN_MBX_SIZE 1  /* minimum mailbox size in bytes */
 
-/* Timing Macros */
-#define MIN_SYS_TICK 100 /* min sys tick  */
-#define MAX_SYS_TICK 1000000000 /* max sys tick */
-
 /* Structures */
 /* message buffer header struct */
 typedef struct rtx_msg_hdr {

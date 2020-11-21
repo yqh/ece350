@@ -1,6 +1,5 @@
 /* @brief: rtx.h User API header file. Do not modify
  * @author: Yiqing Huang
- * @date: 2020/10/05
  * IMPORTANT: DO NOT MODIFY
  */
 #ifndef _RTX_H_
@@ -8,6 +7,7 @@
 
 /*----- Includes -----*/
 #include "common.h"
+#include "common_ext.h"
 
 #define __SVC_0  __svc_indirect(0)
 
@@ -72,6 +72,14 @@ extern void __SVC_0 _tsk_done_rt(U32 p_func);
 extern void k_tsk_suspend(struct timeval_rt *tv);
 #define tsk_suspend(tv) _tsk_suspend((U32) k_tsk_suspend, tv)
 extern void __SVC_0 _tsk_suspend(U32 p_func, struct timeval_rt *tv);
+
+extern int k_rtx_init_rt(RTX_SYS_INFO *sys_info, RTX_TASK_INFO *task_info, int num_tasks);
+#define rtx_init_rt(sys_info, task_info, num_tasks) _rtx_init_rt((U32)k_rtx_init_rt, sys_info, task_info, num_tasks)
+extern int __SVC_0 _rtx_init_rt(U32 p_func, RTX_SYS_INFO *sys_info, RTX_TASK_INFO *task_info, int num_tasks);
+
+extern int k_get_sys_info(RTX_SYS_INFO *buffer);
+#define get_sys_info(buffer) _get_sys_info((U32)k_get_sys_info, buffer)
+extern int __SVC_0 _get_sys_info(U32 p_func, RTX_SYS_INFO *buffer);
 
 /* message passing */
 extern int k_mbx_create(size_t size);

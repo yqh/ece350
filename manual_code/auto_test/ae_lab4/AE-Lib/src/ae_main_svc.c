@@ -42,15 +42,6 @@ int set_fixed_tasks(RTX_TASK_INFO *tasks, int num_tasks){
     return RTX_OK;
 }
 
-int set_wall_clock_task1(RTX_TASK_INFO *tasks){
-		tasks[0].ptask = &wall_clock_task;
-		tasks[0].u_stack_size = 0x100;
-		tasks[0].priv = 0;
-		tasks[0].prio = HIGH;
-	
-		return RTX_OK;
-}
-
 int set_wall_clock_task(RTX_TASK_INFO *task){
 		task->ptask = &wall_clock_task;
 		task->u_stack_size = 0x100;
