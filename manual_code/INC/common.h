@@ -42,8 +42,8 @@ typedef unsigned char   task_t;
 
 /* Main Scheduling Algorithms */
 #define DEFAULT 0          /* stric-priority, FCFS scheduling */
-#define RM_PS   10         /* rate-monotonic scheduling with pooling server */
-#define RM_NPS  11         /* rate-Monotonic scheduling without pooling server */
+#define RM_PS   10         /* rate-monotonic scheduling with polling server */
+#define RM_NPS  11         /* rate-Monotonic scheduling without polling server */
 #define EDF     12         /* earliest-deadline-first scheduling */
 
 #define PID_NULL 0         /* pre-defined Task ID for null task */
