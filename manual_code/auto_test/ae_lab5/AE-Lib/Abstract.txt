@@ -1,0 +1,33 @@
+The AE-Lib project is to demonstrate how to build an automated testing libary to link with RTX
+The AE-Lib is available in different targets:
+
+ - AE Lib SIM:
+   - Compiler:                  ARM Compiler Default Version 5
+   - Configured for simulator debugger 
+   - The target output is ./Objects/SIM/ae_lab5_sim.lib
+   - The period of task_rt1 is set to 100000 microseconds.
+
+ - AE Lib RAM:
+   - Compiler:                  ARM Compiler Default Version 5
+   - Runs from Internal RAM located on chip
+     (may be used for target debugging)
+   - The target output is ./Objects/RAM/ae_lab5_ram.lib
+   - The period is set to 1 second. 
+
+The targets a .lib files. Add one of the lib files to your RTX, exclude main_svc.c, priv_tasks.c and usr_tasks.c from your RTX project build. 
+
+There are two tasks in the system: task_test_manager and task_rt1. Both output to COM1.
+The COM1 terminal uses polling mechanism and outputs the debugging messages when AE_DEBUG_0 macro is defined.
+Timer2 is configured as a free-running counter. All configuration of Timer2 including its PCLK setting is done in ae_timer.c. 
+There is no need to modify system_LPC17xx.c 
+
+Expected behavior:
+
+There are two simple tests.
+
+The task_test_manager send a message to task_rt1. If the message is received properly, test 0 pass and set bit 0 of g_test_result to 0.
+The task_rt1 sends a sequence of 4 timing data to the task_test_manager. The logic to evaluate the timing data is not implemented yet
+and for now always returns 1, which means it is a pass. g_test_result bit 1 is set to 1. This is test1. In the real test, the logic
+to evalute the timing data will be implemented.
+
+

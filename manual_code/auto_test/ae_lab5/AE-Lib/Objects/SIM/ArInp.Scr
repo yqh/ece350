@@ -1,0 +1,5 @@
+--create .\Objects\SIM\ae_lab5_sim.lib
+.\objects\sim\ae_timer.o
+.\objects\sim\ae_main_svc.o
+.\objects\sim\ae_priv_tasks.o
+.\objects\sim\ae_usr_tasks.o
