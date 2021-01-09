@@ -2,7 +2,7 @@
 This branch is for the Fall 2020 Lab. The Hardware is Keil LPC1768 Evaluation Board. The processor is ARM Cortex-M3. 
 
 ### `manual`
-This directory contains the lab manual.
+This directory contains the lab manual. The lab manual github code base links all refer the master brach, which was the main branch in Fall 2020, but no longer the main brach after F2020. You should replace master branch with this branch in the url links in the lab manual for now. 
 
 ### `manual_code`
 
