@@ -1,4 +1,5 @@
-## ECE 350 RTX Project Repository
+## ECE 350 Fall 2020 RTX Project Repository
+This branch is for the Fall 2020 Lab. The Hardware is Keil LPC1768 Evaluation Board. The processor is ARM Cortex-M3. 
 
 ### `manual`
 This directory contains the lab manual.
