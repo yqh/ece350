@@ -1,4 +1,2 @@
-Project ID,1
-Group ID,99 
-Quest ID,jsmith 
-Name,John Smith
+Proj_ID,Group_ID,Quest_ID,Last_Name,First_Name 
+1,99,jsmith,Smith,John

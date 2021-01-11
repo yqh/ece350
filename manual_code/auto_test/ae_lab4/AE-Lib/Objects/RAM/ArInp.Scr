@@ -1,5 +1,0 @@
---create .\Objects\RAM\ae_lab4_ram.lib
-.\objects\ram\ae_timer.o
-.\objects\ram\ae_main_svc.o
-.\objects\ram\ae_priv_tasks.o
-.\objects\ram\ae_usr_tasks.o
