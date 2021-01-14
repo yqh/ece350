@@ -13,7 +13,7 @@ The other branches are named as `<Term>-<Processor>`. For example "F20-CM3" bran
 This directory contains the lab manual.
 
 ### `manual_code`
-This directory contains starter code referred by the lab manual.
+This directory contains starter code of each lab.
 
 ### `submission`
 This directory contains template files for project submissions.
