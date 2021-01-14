@@ -66,21 +66,17 @@ int main()
     mode = __get_mode();
     printf("mode = 0x%x\r\n", mode);
 
+    __ch_MODE(MODE_USR);
+    mode = __get_mode();
+    printf("mode = 0x%x\r\n", mode);
+
+    __ch_MODE(MODE_SYS);
+    mode = __get_mode();
+    printf("mode = 0x%x\r\n", mode);
+
     // System and Task set up by auto testing software
     if (ae_init(&sys_info, task_info, 2) != RTX_OK) {
     	printf("RTX INIT FAILED\r\n");
-    	return RTX_ERR;
-    }
-
-    // memory initialization
-    if (mode == MODE_SYS) {
-        ret = mem_init(32, FIRST_FIT);
-    } else if (mode == MODE_SVC) {
-        ret = k_mem_init(32, FIRST_FIT);
-    }
-
-    if (ret == RTX_ERR) {
-    	printf("ERR: terminating\r\n");
     	return RTX_ERR;
     }
 
