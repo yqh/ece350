@@ -49,9 +49,9 @@
 
 /* __SVC_0 can be put at the end of the function declaration */
 /* memory management */
-extern int k_mem_init(size_t blk_size, int algo);
-#define mem_init(blk_size, algo) _mem_init((U32)k_mem_init, blk_size, algo);
-extern int _mem_init(U32 p_func, size_t blk_size, int algo) __SVC_0;
+extern int k_mem_init(void);
+#define mem_init() _mem_init((U32)k_mem_init);
+extern int _mem_init(U32 p_func) __SVC_0;
 
 extern void *k_mem_alloc(size_t size);
 #define mem_alloc(size) _mem_alloc((U32)k_mem_alloc, size);

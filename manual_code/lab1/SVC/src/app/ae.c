@@ -56,9 +56,6 @@ int ae_set_sys_info(RTX_SYS_INFO *sys_info)
         return RTX_ERR;
     }
 
-    // Memory sys info set up, required for all labs
-    sys_info->mem_algo = FIRST_FIT;
-    sys_info->mem_blk_size = 32;
 
     /*---------- NOT USED in LAB1 -------------------
     // Scheduling sys info set up, not used in lab1, ignore for now

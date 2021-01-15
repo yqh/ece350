@@ -48,8 +48,6 @@ int main()
     RTX_SYS_INFO  sys_info;
 	RTX_TASK_INFO task_info[2];
     char mode = 0;
-    void *ptr = NULL;
-    int  ret = RTX_ERR;
 
     // CMSIS system initialization
     SystemInit();
@@ -78,6 +76,12 @@ int main()
     if (ae_init(&sys_info, task_info, 2) != RTX_OK) {
     	printf("RTX INIT FAILED\r\n");
     	return RTX_ERR;
+    }
+
+    int ret = mem_init();
+    if (ret != RTX_OK) {
+       printf("mem_init failed.\r\n");
+       return RTX_ERR;
     }
 
     printf("test result = %d\r\n", ae_start());

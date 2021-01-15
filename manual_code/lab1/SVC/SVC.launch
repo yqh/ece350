@@ -2,44 +2,44 @@
 <launchConfiguration type="com.arm.debugger.launcher2">
     <stringAttribute key="1538542565168689533.viewid=2:DebugOutlineColumnState" value="OutlineConfig1&#9;8&#9;0&#9;true&#9;true&#9;145&#9;-1&#9;true&#9;1&#9;false&#9;true&#9;109&#9;-1&#9;true&#9;2&#9;true&#9;true&#9;147&#9;-1&#9;true&#9;3&#9;false&#9;true&#9;47&#9;-1&#9;true&#9;4&#9;false&#9;true&#9;56&#9;-1&#9;true&#9;5&#9;true&#9;true&#9;43&#9;-1&#9;true&#9;6&#9;false&#9;true&#9;74&#9;-1&#9;true&#9;7&#9;true&#9;true&#9;61&#9;-1&#9;true"/>
     <mapAttribute key="AverageDurationTracker">
-        <mapEntry key="*Fetching Data Model" value="2743665"/>
-        <mapEntry key="*list global low level symbols" value="7616774"/>
+        <mapEntry key="*Fetching Data Model" value="431660"/>
+        <mapEntry key="*list global low level symbols" value="1579667"/>
         <mapEntry key="*loading memory from target" value="1055256"/>
         <mapEntry key="*loading values from target" value="3111716"/>
         <mapEntry key="*updating registers" value="17827645"/>
         <mapEntry key="*updating variables" value="1848378"/>
-        <mapEntry key="AddEventObserver" value="4083257"/>
+        <mapEntry key="AddEventObserver" value="2488876"/>
         <mapEntry key="Evaluate" value="2408152"/>
         <mapEntry key="Retrieving globals list" value="20164650"/>
         <mapEntry key="areCachesAvailable" value="680002"/>
-        <mapEntry key="break" value="2331621"/>
-        <mapEntry key="compute execution mode" value="1129355"/>
-        <mapEntry key="continue" value="21073738"/>
+        <mapEntry key="break" value="1847224"/>
+        <mapEntry key="compute execution mode" value="591382"/>
+        <mapEntry key="continue" value="19807383"/>
         <mapEntry key="disassemble" value="44365686"/>
         <mapEntry key="get byte order" value="293028"/>
-        <mapEntry key="get capabilities" value="269613"/>
-        <mapEntry key="get execution addresss" value="619980"/>
-        <mapEntry key="get source lines" value="1480299"/>
+        <mapEntry key="get capabilities" value="231934"/>
+        <mapEntry key="get execution addresss" value="479511"/>
+        <mapEntry key="get source lines" value="475350"/>
         <mapEntry key="getValidEncodings" value="717018"/>
-        <mapEntry key="initialize command help" value="77819405"/>
+        <mapEntry key="initialize command help" value="51733187"/>
         <mapEntry key="interrupt" value="5252900"/>
-        <mapEntry key="list breakpoint options" value="207330"/>
-        <mapEntry key="list breakpoints" value="1381489"/>
-        <mapEntry key="list instruction sets" value="1860436"/>
-        <mapEntry key="list signals" value="44546718"/>
-        <mapEntry key="list watchpoint options" value="4352149"/>
-        <mapEntry key="list watchpoints" value="967445"/>
-        <mapEntry key="loadfile" value="159878825"/>
+        <mapEntry key="list breakpoint options" value="130950"/>
+        <mapEntry key="list breakpoints" value="2431875"/>
+        <mapEntry key="list instruction sets" value="422219"/>
+        <mapEntry key="list signals" value="10289163"/>
+        <mapEntry key="list watchpoint options" value="718028"/>
+        <mapEntry key="list watchpoints" value="375579"/>
+        <mapEntry key="loadfile" value="112454256"/>
         <mapEntry key="next" value="23699859"/>
         <mapEntry key="nexti" value="22049474"/>
-        <mapEntry key="set CWD" value="6303322"/>
-        <mapEntry key="set breakpoint properties" value="3331439"/>
-        <mapEntry key="set debug-from" value="1659103"/>
-        <mapEntry key="start" value="110585152"/>
+        <mapEntry key="set CWD" value="2285112"/>
+        <mapEntry key="set breakpoint properties" value="2181737"/>
+        <mapEntry key="set debug-from" value="1144772"/>
+        <mapEntry key="start" value="21916045"/>
         <mapEntry key="step" value="23399164"/>
         <mapEntry key="stepi" value="21916021"/>
         <mapEntry key="toggleBreakpoint" value="5053461"/>
-        <mapEntry key="waitForTargetToStop" value="22491748"/>
+        <mapEntry key="waitForTargetToStop" value="11527677"/>
     </mapAttribute>
     <intAttribute key="DEBUG_TAB..RESOURCES.COUNT" value="0"/>
     <intAttribute key="FILES.CONNECT_TO_GDB_SERVER.RESOURCES.COUNT" value="0"/>
