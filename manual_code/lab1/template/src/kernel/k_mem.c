@@ -44,19 +44,15 @@ const U32 g_k_stack_size = KERN_STACK_SIZE;
 // task kernel stacks
 U32 g_k_stacks[MAX_TASKS][KERN_STACK_SIZE >> 2] __attribute__((aligned(8)));
 
-//process stack for tasks in SYS mode
-U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
-
 /*
  *===========================================================================
  *                            FUNCTIONS
  *===========================================================================
  */
 
-int k_mem_init(size_t blk_size, int algo) {
+int k_mem_init(void) {
     unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
 #ifdef DEBUG_0
-    printf("k_mem_init: blk_size = %d, algo = %d\r\n", blk_size, algo);
     printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
     printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
 #endif /* DEBUG_0 */

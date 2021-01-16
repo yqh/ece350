@@ -148,8 +148,6 @@ typedef struct polling_server {
  * @brief RTX system configuration structure
  */
 typedef struct rtx_sys_info {
-    size_t              mem_blk_size;       /**< min memory block size manageable  */
-    int                 mem_algo;           /**< memory allocator algorithm        */
     U32                 rtx_time_qtm;       /**< time granularity in microseconds  */
     POLLING_SERVER      server;             /**< scheduling server for non-real-time tasks */
     U8                  sched;              /**< scheduler                         */
