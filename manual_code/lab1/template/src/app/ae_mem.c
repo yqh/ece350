@@ -25,34 +25,38 @@
 #include "printf.h"
 
 int test_mem(void) {
-	void *p[4];
-	int n;
+    void *p[4];
+    int n;
 
-	U32 result = 0;
+    U32 result = 0;
 
-	p[0] = mem_alloc(8);
+    p[0] = mem_alloc(8);
 
-	if (p[0] != NULL) {
-		result |= BIT(0);
-	}
+    if (p[0] != NULL) {
+        result |= BIT(0);
+    }
 
-	p[1] = mem_alloc(8);
+    p[1] = mem_alloc(8);
 
-	if (p[1] != NULL && p[1] != p[0]) {
-		result |= BIT(1);
-	}
+    if (p[1] != NULL && p[1] != p[0]) {
+        result |= BIT(1);
+    }
 
-	mem_dealloc(p[0]);
-	n = mem_count_extfrag(40)
-	;
-	if (n == 1) {
-		result |= BIT(2);
-	}
+    mem_dealloc(p[0]);
+    n = mem_count_extfrag(128);
+    if (n == 1) {
+        result |= BIT(2);
+    }
 
-	mem_dealloc(p[1]);
-	n = mem_count_extfrag(40);
-	if (n == 1) {
-		result |= BIT(2);
-	}
-	return result;
+    mem_dealloc(p[1]);
+    n = mem_count_extfrag(128);
+    if (n == 0) {
+        result |= BIT(3);
+    }
+    return result;
 }
+/*
+ *===========================================================================
+ *                             END OF FILE
+ *===========================================================================
+ */
