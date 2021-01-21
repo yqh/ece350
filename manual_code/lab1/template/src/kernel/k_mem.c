@@ -77,7 +77,24 @@ int k_mem_count_extfrag(size_t size) {
 #ifdef DEBUG_0
     printf("k_mem_extfrag: size = %d\r\n", size);
 #endif /* DEBUG_0 */
-    return RTX_OK;
+    // return RTX_OK;
+    
+    int memRegionSize;
+    int regionCount = 0;
+
+    node * curNode = HEAD; // HEAD is global var
+
+    while(curNode->next != NULL){
+        memRegionSize = curNode.size + sizeof(node);
+        if(curnode.isFree){
+            if(memRegionSize < size){
+                regionCount++;
+            }
+        }
+        curNode = curNode->next; // idk if this is the right way to goto next node
+    }
+
+    return regionCount;
 }
 
 /*
