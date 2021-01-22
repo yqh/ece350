@@ -50,11 +50,11 @@
 /* __SVC_0 can be put at the end of the function declaration */
 /* memory management */
 extern int k_mem_init(void);
-#define mem_init() _mem_init((U32)k_mem_init);
+#define mem_init() _mem_init((U32)k_mem_init)
 extern int _mem_init(U32 p_func) __SVC_0;
 
 extern void *k_mem_alloc(size_t size);
-#define mem_alloc(size) _mem_alloc((U32)k_mem_alloc, size);
+#define mem_alloc(size) _mem_alloc((U32)k_mem_alloc, size)
 extern void *_mem_alloc(U32 p_func, size_t size) __SVC_0;
 
 extern int k_mem_dealloc(void *);
@@ -62,7 +62,7 @@ extern int k_mem_dealloc(void *);
 extern int _mem_dealloc(U32 p_func, void *ptr) __SVC_0;
 
 extern int k_mem_count_extfrag(size_t size);
-#define mem_count_extfrag(size) _mem_count_extfrag((U32)k_mem_count_extfrag, size);
+#define mem_count_extfrag(size) _mem_count_extfrag((U32)k_mem_count_extfrag, size)
 extern int _mem_count_extfrag(U32 p_func, size_t size) __SVC_0;
 
 /*------------------------------------------------------------------------*
