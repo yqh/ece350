@@ -33,6 +33,19 @@
 #include "printf.h"
 #endif  /* DEBUG_0 */
 
+
+/*
+ *==========================================================================
+ *                            STRUCTS
+ *==========================================================================
+ */
+
+struct node {
+	int size;
+	int isFree;
+	struct node *next;
+};
+
 /*
  *==========================================================================
  *                            GLOBAL VARIABLES
@@ -43,6 +56,7 @@ const U32 g_k_stack_size = KERN_STACK_SIZE;
 
 // task kernel stacks
 U32 g_k_stacks[MAX_TASKS][KERN_STACK_SIZE >> 2] __attribute__((aligned(8)));
+struct node* HEAD = NULL;
 
 /*
  *===========================================================================
@@ -56,6 +70,21 @@ int k_mem_init(void) {
     printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
     printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
 #endif /* DEBUG_0 */
+
+    //check if end addr is valid
+    int totalSize = 0xBFFFFFFF - end_addr;
+    if(totalSize <= 0) {
+    	return RTX_ERR;
+    }
+
+    // cast end_addr to pointer given in end_addr
+    HEAD = (struct node*) end_addr;
+
+    // setup head
+    HEAD->size = totalSize - sizeof(struct node);
+    HEAD->isFree = 1;
+    HEAD->next = NULL;
+
     return RTX_OK;
 }
 
@@ -63,7 +92,35 @@ void* k_mem_alloc(size_t size) {
 #ifdef DEBUG_0
     printf("k_mem_alloc: requested memory size = %d\r\n", size);
 #endif /* DEBUG_0 */
-    return NULL;
+
+    struct node* curr = HEAD;
+
+    while(curr != NULL) {
+    	if (size <= curr->size && curr->isFree) {
+    		break;
+    	}
+    	
+    	curr = curr->next;
+    }
+
+    // couldn't allocate since no free space
+    if (curr == NULL) {
+    	return RTX_ERR;
+    }
+    //make a new node
+    // might need to use an unsigned depending on how types work
+    struct node* newNode = (struct node_t*)(curr + sizeof(struct node) + size); 
+    newNode->isFree = 1;
+    newNode->size = curr->size-size-sizeof(struct node);
+    newNode->next = NULL;
+
+    curr->isFree=0;
+    curr->size = size;
+    curr->next = newNode;
+
+    // return pointer to new memory?
+    // return curr
+    return RTX_OK;
 }
 
 int k_mem_dealloc(void *ptr) {
