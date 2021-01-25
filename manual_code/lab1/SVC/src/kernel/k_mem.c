@@ -93,6 +93,13 @@ void* k_mem_alloc(size_t size) {
     printf("k_mem_alloc: requested memory size = %d\r\n", size);
 #endif /* DEBUG_0 */
 
+    // 4 byte align
+    if (size % 4 == 0) {
+        size = ((int)(size / 4)) * 4;
+    } else {
+        size = ((int)(size / 4)) * 4 + 4;
+    }
+
     struct node* curr = HEAD;
 
     while(curr != NULL) {
@@ -109,7 +116,7 @@ void* k_mem_alloc(size_t size) {
     }
     //make a new node
     // might need to use an unsigned depending on how types work
-    struct node* newNode = (struct node_t*)(curr + sizeof(struct node) + size); 
+    struct node* newNode = (struct node_t*)((unsigned int)curr + sizeof(struct node) + size); 
     newNode->isFree = 1;
     newNode->size = curr->size-size-sizeof(struct node);
     newNode->next = NULL;
