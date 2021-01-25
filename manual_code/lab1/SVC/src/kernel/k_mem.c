@@ -112,7 +112,7 @@ void* k_mem_alloc(size_t size) {
 
     // couldn't allocate since no free space
     if (curr == NULL) {
-    	return RTX_ERR;
+    	return NULL;
     }
     //make a new node
     // might need to use an unsigned depending on how types work
@@ -127,7 +127,7 @@ void* k_mem_alloc(size_t size) {
 
     // return pointer to new memory?
     // return curr
-    return RTX_OK;
+    return &curr + sizeof(struct node);
 }
 
 int k_mem_dealloc(void *ptr) {
