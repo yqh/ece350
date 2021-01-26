@@ -40,11 +40,11 @@
  *==========================================================================
  */
 
-struct node {
+typedef struct Node {
 	unsigned int size;
 	int isFree;
-	struct node *next;
-};
+	struct Node *next;
+} Node;
 
 /*
  *==========================================================================
@@ -56,13 +56,21 @@ const U32 g_k_stack_size = KERN_STACK_SIZE;
 
 // task kernel stacks
 U32 g_k_stacks[MAX_TASKS][KERN_STACK_SIZE >> 2] __attribute__((aligned(8)));
-struct node* HEAD = NULL;
+Node* HEAD = NULL;
 
 /*
  *===========================================================================
  *                            FUNCTIONS
  *===========================================================================
  */
+
+void print_list() {
+	Node* curr = HEAD;
+	while (curr) {
+		printf("location: 0x%x, size: %x, free: %x\r\n", (U32)curr, (U32)curr->size, curr->isFree);
+		curr = curr->next;
+	}
+}
 
 int k_mem_init(void) {
     unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
@@ -78,10 +86,10 @@ int k_mem_init(void) {
     }
 
     // cast end_addr to pointer given in end_addr
-    HEAD = (struct node*) end_addr;
+    HEAD = (Node*) end_addr;
 
     // setup head
-    HEAD->size = totalSize - sizeof(struct node);
+    HEAD->size = totalSize - sizeof(Node);
     HEAD->isFree = 1;
     HEAD->next = NULL;
 
@@ -100,7 +108,7 @@ void* k_mem_alloc(size_t size) {
         size = ((unsigned int)(size / 4)) * 4 + 4;
     }
 
-    struct node* curr = HEAD;
+    Node* curr = HEAD;
 
     while(curr != NULL) {
     	if ((size + sizeof(struct node)) <= curr->size && curr->isFree) {
@@ -116,9 +124,9 @@ void* k_mem_alloc(size_t size) {
     }
     //make a new node
     // might need to use an unsigned depending on how types work
-    struct node* newNode = (struct node*)((unsigned int)curr + sizeof(struct node) + size);
+    Node* newNode = (Node*)((unsigned int)curr + sizeof(Node) + size);
     newNode->isFree = 1;
-    newNode->size = curr->size-size-sizeof(struct node);
+    newNode->size = curr->size - size - sizeof(Node);
     newNode->next = NULL;
 
     curr->isFree=0;
@@ -127,13 +135,64 @@ void* k_mem_alloc(size_t size) {
 
     // return pointer to new memory?
     // return curr
-    return curr + sizeof(struct node);
+
+    print_list();
+
+    // Cast curr to U32 to ensure pointer arithmetic works
+    // Pointer addition works by adding by increment of sizeof the pointer
+    // argument. If curr is of type Node* and we add sizeof(Node), we add
+    // sizeof(Node)^2 amount of bytes.
+    return (void*)((U32)curr + sizeof(Node));
+}
+
+Node* mergeNode(Node* first, Node* second) {
+	if (first > second) {
+		return NULL;
+	}
+
+	Node* result = first;
+	result->size = first->size + second->size;
+	result->next = second->next;
+
+	return result;
 }
 
 int k_mem_dealloc(void *ptr) {
 #ifdef DEBUG_0
     printf("k_mem_dealloc: freeing 0x%x\r\n", (U32) ptr);
 #endif /* DEBUG_0 */
+
+    Node* curr = HEAD;
+    Node* prev = NULL;
+
+    while (ptr != (char*)curr + sizeof(Node)) {
+    	if (curr->next == NULL) {
+    		return RTX_ERR;
+    	}
+
+    	prev = curr;
+    	curr = curr->next;
+//    	printf("0x%x\n", (U32)((char*)curr + sizeof(Node) + curr->size));
+    }
+
+    // Double free
+    if (curr->isFree > 0) {
+    	return RTX_ERR;
+    }
+
+    curr->isFree = 1;
+
+    // Merge neighboring nodes
+    if (prev && prev->isFree > 0) {
+    	curr = mergeNode(prev, curr);
+    }
+
+    if (curr->next && curr->next->isFree > 0) {
+    	curr = mergeNode(curr, curr->next);
+    }
+
+    print_list();
+
     return RTX_OK;
 }
 
@@ -146,10 +205,10 @@ int k_mem_count_extfrag(size_t size) {
     unsigned int memRegionSize;
     int regionCount = 0;
 
-    struct node* curNode = HEAD; // HEAD is global var
+    Node* curNode = HEAD; // HEAD is global var
 
-    while(curNode != NULL) {
-        memRegionSize = curNode->size + sizeof(struct node);
+    while(curNode->next != NULL){
+        memRegionSize = curNode->size + sizeof(Node);
         if(curNode->isFree){
             if(memRegionSize < size){
                 regionCount++;
