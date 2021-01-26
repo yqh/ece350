@@ -125,7 +125,8 @@ void* k_mem_alloc(size_t size) {
     p-> size = size;
     p-> next = n;
     p-> allocated = true;
-    return p;
+    // increment the pointer such that the return value will be pointing directly to the memory region instead of the header of the node
+    return ++p;
 }
 
 int k_mem_dealloc(void *ptr) {
@@ -138,7 +139,8 @@ int k_mem_dealloc(void *ptr) {
         return NULL;
     }
     // check if the ptr is actually pointing to an allocated memory region
-    struct node_t *p = (struct node_t*) ptr;
+    // decrement the point so now we are pointing to the memory address of the header of the node instead of the memory region
+    struct node_t *p = (struct node_t*)ptr-1;
     if (!p->allocated) {
         // if allocated is false that means that ptr was not returned by a previous mem_alloc() call or has already been previously called by mem_dealloc()
         return RTX_ERR;
@@ -155,15 +157,21 @@ int k_mem_dealloc(void *ptr) {
         p-> size += p-> next-> size + sizeof(struct node_t);
         // p-> next becomes what the next node was pointing at
         p-> next = p-> next-> next;
+        // also have to update the next node's previous node to point back to p
+        p-> next-> prev = p;
     }
     // then check the previous node to see if it has been allocated
+    printf("prev addr: 0x%x\r\n", (U32)p->prev);
     if (p-> prev != NULL && !p-> prev-> allocated) {
         // if the prev ptr is pointing to a free memory region, then I can merge the two regions
         // will be deleting the ptr node and merging it with its previous
         //struct node_t * pr = p-> prev;
         p-> prev-> size += p-> size + sizeof(struct node_t);
         p-> prev-> next = p-> next;
+        // since we merged this node, we have to also update the following node as well
+        p-> next-> prev = p-> prev;
     }
+
     return RTX_OK;
 }
 
@@ -177,8 +185,9 @@ int k_mem_count_extfrag(size_t size) {
     int counter = 0;
     struct node_t *p = node_head;
     while(p != NULL) {
-        // check if region is unallocated and its size is less than the threshold
-        if (p->size < size && !p-> allocated) {
+        // check if chunk is unallocated and its size is less than the threshold
+        //printf("addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p, p->size, p->allocated ? "true" : "false");
+        if ((p->size + sizeof(struct node_t)) < size && !p-> allocated) {
             // update the counter
             ++counter;
         }
