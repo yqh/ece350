@@ -33,11 +33,11 @@ int test_case_3 ();
 // Negative return value shows how many cases faied (e.g. -2 means two cases failed)
 int test_mem(void) {
 
-	int res1 = test_case_3();
-	int res2 = test_case_2();
-	int res3 = test_case_1();
+    int res1 = test_case_1();
+    int res2 = test_case_2();
+    int res3 = test_case_3();
 
-	return res1 + res2 + res3;
+    return res1 + res2 + res3;
 }
 
 // TEST CASE 1: Testing Overhead and External Fragmentation
@@ -46,20 +46,20 @@ int test_mem(void) {
 // Uses mem_count_extfrag() to verify the state of the heap
 // returns 0 if successful and -1 otherwise
 int test_case_1 () {
-	void *p[6];										//pointers for allocated chunks
-	int bytes_to_alloc = 8;							//size of the first allocated chunk
-    int byte_input[] = {9, 32, 33, 80, 81, 500};	//inputs to mem_count_extfrag()
-    const int INPUT_SIZE = 6;						//amount of inputs tested
-    int output = 0;									//ouput of mem_count_extfrag
-    int expected_output[] = {0, 0, 1, 1, 2, 2};		//expected output from inputs byte_input[]
+    void *p[6];                                     //pointers for allocated chunks
+    int bytes_to_alloc = 8;                         //size of the first allocated chunk
+    int byte_input[] = {9, 32, 33, 80, 81, 500};    //inputs to mem_count_extfrag()
+    const int INPUT_SIZE = 6;                       //amount of inputs tested
+    int output = 0;                                 //ouput of mem_count_extfrag
+    int expected_output[] = {0, 0, 1, 1, 2, 2};     //expected output from inputs byte_input[]
 
     printf("\r\n TEST CASE 1: Testing Overhead and External Fragmentation\r\n");
 
     // This for loop allocates chunks of memory that are size 8, 16, 32, 64, and 128 bytes in that order
     for (int i = 0; i < 6; i++) {
-    	p[i] = mem_alloc(bytes_to_alloc);
-    	printf("Starting Address for pointer %d: 0x%x\r\n", i, (U32) p[i]);
-    	bytes_to_alloc = bytes_to_alloc * 2;
+        p[i] = mem_alloc(bytes_to_alloc);
+        printf("Starting Address for pointer %d: 0x%x\r\n", i, (U32) p[i]);
+        bytes_to_alloc = bytes_to_alloc * 2;
     }
 
     // NOTE: for verifying overhead
@@ -77,12 +77,12 @@ int test_case_1 () {
 
     // Print the number of free memory fragments for the values in the byte_input array
     for (int i = 0; i < INPUT_SIZE; i++) {
-    	output = mem_count_extfrag(byte_input[i]);
-    	printf("Number of free memory regions strictly less than %d bytes: %d\r\n", byte_input[i], output);
-    	if (output != expected_output[i]) {
-    		printf("TEST CASE 1 FAILED\r\n");
-    		return -1;
-    	}
+        output = mem_count_extfrag(byte_input[i]);
+        printf("Number of free memory regions strictly less than %d bytes: %d\r\n", byte_input[i], output);
+        if (output != expected_output[i]) {
+            printf("TEST CASE 1 FAILED\r\n");
+            return -1;
+        }
     }
 
     //cleanup
@@ -111,53 +111,57 @@ int test_case_1 () {
 //   Checks that free 8 bytes chunk no longer exists (result of 0 frommem_count_extfrag(9))
 //   Checks that the two adjacent free chunks are coalesced (result of 1 from mem_count_extfrag(105))
 int test_case_2() {
-	void *p[4];													//pointers for allocated chunks
-	int bytes_to_alloc = 8;										//size of the first allocated chunk
-	int count_inputs[] = {5000, 33, 33, 49, 81, 81, 9, 105};	//inputs for mem_count_extfrag()
-	int expected_outputs[] = {0, 1, 0, 0, 1, 0, 0, 1};			//expected outputs from mem_count_extfrag()
-	int res = 0;												//temp variable
+    void *p[4];                                                 //pointers for allocated chunks
+    int bytes_to_alloc = 8;                                     //size of the first allocated chunk
+    int count_inputs[] = {5000, 33, 33, 49, 81, 81, 9, 105};    //inputs for mem_count_extfrag()
+    int expected_outputs[] = {0, 1, 0, 0, 1, 0, 0, 1};          //expected outputs from mem_count_extfrag()
+    int res = 0;                                                //temp variable
 
     printf("\r\n TEST CASE 2: Testing Coalescing\r\n");
 
     // This for loop allocates chunks of memory that are size 8, 16, 32, and 64 bytes in that order
     for (int i = 0; i < 4; i++) {
-    	p[i] = mem_alloc(bytes_to_alloc);
-    	bytes_to_alloc = bytes_to_alloc * 2;
+        p[i] = mem_alloc(bytes_to_alloc);
+        bytes_to_alloc = bytes_to_alloc * 2;
     }
 
     // basically what this for loop is doing:
-    //	 mem_count_extfrag(5000);
-    //	 mem_dealloc(p[1]);
-    //	 mem_count_extfrag(33);
-    //	 mem_dealloc(p[2]);
-    //	 mem_count_extfrag(33);
-    //	 mem_count_extfrag(49);
-    //	 mem_count_extfrag(81);
-    //	 mem_dealloc(p[0]);
-    //	 mem_count_extfrag(81);
-    //	 mem_count_extfrag(9);
-    //	 mem_count_extfrag(105);
+    //   mem_count_extfrag(5000);
+    //   mem_dealloc(p[1]);
+    //   mem_count_extfrag(33);
+    //   mem_dealloc(p[2]);
+    //   mem_count_extfrag(33);
+    //   mem_count_extfrag(49);
+    //   mem_count_extfrag(81);
+    //   mem_dealloc(p[0]);
+    //   mem_count_extfrag(81);
+    //   mem_count_extfrag(9);
+    //   mem_count_extfrag(105);
     for (int i = 0; i < 8; i++) {
-    	res = mem_count_extfrag(count_inputs[i]);
-    	printf("Number of free memory regions strictly less than %d bytes: %d\r\n", count_inputs[i], res);
-    	if (res != expected_outputs[i]) {
-    		printf("TEST CASE 2 FAILED\r\n");
-    		return -1;
-    	}
-    	if (i == 0) {
-    		mem_dealloc(p[1]);
-    	} else if (i == 1) {
-    		mem_dealloc(p[2]);
-    	} else if (i == 4) {
-    		mem_dealloc(p[0]);
-    	}
+        res = mem_count_extfrag(count_inputs[i]);
+        printf("Number of free memory regions strictly less than %d bytes: %d\r\n", count_inputs[i], res);
+        if (res != expected_outputs[i]) {
+            printf("TEST CASE 2 FAILED\r\n");
+            return -1;
+        }
+        if (i == 0) {
+            mem_dealloc(p[1]);
+        } else if (i == 1) {
+            mem_dealloc(p[2]);
+        } else if (i == 4) {
+            mem_dealloc(p[0]);
+        }
     }
 
     //cleanup
     mem_dealloc(p[3]);
-    printf("Number of free memory regions strictly less than %d bytes: %d\r\n", 5000, mem_count_extfrag(5000));
-
-	return 0;
+    res = mem_count_extfrag(5000);
+    printf("Number of free memory regions strictly less than %d bytes: %d\r\n", 5000, res);
+    if (res != 0) {
+        printf("TEST CASE 2 FAILED\r\n");
+        return -1;
+    }
+    return 0;
 }
 
 // TEST CASE 3: Testing Reusing Newly Freed Regions and Leakage
@@ -174,15 +178,15 @@ int test_case_2() {
 //   the starting address should again be the starting address of the firstly created chunk as it fits in the freed space
 //   This shows that the memory is utilized without leakage
 int test_case_3() {
-	void *p[5];													//pointers for allocated chunks
-	int bytes_to_alloc = 16;										//size of the first allocated chunk
+    void *p[5];                                                 //pointers for allocated chunks
+    int bytes_to_alloc = 16;                                        //size of the first allocated chunk
 
     printf("\r\n TEST CASE 3: Testing Reusing Newly Freed Regions\r\n");
 
     // This for loop allocates 2 chunks of memory that are size 16 byte
     for (int i = 0; i < 2; i++) {
-    	p[i] = mem_alloc(bytes_to_alloc);
-    	printf("Starting Address for pointer %d: 0x%x\r\n", i, (U32) p[i]);
+        p[i] = mem_alloc(bytes_to_alloc);
+        printf("Starting Address for pointer %d: 0x%x\r\n", i, (U32) p[i]);
     }
 
     mem_dealloc(p[0]);
@@ -192,17 +196,17 @@ int test_case_3() {
     p[2] = mem_alloc(8);
     printf("Starting Address for pointer %d: 0x%x\r\n", 3, (U32) p[2]);
     if (p[2] != p[0]) {
-    	printf("TEST CASE 3 FAILED\r\n");
-    	return -1;
+        printf("TEST CASE 3 FAILED\r\n");
+        return -1;
     }
 
     mem_dealloc(p[2]);
 
-	p[3] = mem_alloc(32);
-	printf("Starting Address for pointer %d: 0x%x\r\n", 4, (U32) p[3]);
+    p[3] = mem_alloc(32);
+    printf("Starting Address for pointer %d: 0x%x\r\n", 4, (U32) p[3]);
 
-	p[4] = mem_alloc(16);
-	printf("Starting Address for pointer %d: 0x%x\r\n", 5, (U32) p[4]);
+    p[4] = mem_alloc(16);
+    printf("Starting Address for pointer %d: 0x%x\r\n", 5, (U32) p[4]);
 
     //cleanup
 
@@ -211,7 +215,7 @@ int test_case_3() {
     mem_dealloc(p[4]);
     printf("Number of free memory regions strictly less than %d bytes: %d\r\n", 5000, mem_count_extfrag(5000));
 
-	return 0;
+    return 0;
 }
 
 /*
