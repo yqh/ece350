@@ -103,7 +103,7 @@ void* k_mem_alloc(size_t size) {
     struct node* curr = HEAD;
 
     while(curr != NULL) {
-    	if (size <= curr->size && curr->isFree) {
+    	if ((size + sizeof(struct node)) <= curr->size && curr->isFree) {
     		break;
     	}
 
