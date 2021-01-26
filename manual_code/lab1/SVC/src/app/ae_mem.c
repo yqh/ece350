@@ -189,25 +189,40 @@ int test_case_3() {
         printf("Starting Address for pointer %d: 0x%x\r\n", i, (U32) p[i]);
     }
 
+    // deallocate one of the 16 byte memory sizes 
     mem_dealloc(p[0]);
 
     printf("Number of free memory regions strictly less than %d bytes: %d\r\n", 33, mem_count_extfrag(33));
 
+    // allocate an 8 byte memory 
     p[2] = mem_alloc(8);
+    // should go into the 16 byte memory region that was just deallocated 
     printf("Starting Address for pointer %d: 0x%x\r\n", 3, (U32) p[2]);
     if (p[2] != p[0]) {
         printf("TEST CASE 3 FAILED\r\n");
         return -1;
     }
 
+    // deallocate the 8 byte memory 
     mem_dealloc(p[2]);
 
+    // allocate a 32 byte memory region
     p[3] = mem_alloc(32);
+    if (p[3] == p[0]) {
+        // 32 byte memory should not go into the first chunk since we just allocated 8 bytes of memory 
+        printf("TEST CASE 3 FAILED\r\n");
+        return -1;
+    }
     printf("Starting Address for pointer %d: 0x%x\r\n", 4, (U32) p[3]);
 
+    // allocate a 16 byte memory region 
     p[4] = mem_alloc(16);
     printf("Starting Address for pointer %d: 0x%x\r\n", 5, (U32) p[4]);
-
+    // should go into just recently deallocated 8 byte memory region (8 + 8 = 16)
+     if (p[4] != p[0]) {
+        printf("TEST CASE 3 FAILED\r\n");
+        return -1;
+    }
     //cleanup
 
     mem_dealloc(p[1]);
