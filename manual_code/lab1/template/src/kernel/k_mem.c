@@ -41,7 +41,7 @@
  */
 
 struct node {
-	int size;
+	unsigned int size;
 	int isFree;
 	struct node *next;
 };
@@ -72,7 +72,7 @@ int k_mem_init(void) {
 #endif /* DEBUG_0 */
 
     //check if end addr is valid
-    int totalSize = 0xBFFFFFFF - end_addr;
+    unsigned int totalSize = 0xBFFFFFFF - end_addr;
     if(totalSize <= 0) {
     	return RTX_ERR;
     }
@@ -95,9 +95,9 @@ void* k_mem_alloc(size_t size) {
 
     // 4 byte align
     if (size % 4 == 0) {
-        size = ((int)(size / 4)) * 4;
+        size = ((unsigned int)(size / 4)) * 4;
     } else {
-        size = ((int)(size / 4)) * 4 + 4;
+        size = ((unsigned int)(size / 4)) * 4 + 4;
     }
 
     struct node* curr = HEAD;
@@ -116,7 +116,7 @@ void* k_mem_alloc(size_t size) {
     }
     //make a new node
     // might need to use an unsigned depending on how types work
-    struct node* newNode = (struct node_t*)((unsigned int)curr + sizeof(struct node) + size); 
+    struct node* newNode = (struct node*)((unsigned int)curr + sizeof(struct node) + size); 
     newNode->isFree = 1;
     newNode->size = curr->size-size-sizeof(struct node);
     newNode->next = NULL;
@@ -143,7 +143,7 @@ int k_mem_count_extfrag(size_t size) {
 #endif /* DEBUG_0 */
     // return RTX_OK;
     
-    int memRegionSize;
+    unsigned int memRegionSize;
     int regionCount = 0;
 
     struct node* curNode = HEAD; // HEAD is global var
