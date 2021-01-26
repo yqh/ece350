@@ -106,7 +106,7 @@ void* k_mem_alloc(size_t size) {
     	if (size <= curr->size && curr->isFree) {
     		break;
     	}
-    	
+
     	curr = curr->next;
     }
 
@@ -116,7 +116,7 @@ void* k_mem_alloc(size_t size) {
     }
     //make a new node
     // might need to use an unsigned depending on how types work
-    struct node* newNode = (struct node*)((unsigned int)curr + sizeof(struct node) + size); 
+    struct node* newNode = (struct node*)((unsigned int)curr + sizeof(struct node) + size);
     newNode->isFree = 1;
     newNode->size = curr->size-size-sizeof(struct node);
     newNode->next = NULL;
@@ -127,7 +127,7 @@ void* k_mem_alloc(size_t size) {
 
     // return pointer to new memory?
     // return curr
-    return &curr + sizeof(struct node);
+    return curr + sizeof(struct node);
 }
 
 int k_mem_dealloc(void *ptr) {
@@ -142,13 +142,13 @@ int k_mem_count_extfrag(size_t size) {
     printf("k_mem_extfrag: size = %d\r\n", size);
 #endif /* DEBUG_0 */
     // return RTX_OK;
-    
+
     unsigned int memRegionSize;
     int regionCount = 0;
 
     struct node* curNode = HEAD; // HEAD is global var
 
-    while(curNode->next != NULL){
+    while(curNode != NULL) {
         memRegionSize = curNode->size + sizeof(struct node);
         if(curNode->isFree){
             if(memRegionSize < size){
