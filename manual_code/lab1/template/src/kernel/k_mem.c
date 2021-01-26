@@ -114,7 +114,7 @@ void* k_mem_alloc(size_t size) {
     Node* curr = HEAD;
 
     while(curr != NULL) {
-    	if ((size + sizeof(struct node)) <= curr->size && curr->isFree) {
+    	if ((size + sizeof(Node)) <= curr->size && curr->isFree) {
     		break;
     	}
 
@@ -221,6 +221,16 @@ int k_mem_count_extfrag(size_t size) {
     }
 
     return regionCount;
+}
+
+int countNodes(){
+	Node* n = HEAD;
+	int ret = 0;
+	while(n != NULL) {
+		ret += 1;
+		n = n->next;
+	}
+	return ret;
 }
 
 /*
