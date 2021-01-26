@@ -85,6 +85,11 @@ int k_mem_init(void) {
     	return RTX_ERR;
     }
 
+    // round end_addr to nearest 4
+    if (end_addr % 4 != 0) {
+        end_addr = ((unsigned int)(end_addr / 4)) * 4 + 4;
+    }
+
     // cast end_addr to pointer given in end_addr
     HEAD = (Node*) end_addr;
 
@@ -102,9 +107,7 @@ void* k_mem_alloc(size_t size) {
 #endif /* DEBUG_0 */
 
     // 4 byte align
-    if (size % 4 == 0) {
-        size = ((unsigned int)(size / 4)) * 4;
-    } else {
+    if (size % 4 != 0) {
         size = ((unsigned int)(size / 4)) * 4 + 4;
     }
 
