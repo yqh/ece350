@@ -161,7 +161,6 @@ int k_mem_dealloc(void *ptr) {
         p-> next-> prev = p;
     }
     // then check the previous node to see if it has been allocated
-    printf("prev addr: 0x%x\r\n", (U32)p->prev);
     if (p-> prev != NULL && !p-> prev-> allocated) {
         // if the prev ptr is pointing to a free memory region, then I can merge the two regions
         // will be deleting the ptr node and merging it with its previous
