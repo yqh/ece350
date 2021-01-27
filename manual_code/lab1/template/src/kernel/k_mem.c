@@ -218,7 +218,7 @@ int k_mem_count_extfrag(size_t size) {
 
     Node* curNode = HEAD; // HEAD is global var
 
-    while(curNode->next != NULL){
+    while(curNode != NULL){
         memRegionSize = curNode->size + sizeof(Node);
         if(curNode->isFree){
             if(memRegionSize < size){
