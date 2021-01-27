@@ -233,6 +233,17 @@ int countNodes(){
 	return ret;
 }
 
+int countAllMem(){
+    unsigned int howMuchMem;
+    Node* curNode = HEAD;
+    while(curNode != NULL){
+        memRegionSize += curNode->size + sizeof(Node);
+        curNode = curNode->next;
+    }
+    return howMuchMem;
+}
+
+
 /*
  *===========================================================================
  *                             END OF FILE
