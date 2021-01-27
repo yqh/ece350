@@ -82,7 +82,7 @@ int test_coales(void) {
 
 int test4(void){
 	U32 result = 0;
-	if (countNodes()==1){
+	if (countNodes() == 1){
 		result |= BIT(0);
 	}
 
@@ -96,33 +96,33 @@ int test4(void){
 	p[5] = mem_alloc(12);
 	p[6] = mem_alloc(18);
 
-	if (countNodes()==8){
+	if (countNodes() == 8){
     	result |= BIT(1);
     }
 
 	mem_dealloc(p[2]);
 	p[7] = mem_alloc(15);
 
-	if (countNodes()==9){
+	if (countNodes() == 9){
     	result |= BIT(2);
     }
 
 	mem_dealloc(p[4]);
 	p[8] = mem_alloc(18);
 
-	if (countNodes()==10){
+	if (countNodes() == 10){
     	result |= BIT(2);
     }
 
-	if (mem_count_extfrag(12) = 0){
+	if (mem_count_extfrag(12) == 0){
 		result |= BIT(3);
 	}
 
-	if (mem_count_extfrag(13) = 1){
+	if (mem_count_extfrag(13) == 1){
 		result |= BIT(4);
 	}
 
-	if (mem_count_extfrag(17) = 2){
+	if (mem_count_extfrag(17) == 2){
 		result |= BIT(5);
 	}
 
