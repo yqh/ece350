@@ -121,7 +121,6 @@ void* k_mem_alloc(size_t size) {
     	if (size <= curr->size && curr->isFree) {
     		break;
     	}
-
     	curr = curr->next;
     }
 
@@ -129,7 +128,7 @@ void* k_mem_alloc(size_t size) {
     if (curr == NULL) {
     	return NULL;
     }
-    
+
     if (size == curr->size){
         return (void*)((U32)curr + sizeof(Node));
     } else if (size < curr->size && (curr->size < (size + sizeof(Node)))) {
@@ -151,8 +150,6 @@ void* k_mem_alloc(size_t size) {
         // sizeof(Node)^2 amount of bytes.
         return (void*)((U32)curr + sizeof(Node));
     }
-    
-
     // print_list();
 }
 
