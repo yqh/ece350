@@ -92,15 +92,17 @@ int test4(void){
     	result |= BIT(3);
     }
 
-	if (mem_count_extfrag(12) == 0){
+	size_t nodeStructSize = 12;
+
+	if (mem_count_extfrag(12 + nodeStructSize) == 0){
 		result |= BIT(4);
 	}
 
-	if (mem_count_extfrag(13) == 1){
+	if (mem_count_extfrag(13 + nodeStructSize) == 1){
 		result |= BIT(5);
 	}
 
-	if (mem_count_extfrag(17) == 2){
+	if (mem_count_extfrag(17 + nodeStructSize) == 2){
 		result |= BIT(6);
 	}
 
