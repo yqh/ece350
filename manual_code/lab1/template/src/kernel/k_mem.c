@@ -234,7 +234,7 @@ int countNodes(){
 }
 
 int memLeakCheck(){
-    unsigned int howMuchMem;
+    unsigned int howMuchMem = 0;
     Node* curNode = HEAD;
     while(curNode != NULL){
         howMuchMem += curNode->size + sizeof(Node);
