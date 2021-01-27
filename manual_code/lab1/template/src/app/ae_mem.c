@@ -58,28 +58,6 @@ int test_coales(void) {
 	return result == 31;
 }
 
-// Test 4:
-// Alloc(12) -> p0
-// Alloc(12) -> p1
-// Alloc(12) -> p2
-// Alloc(12) -> p3
-// Alloc(16) -> p4
-// Alloc(12) -> p5
-// Alloc(18) -> p6
-
-// Assert count regions = 8
-
-// Dealloc(p2)
-// Alloc(15) -> p7
-// Assert count regions = 9
-// Dealloc(p4)
-// Alloc(18) -> p8
-// Assert count regions = 10
-
-// Count mem ext frag(12) = 0
-// Count mem ext frag(13) = 1
-// Count mem ext frag(17) = 2
-
 int test4(void){
 	U32 result = 0;
 	if (countNodes() == 1){
@@ -129,6 +107,7 @@ int test4(void){
 	return result == 63;
 }
 
+<<<<<<< HEAD
 int test_reuse_freed(void) {
 	void *p[4];
 
@@ -291,6 +270,28 @@ int test_mem(void) {
 }
 
 
+=======
+int test_mem(void) {
+	printf("test_coales passed: %x\r\n", test_coales());
+	printf("test4 passted: %x\r\n", test4());
+
+	return 0;
+
+    // void *p[4];
+    // int n;
+    // U32 result = 0;
+    // U32 largeMemVal = 4294967295;
+
+    // p[0] = mem_alloc(8);
+    // n = mem_count_extfrag(largeMemVal);
+    // if (n == 1) {
+    //     result |= BIT(0);
+    // }
+
+    // return result;
+}
+
+>>>>>>> forgot to call the function...
 /*
  *===========================================================================
  *                             END OF FILE
