@@ -32,11 +32,28 @@ int test_case_3 ();
 // returns 0 if all cases pass, negative value if at least one case fails
 // Negative return value shows how many cases faied (e.g. -2 means two cases failed)
 int test_mem(void) {
+	 int res1 = test_case_1();
+	 int res2 = test_case_2();
+	 int res3 = test_case_3();
 
-    int res1 = test_case_1();
-    int res2 = test_case_2();
-    int res3 = test_case_3();
+    //Running 100 tests for each testcase to calculate Throughput
+    /*int test_1_start_time = time();
+    for (int i = 0; i < 100; i++){
+        res1 = test_case_1();
+    }
+    int test_2_start_time = time();
+    for (int i = 0; i < 100; i++){
+        res2 = test_case_2();
+    }
 
+    int test_3_start_time = time();
+    for (int i = 0; i < 100; i++){
+        res3 = test_case_3();
+    }
+    int test_3_end_time = time();
+    printf("Test 1 duration: %d", (test_2_start_time - test_1_start_time));
+    printf("Test 2 duration: %d", (test_3_start_time - test_2_start_time));
+    printf("Test 3 duration: %d", (test_3_end_time - test_3_start_time));*/
     return res1 + res2 + res3;
 }
 
@@ -52,6 +69,9 @@ int test_case_1 () {
     const int INPUT_SIZE = 6;                       //amount of inputs tested
     int output = 0;                                 //ouput of mem_count_extfrag
     int expected_output[] = {0, 0, 1, 1, 2, 2};     //expected output from inputs byte_input[]
+    int total_bytes_allocated = 0;                  //for measuring Heap utilization ratio
+    const int HEAP_SIZE = (0xBFFFFFFF - 0x80000000);//entire heap size
+    //float heap_util_ratio = 0;                    //Heap utilization ratio
 
     printf("\r\n TEST CASE 1: Testing Overhead and External Fragmentation\r\n");
 
@@ -59,8 +79,11 @@ int test_case_1 () {
     for (int i = 0; i < 6; i++) {
         p[i] = mem_alloc(bytes_to_alloc);
         printf("Starting Address for pointer %d: 0x%x\r\n", i, (U32) p[i]);
+        total_bytes_allocated = total_bytes_allocated + bytes_to_alloc;
         bytes_to_alloc = bytes_to_alloc * 2;
     }
+
+    printf("Total bytes allocated = %d\r\n", total_bytes_allocated);
 
     // NOTE: for verifying overhead
     // We know the the overhead for a mem frag is 16 bytes by seeing sizeof(struct node_t) in k_mem.c
@@ -84,6 +107,11 @@ int test_case_1 () {
             return -1;
         }
     }
+
+    printf("Entire heap size = %d\r\n", HEAP_SIZE);
+    //Calculate Heap utilization ratio and print
+    //heap_util_ratio = total_bytes_allocated / HEAP_SIZE;
+    //printf("Heap utilization ratio = %0.5f\r\n", HEAP_SIZE);
 
     //cleanup
     mem_dealloc(p[0]);
@@ -116,14 +144,20 @@ int test_case_2() {
     int count_inputs[] = {5000, 33, 33, 49, 81, 81, 9, 105};    //inputs for mem_count_extfrag()
     int expected_outputs[] = {0, 1, 0, 0, 1, 0, 0, 1};          //expected outputs from mem_count_extfrag()
     int res = 0;                                                //temp variable
+    int total_bytes_allocated = 0;                  //for measuring Heap utilization ratio
+    const int HEAP_SIZE = (0xBFFFFFFF - 0x80000000);//entire heap size
+    //float heap_util_ratio = 0;                      //Heap utilization ratio
 
     printf("\r\n TEST CASE 2: Testing Coalescing\r\n");
 
     // This for loop allocates chunks of memory that are size 8, 16, 32, and 64 bytes in that order
     for (int i = 0; i < 4; i++) {
         p[i] = mem_alloc(bytes_to_alloc);
+        total_bytes_allocated = total_bytes_allocated + bytes_to_alloc;
         bytes_to_alloc = bytes_to_alloc * 2;
     }
+
+    printf("Total bytes allocated = %d\r\n", total_bytes_allocated);
 
     // basically what this for loop is doing:
     //   mem_count_extfrag(5000);
@@ -153,6 +187,11 @@ int test_case_2() {
         }
     }
 
+    printf("Entire heap size = %d\r\n", HEAP_SIZE);
+    //Calculate Heap utilization ratio and print
+    //heap_util_ratio = total_bytes_allocated / HEAP_SIZE;
+    //printf("Heap utilization ratio = %0.5f\r\n", HEAP_SIZE);
+
     //cleanup
     mem_dealloc(p[3]);
     res = mem_count_extfrag(5000);
@@ -180,12 +219,16 @@ int test_case_2() {
 int test_case_3() {
     void *p[5];                                                 //pointers for allocated chunks
     int bytes_to_alloc = 16;                                        //size of the first allocated chunk
+    int total_bytes_allocated = 0;                  //for measuring Heap utilization ratio
+    const int HEAP_SIZE = (0xBFFFFFFF - 0x80000000);//entire heap size
+    //float heap_util_ratio = 0;                      //Heap utilization ratio
 
     printf("\r\n TEST CASE 3: Testing Reusing Newly Freed Regions\r\n");
 
     // This for loop allocates 2 chunks of memory that are size 16 byte
     for (int i = 0; i < 2; i++) {
         p[i] = mem_alloc(bytes_to_alloc);
+        total_bytes_allocated = total_bytes_allocated + bytes_to_alloc;
         printf("Starting Address for pointer %d: 0x%x\r\n", i, (U32) p[i]);
     }
 
@@ -196,6 +239,7 @@ int test_case_3() {
 
     // allocate an 8 byte memory 
     p[2] = mem_alloc(8);
+    total_bytes_allocated = total_bytes_allocated + 8;
     // should go into the 16 byte memory region that was just deallocated 
     printf("Starting Address for pointer %d: 0x%x\r\n", 3, (U32) p[2]);
     if (p[2] != p[0]) {
@@ -208,6 +252,7 @@ int test_case_3() {
 
     // allocate a 32 byte memory region
     p[3] = mem_alloc(32);
+    total_bytes_allocated = total_bytes_allocated + 32;
     if (p[3] == p[0]) {
         // 32 byte memory should not go into the first chunk since we just allocated 8 bytes of memory 
         printf("TEST CASE 3 FAILED\r\n");
@@ -217,12 +262,21 @@ int test_case_3() {
 
     // allocate a 16 byte memory region 
     p[4] = mem_alloc(16);
+    total_bytes_allocated = total_bytes_allocated + 16;
     printf("Starting Address for pointer %d: 0x%x\r\n", 5, (U32) p[4]);
     // should go into just recently deallocated 8 byte memory region (8 + 8 = 16)
      if (p[4] != p[0]) {
         printf("TEST CASE 3 FAILED\r\n");
         return -1;
     }
+
+     printf("Total bytes allocated = %d\r\n", total_bytes_allocated);
+     printf("Entire heap size = %d\r\n", HEAP_SIZE);
+     //Calculate Heap utilization ratio and print
+     //heap_util_ratio = total_bytes_allocated / HEAP_SIZE;
+     //printf("Heap utilization ratio = %0.5f\r\n", HEAP_SIZE);
+
+
     //cleanup
 
     mem_dealloc(p[1]);
