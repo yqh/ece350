@@ -89,27 +89,27 @@ int test4(void){
 	p[8] = mem_alloc(18);
 
 	if (countNodes() == 10){
-    	result |= BIT(2);
+    	result |= BIT(3);
     }
 
 	if (mem_count_extfrag(12) == 0){
-		result |= BIT(3);
-	}
-
-	if (mem_count_extfrag(13) == 1){
 		result |= BIT(4);
 	}
 
-	if (mem_count_extfrag(17) == 2){
+	if (mem_count_extfrag(13) == 1){
 		result |= BIT(5);
 	}
 
-	return result == 63;
+	if (mem_count_extfrag(17) == 2){
+		result |= BIT(6);
+	}
+
+	return result == 127;
 }
 
 int test_mem(void) {
 	printf("test_coales passed: %x\r\n", test_coales());
-	printf("test4 passted: %x\r\n", test4());
+	printf("test4 passed: %x\r\n", test4());
 
 	return 0;
 
