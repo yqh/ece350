@@ -90,11 +90,11 @@ int test_reuse_freed(void) {
 		result |= BIT(4);
 	}
 
-	if(memLeakCheck()==1){		// howMuchMem: 1070585175 vs totalSize: 1070585247
+	if(memLeakCheck()==1){
 		result |= BIT(5);
 	}
 
-	return result == 63;		//result 31
+	return result == 63;
 }
 
 int test_3(void) {
@@ -118,13 +118,13 @@ int test_3(void) {
 	}
 
 	p[3] = mem_alloc(12);
-	if (countNodes()==5){	// 3 nodes? 	(12| )(12|   )(36|  )(48|   )(rest| )
-		result |= BIT(3);	// fail
+	if (countNodes()==5){
+		result |= BIT(3);
 	}
 
 	mem_dealloc(p[3]);
-    if (countNodes()==4){	// 2 nodes?
-		result |= BIT(4);	// fail
+    if (countNodes()==4){
+		result |= BIT(4);
 	}
 
 	mem_dealloc(p[0]);
@@ -137,7 +137,7 @@ int test_3(void) {
 		result |= BIT(6);
 	}
 
-	return result == 127;		// 39
+	return result == 127;
 }
 
 int test_mem(void) {
