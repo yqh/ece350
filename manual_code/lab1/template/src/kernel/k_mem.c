@@ -106,6 +106,10 @@ void* k_mem_alloc(size_t size) {
     printf("k_mem_alloc: requested memory size = %d\r\n", size);
 #endif /* DEBUG_0 */
 
+    if (size == 0) {
+        return NULL;
+    }
+    
     // 4 byte align
     if (size % 4 != 0) {
         size = ((unsigned int)(size / 4)) * 4 + 4;
@@ -114,7 +118,7 @@ void* k_mem_alloc(size_t size) {
     Node* curr = HEAD;
 
     while(curr != NULL) {
-    	if ((size + sizeof(Node)) <= curr->size && curr->isFree) {
+    	if (size <= curr->size && curr->isFree) {
     		break;
     	}
 
@@ -125,27 +129,31 @@ void* k_mem_alloc(size_t size) {
     if (curr == NULL) {
     	return NULL;
     }
-    //make a new node
-    // might need to use an unsigned depending on how types work
-    Node* newNode = (Node*)((unsigned int)curr + sizeof(Node) + size);
-    newNode->isFree = 1;
-    newNode->size = curr->size - size - sizeof(Node);
-    newNode->next = NULL;
+    
+    if (size == curr->size){
+        return (void*)((U32)curr + sizeof(Node));
+    } else if (size < curr->size && (curr->size < (size + sizeof(Node)))) {
+        return (void*)((U32)curr + sizeof(Node));
+    } else {
+        //make a new node
+        // might need to use an unsigned depending on how types work
+        Node* newNode = (Node*)((unsigned int)curr + sizeof(Node) + size);
+        newNode->isFree = 1;
+        newNode->size = curr->size - size - sizeof(Node);
+        newNode->next = NULL;
 
-    curr->isFree=0;
-    curr->size = size;
-    curr->next = newNode;
+        curr->isFree=0;
+        curr->size = size;
+        curr->next = newNode;
+        // Cast curr to U32 to ensure pointer arithmetic works
+        // Pointer addition works by adding by increment of sizeof the pointer
+        // argument. If curr is of type Node* and we add sizeof(Node), we add
+        // sizeof(Node)^2 amount of bytes.
+        return (void*)((U32)curr + sizeof(Node));
+    }
+    
 
-    // return pointer to new memory?
-    // return curr
-
-    print_list();
-
-    // Cast curr to U32 to ensure pointer arithmetic works
-    // Pointer addition works by adding by increment of sizeof the pointer
-    // argument. If curr is of type Node* and we add sizeof(Node), we add
-    // sizeof(Node)^2 amount of bytes.
-    return (void*)((U32)curr + sizeof(Node));
+    // print_list();
 }
 
 Node* mergeNode(Node* first, Node* second) {
