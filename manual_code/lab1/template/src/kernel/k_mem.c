@@ -233,14 +233,16 @@ int countNodes(){
 	return ret;
 }
 
-int countAllMem(){
+int memLeakCheck(){
     unsigned int howMuchMem;
     Node* curNode = HEAD;
     while(curNode != NULL){
-        memRegionSize += curNode->size + sizeof(Node);
+        howMuchMem += curNode->size + sizeof(Node);
         curNode = curNode->next;
     }
-    return howMuchMem;
+    unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
+    unsigned int totalSize = 0xBFFFFFFF - end_addr;
+    return howMuchMem == totalSize;
 }
 
 
