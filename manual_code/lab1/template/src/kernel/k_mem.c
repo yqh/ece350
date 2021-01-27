@@ -139,7 +139,11 @@ void* k_mem_alloc(size_t size) {
         Node* newNode = (Node*)((unsigned int)curr + sizeof(Node) + size);
         newNode->isFree = 1;
         newNode->size = curr->size - size - sizeof(Node);
-        newNode->next = NULL;
+        if (curr->next == NULL){
+        	newNode->next = NULL;
+        } else {
+        	newNode->next = curr->next;
+        }
 
         curr->isFree=0;
         curr->size = size;
@@ -150,7 +154,6 @@ void* k_mem_alloc(size_t size) {
         // sizeof(Node)^2 amount of bytes.
         return (void*)((U32)curr + sizeof(Node));
     }
-    // print_list();
 }
 
 Node* mergeNode(Node* first, Node* second) {
