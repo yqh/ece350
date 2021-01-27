@@ -154,7 +154,7 @@ Node* mergeNode(Node* first, Node* second) {
 	}
 
 	Node* result = first;
-	result->size = first->size + second->size;
+	result->size = first->size + second->size + sizeof(Node);
 	result->next = second->next;
 
 	return result;
