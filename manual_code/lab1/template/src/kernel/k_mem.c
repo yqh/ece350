@@ -162,7 +162,7 @@ Node* mergeNode(Node* first, Node* second) {
 	}
 
 	Node* result = first;
-	result->size = first->size + second->size;
+	result->size = first->size + second->size + sizeof(Node);
 	result->next = second->next;
 
 	return result;
@@ -240,6 +240,19 @@ int countNodes(){
 	}
 	return ret;
 }
+
+int memLeakCheck(){
+    unsigned int howMuchMem = 0;
+    Node* curNode = HEAD;
+    while(curNode != NULL){
+        howMuchMem += curNode->size + sizeof(Node);
+        curNode = curNode->next;
+    }
+    unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
+    unsigned int totalSize = 0xBFFFFFFF - end_addr;
+    return howMuchMem == totalSize;
+}
+
 
 /*
  *===========================================================================
