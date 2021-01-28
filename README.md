@@ -20,7 +20,7 @@ This directory contains template files for project submissions.
 
 Within manual_code:
 
-#### 'template'
+#### `template`
 This directory contains the code the group edited for this project.
 
 The directory kernel contains the code used for memory management. 
