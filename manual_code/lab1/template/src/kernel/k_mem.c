@@ -74,10 +74,10 @@ void print_list() {
 
 int k_mem_init(void) {
     unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
-#ifdef DEBUG_0
-    printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
-    printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
-#endif /* DEBUG_0 */
+//#ifdef DEBUG_0
+//    printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
+//    printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
+//#endif /* DEBUG_0 */
 
     //check if end addr is valid
     unsigned int totalSize = 0xBFFFFFFF - end_addr;
@@ -102,14 +102,14 @@ int k_mem_init(void) {
 }
 
 void* k_mem_alloc(size_t size) {
-#ifdef DEBUG_0
-    printf("k_mem_alloc: requested memory size = %d\r\n", size);
-#endif /* DEBUG_0 */
+//#ifdef DEBUG_0
+//    printf("k_mem_alloc: requested memory size = %d\r\n", size);
+//#endif /* DEBUG_0 */
 
     if (size == 0) {
         return NULL;
     }
-    
+
     // 4 byte align
     if (size % 4 != 0) {
         size = ((unsigned int)(size / 4)) * 4 + 4;
@@ -139,11 +139,7 @@ void* k_mem_alloc(size_t size) {
         Node* newNode = (Node*)((unsigned int)curr + sizeof(Node) + size);
         newNode->isFree = 1;
         newNode->size = curr->size - size - sizeof(Node);
-        if (curr->next == NULL){
-        	newNode->next = NULL;
-        } else {
-        	newNode->next = curr->next;
-        }
+        newNode->next = curr->next;
 
         curr->isFree=0;
         curr->size = size;
@@ -169,9 +165,9 @@ Node* mergeNode(Node* first, Node* second) {
 }
 
 int k_mem_dealloc(void *ptr) {
-#ifdef DEBUG_0
-    printf("k_mem_dealloc: freeing 0x%x\r\n", (U32) ptr);
-#endif /* DEBUG_0 */
+//#ifdef DEBUG_0
+//    printf("k_mem_dealloc: freeing 0x%x\r\n", (U32) ptr);
+//#endif /* DEBUG_0 */
 
     Node* curr = HEAD;
     Node* prev = NULL;
@@ -202,15 +198,15 @@ int k_mem_dealloc(void *ptr) {
     	curr = mergeNode(curr, curr->next);
     }
 
-    print_list();
+//    print_list();
 
     return RTX_OK;
 }
 
 int k_mem_count_extfrag(size_t size) {
-#ifdef DEBUG_0
-    printf("k_mem_extfrag: size = %d\r\n", size);
-#endif /* DEBUG_0 */
+//#ifdef DEBUG_0
+//    printf("k_mem_extfrag: size = %d\r\n", size);
+//#endif /* DEBUG_0 */
     // return RTX_OK;
 
     unsigned int memRegionSize;
@@ -252,7 +248,6 @@ int memLeakCheck(){
     unsigned int totalSize = 0xBFFFFFFF - end_addr;
     return howMuchMem == totalSize;
 }
-
 
 /*
  *===========================================================================
