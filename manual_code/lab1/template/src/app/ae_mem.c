@@ -228,12 +228,8 @@ int test_extfrag(void){
     	result |= BIT(2);
     }
 
-	print_list();
-
 	mem_dealloc(p[4]);
 	p[8] = mem_alloc(18);
-
-	print_list();
 
 	if (countNodes() == 10){
     	result |= BIT(3);
@@ -251,32 +247,81 @@ int test_extfrag(void){
 		result |= BIT(6);
 	}
 
+	mem_dealloc(p[0]);
+	mem_dealloc(p[1]);
+
+	mem_dealloc(p[3]);
+
+	mem_dealloc(p[5]);
+	mem_dealloc(p[6]);
+	mem_dealloc(p[7]);
+	mem_dealloc(p[8]);
+
 	return result == 127;
 }
 
+int test_utilization(void) {
+	unsigned int totalUsed = 0;
+    unsigned int counter = 0;
+    unsigned int regionSize = 1048576;
+    unsigned int magicSize = 1070585247;
+
+    while(1){
+        if (mem_alloc(regionSize) == NULL) {
+            break;
+        }
+        totalUsed += regionSize;
+        counter++;
+        if(totalUsed > magicSize){
+        	return -1;
+        }
+    }
+
+    unsigned int numAllocs = counter;
+    return 0;
+}
+
+int test_throughput(void){
+	for(int i = 0; i < 200; i++){
+		test_reuse_freed_2();
+	}
+	return 1;
+}
+
 int test_mem(void) {
-	U32 result = 0;
+// Function Tests:
+//	U32 result = 0;
+//
+//	if(test_mem_leak()){
+//		result |= BIT(0);
+//	}
+//	if(test_coales()){
+//		result |= BIT(1);
+//	}
+//	if(test_reuse_freed()){
+//		result |= BIT(2);
+//	}
+//	if(test_reuse_freed_2()){
+//		result |= BIT(3);
+//	}
+//	if(test_malloc_new_node()){
+//		result |= BIT(4);
+//	}
+//	if(test_extfrag()){
+//		result |= BIT(5);
+//	}
+//
+//  return result == 63;
 
-	if(test_mem_leak()){
-		result |= BIT(0);
-	}
-	if(test_coales()){
-		result |= BIT(1);
-	}
-	if(test_reuse_freed()){
-		result |= BIT(2);
-	}
-	if(test_reuse_freed_2()){
-		result |= BIT(3);
-	}
-	if(test_malloc_new_node()){
-		result |= BIT(4);
-	}
-	if(test_extfrag()){
-		result |= BIT(5);
-	}
+// 	Throughput Test: (function needs to be updated
+//	test_throughput();
+//  return 1;
 
-	return result == 63;
+//  Utilization Test: Maxes out memory
+	int utilResult = test_utilization();
+	return 1;
+
+
 }
 
 
