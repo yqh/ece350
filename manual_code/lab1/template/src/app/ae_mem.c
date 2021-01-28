@@ -89,27 +89,24 @@ int test4(void){
 	p[8] = mem_alloc(18);
 
 	if (countNodes() == 10){
-    	result |= BIT(3);
+    	result |= BIT(2);
     }
 
-	size_t nodeStructSize = 12;
+	if (mem_count_extfrag(12) == 0){
+		result |= BIT(3);
+	}
 
-	if (mem_count_extfrag(12 + nodeStructSize) == 0){
+	if (mem_count_extfrag(13) == 1){
 		result |= BIT(4);
 	}
 
-	if (mem_count_extfrag(13 + nodeStructSize) == 1){
+	if (mem_count_extfrag(17) == 2){
 		result |= BIT(5);
 	}
 
-	if (mem_count_extfrag(17 + nodeStructSize) == 2){
-		result |= BIT(6);
-	}
-
-	return result == 127;
+	return result == 63;
 }
 
-<<<<<<< HEAD
 int test_reuse_freed(void) {
 	void *p[4];
 
@@ -272,28 +269,6 @@ int test_mem(void) {
 }
 
 
-=======
-int test_mem(void) {
-	printf("test_coales passed: %x\r\n", test_coales());
-	printf("test4 passed: %x\r\n", test4());
-
-	return 0;
-
-    // void *p[4];
-    // int n;
-    // U32 result = 0;
-    // U32 largeMemVal = 4294967295;
-
-    // p[0] = mem_alloc(8);
-    // n = mem_count_extfrag(largeMemVal);
-    // if (n == 1) {
-    //     result |= BIT(0);
-    // }
-
-    // return result;
-}
-
->>>>>>> forgot to call the function...
 /*
  *===========================================================================
  *                             END OF FILE
