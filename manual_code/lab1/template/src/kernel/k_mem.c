@@ -162,7 +162,7 @@ Node* mergeNode(Node* first, Node* second) {
 	}
 
 	Node* result = first;
-	result->size = first->size + second->size;
+	result->size = first->size + second->size + sizeof(Node);
 	result->next = second->next;
 
 	return result;
@@ -218,7 +218,7 @@ int k_mem_count_extfrag(size_t size) {
 
     Node* curNode = HEAD; // HEAD is global var
 
-    while(curNode->next != NULL){
+    while(curNode != NULL){
         memRegionSize = curNode->size + sizeof(Node);
         if(curNode->isFree){
             if(memRegionSize < size){
@@ -240,6 +240,19 @@ int countNodes(){
 	}
 	return ret;
 }
+
+int memLeakCheck(){
+    unsigned int howMuchMem = 0;
+    Node* curNode = HEAD;
+    while(curNode != NULL){
+        howMuchMem += curNode->size + sizeof(Node);
+        curNode = curNode->next;
+    }
+    unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
+    unsigned int totalSize = 0xBFFFFFFF - end_addr;
+    return howMuchMem == totalSize;
+}
+
 
 /*
  *===========================================================================

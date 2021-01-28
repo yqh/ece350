@@ -36,7 +36,8 @@ int     k_mem_init          (void);
 void   *k_mem_alloc         (size_t size);
 int     k_mem_dealloc       (void *ptr);
 int     k_mem_count_extfrag (size_t size);
-int countNodes(void);
+int     countNodes          (void);
+int     memLeakCheck        (void);
 #endif // ! K_MEM_H_
 
 /*
