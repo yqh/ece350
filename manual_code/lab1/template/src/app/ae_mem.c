@@ -58,55 +58,6 @@ int test_coales(void) {
 	return result == 31;
 }
 
-int test4(void){
-	U32 result = 0;
-	if (countNodes() == 1){
-		result |= BIT(0);
-	}
-
-	void *p[10];
-
-	p[0] = mem_alloc(12);
-	p[1] = mem_alloc(12);
-	p[2] = mem_alloc(12);
-	p[3] = mem_alloc(12);
-	p[4] = mem_alloc(16);
-	p[5] = mem_alloc(12);
-	p[6] = mem_alloc(18);
-
-	if (countNodes() == 8){
-    	result |= BIT(1);
-    }
-
-	mem_dealloc(p[2]);
-	p[7] = mem_alloc(15);
-
-	if (countNodes() == 9){
-    	result |= BIT(2);
-    }
-
-	mem_dealloc(p[4]);
-	p[8] = mem_alloc(18);
-
-	if (countNodes() == 10){
-    	result |= BIT(2);
-    }
-
-	if (mem_count_extfrag(12) == 0){
-		result |= BIT(3);
-	}
-
-	if (mem_count_extfrag(13) == 1){
-		result |= BIT(4);
-	}
-
-	if (mem_count_extfrag(17) == 2){
-		result |= BIT(5);
-	}
-
-	return result == 63;
-}
-
 int test_reuse_freed(void) {
 	void *p[4];
 
@@ -246,6 +197,55 @@ int test_mem_leak(){
 	return result == 7;
 }
 
+int test_extfrag(void){
+	U32 result = 0;
+	if (countNodes() == 1){
+		result |= BIT(0);
+	}
+
+	void *p[10];
+
+	p[0] = mem_alloc(12);
+	p[1] = mem_alloc(12);
+	p[2] = mem_alloc(12);
+	p[3] = mem_alloc(12);
+	p[4] = mem_alloc(16);
+	p[5] = mem_alloc(12);
+	p[6] = mem_alloc(18);
+
+	if (countNodes() == 8){
+    	result |= BIT(1);
+    }
+
+	mem_dealloc(p[2]);
+	p[7] = mem_alloc(15);
+
+	if (countNodes() == 9){
+    	result |= BIT(2);
+    }
+
+	mem_dealloc(p[4]);
+	p[8] = mem_alloc(18);
+
+	if (countNodes() == 10){
+    	result |= BIT(2);
+    }
+
+	if (mem_count_extfrag(12) == 0){
+		result |= BIT(3);
+	}
+
+	if (mem_count_extfrag(13) == 1){
+		result |= BIT(4);
+	}
+
+	if (mem_count_extfrag(17) == 2){
+		result |= BIT(5);
+	}
+
+	return result == 63;
+}
+
 int test_mem(void) {
 	U32 result = 0;
 
@@ -264,8 +264,11 @@ int test_mem(void) {
 	if(test_malloc_new_node()){
 		result |= BIT(4);
 	}
+	if(test_extfrag()){
+		result |= BIT(5);
+	}
 
-	return result == 31;
+	return result == 63;
 }
 
 
