@@ -60,6 +60,10 @@ int test_coales(void) {
 
 int test_reuse_freed(void) {
 	void *p[4];
+	U32 result = 0;
+	if (countNodes()==1){
+		result |= BIT(0);
+	}
 
 	p[0] = mem_alloc(12);
 	p[1] = mem_alloc(24);
@@ -224,26 +228,30 @@ int test_extfrag(void){
     	result |= BIT(2);
     }
 
+	print_list();
+
 	mem_dealloc(p[4]);
 	p[8] = mem_alloc(18);
 
+	print_list();
+
 	if (countNodes() == 10){
-    	result |= BIT(2);
+    	result |= BIT(3);
     }
 
-	if (mem_count_extfrag(12) == 0){
-		result |= BIT(3);
-	}
-
-	if (mem_count_extfrag(13) == 1){
+	if (mem_count_extfrag(12+12) == 0){
 		result |= BIT(4);
 	}
 
-	if (mem_count_extfrag(17) == 2){
+	if (mem_count_extfrag(13+12) == 1){
 		result |= BIT(5);
 	}
 
-	return result == 63;
+	if (mem_count_extfrag(17+12) == 2){
+		result |= BIT(6);
+	}
+
+	return result == 127;
 }
 
 int test_mem(void) {
@@ -277,4 +285,3 @@ int test_mem(void) {
  *                             END OF FILE
  *===========================================================================
  */
-
