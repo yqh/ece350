@@ -3,7 +3,7 @@
 ; Modified by z99gao@uwaterloo.ca for ECE350 LAB
 ;**************************************************
 
-; Scatter-file for RTX on Versatile Express
+; Scatter-file for RTX on DE1 SoC
 
 ; This scatter-file places application code, data, stack and heap at suitable addresses in the memory map.
 
