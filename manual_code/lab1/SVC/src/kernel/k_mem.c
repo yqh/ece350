@@ -115,7 +115,6 @@ void* k_mem_alloc(size_t size) {
     // first split the chunk
     // change the size to the new allocated size
     // point to a new node with the remaining size (this will be the free chunk)
-    // the new pointer will point to the current pointer + size + size of the node
     unsigned int newAddr = (unsigned int) p + sizeof(struct node_t) + size;
     struct node_t *n = (struct node_t*) newAddr;
     n-> size = p-> size - size - sizeof(struct node_t);
@@ -126,13 +125,52 @@ void* k_mem_alloc(size_t size) {
     p-> size = size;
     p-> next = n;
     p-> allocated = true;
-    return p;
+    // increment the pointer such that the return value will be pointing directly to the memory region instead of the header of the node
+    return ++p;
 }
 
 int k_mem_dealloc(void *ptr) {
 #ifdef DEBUG_0
     printf("k_mem_dealloc: freeing 0x%x\r\n", (U32) ptr);
 #endif /* DEBUG_0 */
+    // free dynamic memory pointed to by ptr (returned by a previous call to mem_alloc())
+    // if ptr is NULL no action is performed
+    if (ptr == NULL) {
+        return NULL;
+    }
+    // check if the ptr is actually pointing to an allocated memory region
+    // decrement the point so now we are pointing to the memory address of the header of the node instead of the memory region
+    struct node_t *p = (struct node_t*)ptr-1;
+    if (!p->allocated) {
+        // if allocated is false that means that ptr was not returned by a previous mem_alloc() call or has already been previously called by mem_dealloc()
+        return RTX_ERR;
+    }
+    // "free" the dynamic memory
+    p-> allocated = false;
+
+    // check if memory region is adjacent to the other free memory regions
+    // can do this using our doubly linked list
+    // first check the next node to see if it has been allocated
+    if (p-> next != NULL && !p-> next-> allocated) {
+        // if next ptr is pointing at a free memory region, I can merge the two regions
+        // essentially deleting the next node and merging it with p node
+        p-> size += p-> next-> size + sizeof(struct node_t);
+        // p-> next becomes what the next node was pointing at
+        p-> next = p-> next-> next;
+        // also have to update the next node's previous node to point back to p
+        p-> next-> prev = p;
+    }
+    // then check the previous node to see if it has been allocated
+    if (p-> prev != NULL && !p-> prev-> allocated) {
+        // if the prev ptr is pointing to a free memory region, then I can merge the two regions
+        // will be deleting the ptr node and merging it with its previous
+        //struct node_t * pr = p-> prev;
+        p-> prev-> size += p-> size + sizeof(struct node_t);
+        p-> prev-> next = p-> next;
+        // since we merged this node, we have to also update the following node as well
+        p-> next-> prev = p-> prev;
+    }
+
     return RTX_OK;
 }
 
@@ -140,7 +178,23 @@ int k_mem_count_extfrag(size_t size) {
 #ifdef DEBUG_0
     printf("k_mem_extfrag: size = %d\r\n", size);
 #endif /* DEBUG_0 */
-    return RTX_OK;
+    // count externally-fragmented memory regions
+    // counts the number of free (unallocated) memory regions that are of size strictly less than size (in bytes)
+    // can simply start at the head of the node and increment a counter every time the node->size is less than size
+    int counter = 0;
+    struct node_t *p = node_head;
+    while(p != NULL) {
+        // check if chunk is unallocated and its size is less than the threshold
+        //printf("addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p, p->size, p->allocated ? "true" : "false");
+        if ((p->size + sizeof(struct node_t)) < size && !p-> allocated) {
+            // update the counter
+            ++counter;
+        }
+        // move to the next node
+        p = p->next;
+    }
+    // loop runs until we reach the end p-> next is NULL and return the resultant counter
+    return counter;
 }
 
 /*
