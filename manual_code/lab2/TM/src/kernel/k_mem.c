@@ -158,10 +158,10 @@ void* k_mem_alloc(size_t size) {
     //TODO: assign TID ownership
 
     if (size == curr->size){
-        curr->owner = gp_current_task;
+        curr->owner = gp_current_task->tid;
         return (void*)((U32)curr + sizeof(Node));
     } else if (size < curr->size && (curr->size < (size + sizeof(Node)))) {
-        curr->owner = gp_current_task;
+        curr->owner = gp_current_task->tid;
         return (void*)((U32)curr + sizeof(Node));
     } else {
         //make a new node
@@ -174,7 +174,7 @@ void* k_mem_alloc(size_t size) {
         curr->isFree=0;
         curr->size = size;
         curr->next = newNode;
-        curr->owner = gp_current_task;
+        curr->owner = gp_current_task->tid;
         // Cast curr to U32 to ensure pointer arithmetic works
         // Pointer addition works by adding by increment of sizeof the pointer
         // argument. If curr is of type Node* and we add sizeof(Node), we add
