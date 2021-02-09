@@ -183,6 +183,18 @@ void* k_mem_alloc(size_t size) {
     }
 }
 
+Node* mergeNode(Node* first, Node* second) {
+	if (first > second) {
+		return NULL;
+	}
+
+	Node* result = first;
+	result->size = first->size + second->size + sizeof(Node);
+	result->next = second->next;
+
+	return result;
+}
+
 int k_mem_dealloc(void *ptr) {
 //#ifdef DEBUG_0
 //    printf("k_mem_dealloc: freeing 0x%x\r\n", (U32) ptr);
@@ -205,6 +217,13 @@ int k_mem_dealloc(void *ptr) {
     if (curr->isFree > 0) {
     	return RTX_ERR;
     }
+    
+    if (!gp_current_task->priv) {
+        if (gp_current_task->tid != curr->owner){
+            return RTX_ERR;
+        }
+    }
+    
 
     curr->isFree = 1;
 
