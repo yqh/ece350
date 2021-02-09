@@ -40,6 +40,31 @@
 #include "Serial.h"
 #include "printf.h"
 
+//TODO test out allocating and de-allocating the same task or a diff task
+
+// test 1
+// create tcb
+// malloc
+//dealloc
+// assert pass
+
+// test 2
+// create tcb 1
+// create tcb 2
+// malloc as tcb 1
+// switch to tcb 2
+// dealloc as tcb 2
+// assert rtx error
+
+// test 2
+// create tcb 1
+// create tcb 2 with privilidge
+// malloc as tcb 1
+// switch to tcb 2
+// dealloc as tcb 2
+// assert pass
+
+
 int test_mem(void) {
     void *p[4];
     int n;
