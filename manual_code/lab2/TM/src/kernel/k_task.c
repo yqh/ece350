@@ -389,9 +389,14 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
 
 void k_tsk_exit(void) 
 {
-#ifdef DEBUG_0
-    printf("k_tsk_exit: entering...\n\r");
-#endif /* DEBUG_0 */
+// #ifdef DEBUG_0
+//     printf("k_tsk_exit: entering...\n\r");
+// #endif /* DEBUG_0 */
+    gp_current_task->state = DORMANT;
+    
+    RTX_TASK_INFO *b;
+    k_tsk_get(gp_current_task->tid, b);
+    k_mem_dealloc(b->u_sp);
     return;
 }
 
