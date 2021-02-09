@@ -48,7 +48,8 @@
 #define NUM_PRIV_MODES  0x00000006      // 6 privileged modes
 #define STACK_SZ        0x00000200      // 512 B stack for each mode
 #define RAM_SIZE        0x40000000      // The VE9 has 2G RAM, we only use 1G
-#define RAM_END         0xFFFFFFFF      // The VE9 RAM END
+#define RAM_END         0xBFFFFFFF      // The VE9 RAM END is 0xFFFFFFFF, we
+                                        // only use 1G
 
 #endif
 /*

@@ -173,8 +173,8 @@ SVC_SAVE
 
         ;// extract SVC number, only handles #0
         MRS     R4,SPSR                 ; Get SPSR
-        LDREQ   R4,[LR,#-4]             ; ARM:   Load Word
-        BICEQ   R4,R4,#0xFF000000       ; Extract SVC Number
+        LDR     R4,[LR,#-4]             ; ARM:   Load Word
+        BIC     R4,R4,#0xFF000000       ; Extract SVC Number
 
         CMP     R4,#0
         BNE     SVC_EXIT                ; if not SVC #0, go to SVC_EXIT
