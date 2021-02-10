@@ -22,7 +22,7 @@
  *
  *****************************************************************************/
 
-/** 
+/**
  * @brief:  k_mem.c kernel API implementations, this is only a skeleton.
  * @author: Yiqing Huang
  */
@@ -61,6 +61,7 @@ struct node_t {
     bool allocated;
     struct node_t *next;
     struct node_t *prev;
+    int padding;
 }* node_head = NULL;
 
 int k_mem_init(void) {
@@ -86,7 +87,9 @@ int k_mem_init(void) {
     head -> next = NULL;
     head -> prev = NULL;
     head -> allocated = false;
+    head -> padding = 0;
     node_head = head;
+    k_mem_print();
     return RTX_OK;
 }
 
@@ -103,7 +106,8 @@ void* k_mem_alloc(size_t size) {
     // start at the head of the memory manager
     struct node_t *p = node_head;
     while(p != NULL) {
-        if (size <= p->size && !p->allocated) {
+        // printf("addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p, p->size, p->allocated ? "true" : "false");
+        if (size + sizeof(struct node_t) <= p->size && !p->allocated) {
             break;
         }
         p = p->next;
@@ -115,17 +119,22 @@ void* k_mem_alloc(size_t size) {
     // first split the chunk
     // change the size to the new allocated size
     // point to a new node with the remaining size (this will be the free chunk)
-    unsigned int newAddr = (unsigned int) p + sizeof(struct node_t) + size;
+    // note that the memory address are 4 bytes aligned
+    int padding = size % 4 == 0 ? 0 : 4 - (size % 4);
+    unsigned int newAddr = (unsigned int) p + sizeof(struct node_t) + size + padding;
     struct node_t *n = (struct node_t*) newAddr;
     n-> size = p-> size - size - sizeof(struct node_t);
     n-> next = p-> next;
     n-> allocated = false;
     n-> prev = p;
+    n-> padding = 0;
 
     p-> size = size;
     p-> next = n;
     p-> allocated = true;
+    p-> padding = padding;
     // increment the pointer such that the return value will be pointing directly to the memory region instead of the header of the node
+    k_mem_print();
     return ++p;
 }
 
@@ -151,26 +160,33 @@ int k_mem_dealloc(void *ptr) {
     // check if memory region is adjacent to the other free memory regions
     // can do this using our doubly linked list
     // first check the next node to see if it has been allocated
+    // printf("next chunk addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p-> next, p-> next->size, p-> next->allocated ? "true" : "false");
     if (p-> next != NULL && !p-> next-> allocated) {
         // if next ptr is pointing at a free memory region, I can merge the two regions
         // essentially deleting the next node and merging it with p node
-        p-> size += p-> next-> size + sizeof(struct node_t);
+        // have to account for padding
+        // can simply subtract memory addresses to get the byte difference and set that as the size
+        p-> size += p-> next-> size + sizeof(struct node_t) + p-> padding + p-> next-> padding;
+        p-> padding = 0;
         // p-> next becomes what the next node was pointing at
         p-> next = p-> next-> next;
         // also have to update the next node's previous node to point back to p
         p-> next-> prev = p;
     }
     // then check the previous node to see if it has been allocated
+    // printf("prev chunk addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p-> prev, p-> prev->size, p-> prev->allocated ? "true" : "false");
     if (p-> prev != NULL && !p-> prev-> allocated) {
         // if the prev ptr is pointing to a free memory region, then I can merge the two regions
         // will be deleting the ptr node and merging it with its previous
+        // have to account for padding
         //struct node_t * pr = p-> prev;
-        p-> prev-> size += p-> size + sizeof(struct node_t);
+        p-> prev-> size += p-> size + sizeof(struct node_t) + p-> padding + p-> prev-> padding;
+        p-> prev-> padding = 0;
         p-> prev-> next = p-> next;
         // since we merged this node, we have to also update the following node as well
         p-> next-> prev = p-> prev;
     }
-
+    k_mem_print();
     return RTX_OK;
 }
 
@@ -185,7 +201,7 @@ int k_mem_count_extfrag(size_t size) {
     struct node_t *p = node_head;
     while(p != NULL) {
         // check if chunk is unallocated and its size is less than the threshold
-        //printf("addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p, p->size, p->allocated ? "true" : "false");
+        // printf("addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p, p->size, p->allocated ? "true" : "false");
         if ((p->size + sizeof(struct node_t)) < size && !p-> allocated) {
             // update the counter
             ++counter;
@@ -194,7 +210,19 @@ int k_mem_count_extfrag(size_t size) {
         p = p->next;
     }
     // loop runs until we reach the end p-> next is NULL and return the resultant counter
+    k_mem_print();
     return counter;
+}
+
+void k_mem_print(){
+    struct node_t * p = node_head;
+    while(p != NULL){
+         printf("curr chunk addr: 0x%x chunk size: %d padding: %d allocated: %s\r\n", (U32)p, p->size, p->padding, p->allocated ? "true" : "false");
+         printf("prev chunk addr: 0x%x chunk size: %d padding: %d allocated: %s\r\n", (U32)p-> prev, p-> prev->size, p->prev->padding, p-> prev->allocated ? "true" : "false");
+         printf("next chunk addr: 0x%x chunk size: %d padding: %d allocated: %s\r\n", (U32)p-> next, p-> next->size, p->next->padding, p-> next->allocated ? "true" : "false");
+         printf("----------------------------------------\r\n");
+         p = p-> next;
+    }
 }
 
 /*
