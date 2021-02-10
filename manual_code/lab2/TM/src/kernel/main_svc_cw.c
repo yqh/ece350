@@ -69,8 +69,8 @@ void task_null (void)
 
 int main() 
 {    
-    RTX_SYS_INFO  sys_info;
-	RTX_TASK_INFO task_info[2];
+    static RTX_SYS_INFO  sys_info;
+    static RTX_TASK_INFO task_info[2];
     char mode = 0;
 
     // CMSIS system initialization
