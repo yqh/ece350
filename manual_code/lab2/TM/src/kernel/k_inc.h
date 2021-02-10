@@ -76,6 +76,13 @@ typedef struct tcb {
     U8                  prio;               /**> execution priority                 */
     U8                  state;              /**> task state                         */
     U8                  priv;               /**> = 0 unprivileged, =1 privileged    */
+    struct timeval_rt   tv_cpu;             /**> task execution cpu time            */
+    struct timeval_rt   tv_wall;            /**> task execution wall clock time     */
+    
+    /* The following only applies to real-time tasks */
+    struct timeval_rt   p_n;                /**> period in seconds and microseconds */
+    RTX_MSG_HDR        *msg_hdr;            /**> real-time task message header      */
+    U32                 num_msgs;           /**> real-time task mailbox capacity    */
 } TCB;
 
 /*
