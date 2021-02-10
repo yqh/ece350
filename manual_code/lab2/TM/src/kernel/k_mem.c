@@ -47,6 +47,8 @@
 #include "Serial.h"
 #ifdef DEBUG_0
 #include "printf.h"
+#include "k_tash.h"
+#include "common.h"
 #include <stdbool.h>
 #endif  /* DEBUG_0 */
 
@@ -93,6 +95,7 @@ struct node_t {
     struct node_t *next;
     struct node_t *prev;
     int padding;
+    task_t owner_id;
 }* node_head = NULL;
 
 int k_mem_init(void) {
@@ -119,6 +122,7 @@ int k_mem_init(void) {
     head -> prev = NULL;
     head -> allocated = false;
     head -> padding = 0;
+    head -> owner_id = TID_NULL;
     node_head = head;
     return RTX_OK;
 }
@@ -150,7 +154,7 @@ void* k_mem_alloc(size_t size) {
     // change the size to the new allocated size
     // point to a new node with the remaining size (this will be the free chunk)
     // note that the memory address are 4 bytes aligned
-    int padding = size % 4 == 0 ? 0 : 4 - (size % 4);
+    int padding = size % 8 == 0 ? 0 : 8 - (size % 8);
     unsigned int newAddr = (unsigned int) p + sizeof(struct node_t) + size + padding;
     struct node_t *n = (struct node_t*) newAddr;
     n-> size = p-> size - size - sizeof(struct node_t);
@@ -158,11 +162,13 @@ void* k_mem_alloc(size_t size) {
     n-> allocated = false;
     n-> prev = p;
     n-> padding = 0;
+    n-> owner_id = p-> owner_id;
 
     p-> size = size;
     p-> next = n;
     p-> allocated = true;
     p-> padding = padding;
+    p-> owner_id = gp_current_task-> tid;
     // increment the pointer such that the return value will be pointing directly to the memory region instead of the header of the node
     return ++p;
 }
@@ -181,6 +187,10 @@ int k_mem_dealloc(void *ptr) {
     struct node_t *p = (struct node_t*)ptr-1;
     if (!p->allocated) {
         // if allocated is false that means that ptr was not returned by a previous mem_alloc() call or has already been previously called by mem_dealloc()
+        return RTX_ERR;
+    }
+    // can only deallocate if the input memory is owned by the calling task (running task)
+    if (p-> owner_id !== gp_current_task->tid) {
         return RTX_ERR;
     }
     // "free" the dynamic memory

@@ -385,57 +385,61 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
 #ifdef DEBUG_0
     printf("k_tsk_create: entering...\n\r");
     printf("task = 0x%x, task_entry = 0x%x, prio=%d, stack_size = %d\n\r", task, task_entry, prio, stack_size);
-
-
-    // Initialize p_taskinfo to pass into k_tsk_create_new as parameter ( not sure why though... )
-    RTX_TASK_INFO *p_taskinfo = &g_null_task_info;
-
-    // Loop through each element in the g_tcbs array to find a tcb that is not being used.
-    U8 pid = 0;
-
-    // Starting from one since the initial task will be always running?
-    for (int i = 1; i < MAX_TASKS; i++){
-    	if (g_tcbs[i].state == DORMANT || g_tcbs[i].state > 5){
-    		pid = i;
-        	break;
-    	}
-    };
-    // If all tcbs are in use, return -1
-    if (pid == 0){
-    	return -1;
+#endif /* DEBUG_0 */
+    if (task == NULL) {
+      retunr RTX_ERR;
     }
+    // If all tcbs are in use, return -1
+    if (g_num_active_tasks == MAX_TASKS){
+      return RTX_ERR;
+    }
+    // return error if the stack size is too small
+    if (stack_size < PROC_STACK_SIZE) {
+      return RTX_ERR;
+    }
+    // stack size has to be a multiple of 8
+    if (stack_size % 8) {
+      return RTX_ERR;
+    }
+    // return error if prio is invalid
+    if (prio != PRIO_RT || prio != HIGH || prio != MEDIUM || prio != LOW || prio != LOWEST || prio != PRIO_NULL) {
+      return RTX_ERR;
+    }
+    // Initialize p_taskinfo to pass into k_tsk_create_new as parameter
+    RTX_TASK_INFO *p_taskinfo;
+    U8 tid = g_num_active_tasks;
 
-    // Allocate space in the user stack and return the pointer to the stack
-    U32* user_stack_ptr = k_mem_alloc(stack_size);
+    p_taskinfo-> ptask = task_entry;
+    p_taskinfo-> tid = tid;
+    p_taskinfo-> priv = 0;
+    p_taskinfo-> prio = prio; 
 
     // Set some values for the tcb
-    TCB *p_tcb = &g_tcbs[pid];
+    TCB *p_tcb = &g_tcbs[tid];
     p_tcb->ptask = task_entry;
-	p_tcb->prio = prio;
-	p_tcb->priv = 0;
-	p_tcb->tid = pid;
-	p_tcb->state = READY;
-	p_tcb->u_stack_size = stack_size;
-    p_tcb->u_sp = user_stack_ptr;
-    //printf("0x%x 0x%x\n", user_stack_ptr, p_tcb->u_sp);
+    p_tcb->prio = prio;
+    p_tcb->priv = 0;
+    p_tcb->u_stack_size = stack_size;
 
-	// Call the k_tsk_create_new function to allocate kernel stack
-	if (k_tsk_create_new(p_taskinfo, p_tcb, pid) == RTX_OK) {
-		g_num_active_tasks++;
-		p_taskinfo++;
-	} else {
-		return -1;
-	};
-
-#endif /* DEBUG_0 */
+    // Call the k_tsk_create_new function to allocate kernel stack
+    if (k_tsk_create_new(p_taskinfo, p_tcb, tid) == RTX_OK) {
+        g_num_active_tasks++;
+        *task = tid
+    } else {
+      return RTX_ERR;
+    };
     return RTX_OK;
 }
 
+// stops and deletes the currently running task
+// once task is terminated, its state becomes DORMANT if its TCB data structure still exists in teh system
+// if running test terminates, RTX should schedule another ready task to run 
 void k_tsk_exit(void) 
 {
 #ifdef DEBUG_0
     printf("k_tsk_exit: entering...\n\r");
 #endif /* DEBUG_0 */
+
     return;
 }
 
@@ -448,6 +452,7 @@ int k_tsk_set_prio(task_t task_id, U8 prio)
     return RTX_OK;    
 }
 
+// obtain task status information from the kernel identified with task_id
 int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
 {
 #ifdef DEBUG_0
@@ -456,6 +461,11 @@ int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
 #endif /* DEBUG_0 */    
     if (buffer == NULL) {
         return RTX_ERR;
+    }
+    // return error for invalid task_id
+    // TID is an integer between 0 and MAX_TASKS - 1
+    if (task_id < 0 || task_id > MAX_TASKS-1) {
+      return RTX_ERR;
     }
     /* The code fills the buffer with some fake task information. 
        You should fill the buffer with correct information    */
