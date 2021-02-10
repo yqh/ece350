@@ -187,6 +187,7 @@ int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
         }
         p_taskinfo++;
     }
+    k_mem_init();
     return RTX_OK;
 }
 /**************************************************************************//**
@@ -258,7 +259,9 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         //********************************************************************//
         //*** allocate user stack from the user space, not implemented yet ***//
         //********************************************************************//
-        *(--sp) = (U32) k_alloc_p_stack(tid);
+
+        *(--sp) = (U32) p_tcb->u_sp;
+
 
         // uR12, uR11, ..., uR0
         for ( int j = 0; j < 13; j++ ) {
@@ -383,8 +386,50 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
     printf("k_tsk_create: entering...\n\r");
     printf("task = 0x%x, task_entry = 0x%x, prio=%d, stack_size = %d\n\r", task, task_entry, prio, stack_size);
 #endif /* DEBUG_0 */
-    return RTX_OK;
 
+    // Initialize p_taskinfo to pass into k_tsk_create_new as parameter ( not sure why though... )
+    RTX_TASK_INFO *p_taskinfo = &g_null_task_info;
+
+    // Loop through each element in the g_tcbs array to find a tcb that is not being used.
+    U8 tid = 0;
+
+    // Starting from one since the initial task will be always running?
+    for (int i = 1; i < MAX_TASKS; i++){
+    	if (g_tcbs[i].state == DORMANT || g_tcbs[i].state > 5){
+    		pid = i;
+        	break;
+    	}
+    };
+    // If all tcbs are in use, return -1
+    if (tid == 0){
+    	return -1;
+    }
+
+    // Allocate space in the user stack and return the pointer to the stack
+    U32* user_stack_ptr = k_mem_alloc(stack_size);
+
+    // Set some values for the tcb
+    TCB *p_tcb = &g_tcbs[pid];
+    p_tcb->ptask = task_entry;
+	p_tcb->prio = prio;
+	p_tcb->priv = 0;
+	p_tcb->tid = tid;
+	p_tcb->state = READY;
+	p_tcb->u_stack_size = stack_size;
+    p_tcb->u_sp = user_stack_ptr;
+    //printf("0x%x 0x%x\n", user_stack_ptr, p_tcb->u_sp);
+
+	// Call the k_tsk_create_new function to allocate kernel stack
+	if (k_tsk_create_new(p_taskinfo, p_tcb, pid) == RTX_OK) {
+		g_num_active_tasks++;
+		p_taskinfo++;
+	} else {
+		return -1;
+	};
+
+    //store tid to task buffer
+    *task = tid; //might need to use strcpy() instead
+    return RTX_OK;
 }
 
 void k_tsk_exit(void) 
@@ -392,6 +437,17 @@ void k_tsk_exit(void)
 #ifdef DEBUG_0
     printf("k_tsk_exit: entering...\n\r");
 #endif /* DEBUG_0 */
+
+    //Check if current task is not NULL, and not the null task, and is RUNNING
+    if (gp_current_task != NULL && gp_current_task->tid != TID_NULL && gp_current_task->state == RUNNING){
+        gp_current_task->state == DORMANT;
+        gp_current_task->k_sp = NULL;
+        k_mem_dealloc(gp_current_task->u_sp); //deallote user stack memory, assuming kernel stack memory will be overwritten by the next task
+        gp_current_task->u_sp = NULL;
+        g_num_active_tasks--;
+        gp_current_task = scheduler(); //call scheduler to get the next task to be run
+    }
+ 
     return;
 }
 
@@ -401,6 +457,20 @@ int k_tsk_set_prio(task_t task_id, U8 prio)
     printf("k_tsk_set_prio: entering...\n\r");
     printf("task_id = %d, prio = %d.\n\r", task_id, prio);
 #endif /* DEBUG_0 */
+
+    //Check if task_id is valid, not null task, and not equal to the priority for null task
+    if (task_id != NULL; task_id > MAX_TASKS || prio >= 255) //Should we check if task_id == null??
+    {
+        return RTX_ERR;
+    }
+    //Check if the current task is a user task, which cannot change the prio of a kernel task
+    if (gp_current_task->priv == 0 && g_tcb[task_id]->priv == 1)
+    {
+        return RTX_ERR;
+    }
+    //Change the task_id's priority from g_tcb to prio
+    g_tcb[task_id]->prio = prio;
+
     return RTX_OK;    
 }
 
@@ -413,17 +483,28 @@ int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
     if (buffer == NULL) {
         return RTX_ERR;
     }
+    if (task_id > MAX_TASKS)
+    {
+        return RTX_ERR;
+    }
     /* The code fills the buffer with some fake task information. 
        You should fill the buffer with correct information    */
-    buffer->tid = task_id;
-    buffer->prio = 99;
-    buffer->state = MEDIUM;
-    buffer->priv = 0;
-    buffer->ptask = 0x0;
-    buffer->k_sp = 0xBEEFDEAD;
-    buffer->k_stack_size = KERN_STACK_SIZE;
-    buffer->u_sp = 0xDEADBEEF;
-    buffer->u_stack_size = 0x200;
+    buffer->ptask = g_tcb[task_id]->ptask;
+    buffer->k_sp = g_tcb[task_id]->k_sp;
+    buffer->k_stack_hi = g_tcb[task_id]->k_stack_hi;
+    buffer->u_sp = g_tcb[task_id]->u_sp;
+    buffer->u_stack_hi = g_tcb[task_id]->u_stack_hi;
+    buffer->k_stack_size = g_tcb[task_id]->k_stack_size;
+    buffer->u_stack_size = g_tcb[task_id]->u_stack_size;
+    buffer->tid = g_tcb[task_id]->tid;
+    buffer->prio = g_tcb[task_id]->prio;
+    buffer->state = g_tcb[task_id]->state;
+    buffer->priv = g_tcb[task_id]->priv;
+    buffer->tv_cpu = g_tcb[task_id]->tv_cpu;
+    buffer->tv_wall = g_tcb[task_id]->tv_wall;
+    buffer->p_n = g_tcb[task_id]->p_n;
+    buffer->msg_hdr = g_tcb[task_id]->msg_hdr;
+    buffer->num_msgs = g_tcb[task_id]->num_msgs;
 
     return RTX_OK;     
 }
