@@ -187,6 +187,7 @@ int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
         }
         p_taskinfo++;
     }
+    k_mem_init();
     return RTX_OK;
 }
 /**************************************************************************//**
@@ -258,7 +259,9 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         //********************************************************************//
         //*** allocate user stack from the user space, not implemented yet ***//
         //********************************************************************//
-        *(--sp) = (U32) k_alloc_p_stack(tid);
+
+        *(--sp) = (U32) p_tcb->u_sp;
+
 
         // uR12, uR11, ..., uR0
         for ( int j = 0; j < 13; j++ ) {
@@ -382,9 +385,50 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
 #ifdef DEBUG_0
     printf("k_tsk_create: entering...\n\r");
     printf("task = 0x%x, task_entry = 0x%x, prio=%d, stack_size = %d\n\r", task, task_entry, prio, stack_size);
+
+
+    // Initialize p_taskinfo to pass into k_tsk_create_new as parameter ( not sure why though... )
+    RTX_TASK_INFO *p_taskinfo = &g_null_task_info;
+
+    // Loop through each element in the g_tcbs array to find a tcb that is not being used.
+    U8 pid = 0;
+
+    // Starting from one since the initial task will be always running?
+    for (int i = 1; i < MAX_TASKS; i++){
+    	if (g_tcbs[i].state == DORMANT || g_tcbs[i].state > 5){
+    		pid = i;
+        	break;
+    	}
+    };
+    // If all tcbs are in use, return -1
+    if (pid == 0){
+    	return -1;
+    }
+
+    // Allocate space in the user stack and return the pointer to the stack
+    U32* user_stack_ptr = k_mem_alloc(stack_size);
+
+    // Set some values for the tcb
+    TCB *p_tcb = &g_tcbs[pid];
+    p_tcb->ptask = task_entry;
+	p_tcb->prio = prio;
+	p_tcb->priv = 0;
+	p_tcb->tid = pid;
+	p_tcb->state = READY;
+	p_tcb->u_stack_size = stack_size;
+    p_tcb->u_sp = user_stack_ptr;
+    //printf("0x%x 0x%x\n", user_stack_ptr, p_tcb->u_sp);
+
+	// Call the k_tsk_create_new function to allocate kernel stack
+	if (k_tsk_create_new(p_taskinfo, p_tcb, pid) == RTX_OK) {
+		g_num_active_tasks++;
+		p_taskinfo++;
+	} else {
+		return -1;
+	};
+
 #endif /* DEBUG_0 */
     return RTX_OK;
-
 }
 
 void k_tsk_exit(void) 

@@ -65,10 +65,17 @@
 typedef struct tcb {
     struct tcb *next;   /**> next tcb, not used in this example         */
     U32        *msp;    /**> msp of the task, TCB_MSP_OFFSET = 4        */
-    U8          tid;    /**> task id                                    */
-    U8          prio;   /**> Execution priority                         */
-    U8          state;  /**> task state                                 */
-    U8          priv;   /**> = 0 unprivileged, =1 privileged            */
+    void                (*ptask)();         /**> task entry address                 */
+    U32                 k_sp;               /**> current kernel stack pointer       */
+    U32                 k_stack_hi;         /**> kernel stack base (high addr.)     */
+    U32*                 u_sp;               /**> current user stack pointer         */
+    U32                 u_stack_hi;         /**> user stack base addr. (high addr.) */
+    U16                 k_stack_size;       /**> kernel stack size in bytes         */
+    U16                 u_stack_size;       /**> user stack size in bytes           */
+    task_t              tid;                /**> task ID                            */
+    U8                  prio;               /**> execution priority                 */
+    U8                  state;              /**> task state                         */
+    U8                  priv;               /**> = 0 unprivileged, =1 privileged    */
 } TCB;
 
 /*
