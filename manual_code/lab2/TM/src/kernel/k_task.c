@@ -397,6 +397,8 @@ void k_tsk_exit(void)
     RTX_TASK_INFO *b;
     k_tsk_get(gp_current_task->tid, b);
     k_mem_dealloc(b->u_sp);
+    g_num_active_tasks -=1;
+    k_tsk_run_new();
     return;
 }
 
