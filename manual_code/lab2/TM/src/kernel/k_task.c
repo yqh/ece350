@@ -394,9 +394,8 @@ void k_tsk_exit(void)
 // #endif /* DEBUG_0 */
     gp_current_task->state = DORMANT;
     
-    RTX_TASK_INFO *b;
-    k_tsk_get(gp_current_task->tid, b);
-    k_mem_dealloc(b->u_sp);
+    // TODO assume this works since I dont have the tcb changes to merge in yet
+    k_mem_dealloc(gp_current_task->u_stack_hi);
     g_num_active_tasks -=1;
     k_tsk_run_new();
     return;
