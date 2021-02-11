@@ -153,7 +153,7 @@ void* k_mem_alloc(size_t size) {
     // first split the chunk
     // change the size to the new allocated size
     // point to a new node with the remaining size (this will be the free chunk)
-    // note that the memory address are 4 bytes aligned
+    // note that the memory address are 8 bytes aligned for lab 2
     int padding = size % 8 == 0 ? 0 : 8 - (size % 8);
     unsigned int newAddr = (unsigned int) p + sizeof(struct node_t) + size + padding;
     struct node_t *n = (struct node_t*) newAddr;

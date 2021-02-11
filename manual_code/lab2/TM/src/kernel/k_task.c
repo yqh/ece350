@@ -128,6 +128,49 @@ The memory map of the OS image may look like the following:
  *===========================================================================
  */
 
+struct Queue {
+  TCB *front;
+  TCB *rear;
+};
+
+struct Queue *ready_queue; 
+
+void queue_add(TCB* t_block) {
+  // start at the head of the ready queue; 
+  TCB* t_comp = ready_queue-> front;
+
+  // first can compare with the head of the queue
+  if (t_block-> prio <  ready_queue-> front-> prio) {
+    // new created task has a higher prio than the current task 
+    t_block-> next = t_comp;
+    // the front of the ready queue should now point at the head 
+    ready_queue-> front = t_block; 
+  } else {
+    // the first task (current task) has higher prio, so now compare with the inner tasks 
+    TCB* prev = ready_queue->front; 
+    while(t_comp != NULL) {
+      // move to the next task in the queue 
+      t_comp = -> t_comp-> next; 
+      // compare the priorities of the task to be added and the current task in the queue
+      // 0 Prio == HIGHEST 
+      if(t_block-> prio < t_comp-> prio) {
+        // if the prio is the less, then we have found where to insert the task in the ready queue
+        // the previous task that has a higher priority will now have next point to the new added task
+        // new added task next will now point to t_comp since t_comp has a lower priority 
+        prev-> next = t_block; 
+        t_block-> next = t_comp;
+        break; 
+      }
+      prev = prev-> next; 
+    }
+    if (t_comp == NULL) {
+      // technically should never get here since the last task in the queue should always be the PRIO NULL TASK 
+      // we cannot add a task with prio >= 255
+      printf("OOPS, WE SHOULDN'T BE HERE")
+    }
+  }
+}
+
 /**************************************************************************//**
  * @brief   scheduler, pick the TCB of the next to run task
  *
@@ -135,15 +178,43 @@ The memory map of the OS image may look like the following:
  * @post    gp_curret_task is updated
  *
  *****************************************************************************/
-
 TCB *scheduler(void)
 {
-    task_t tid = gp_current_task->tid;
-    return &g_tcbs[(++tid)%g_num_active_tasks];
-
+  // returns highest-priority task among all runable tasks (ready plus currently-running)
+  // runable tasks are scheduled based ona simple strict-priority scheduling algorithm
+  // ready queue should for processor should maintain a sorted list of ready tasks based on their priorities
+  // same priority - first come first serve
+  // when the scheduler is called, that means the queue has been modified 
+  // have to iterate through the queue to make sure the order is correct 
+  // note that this scheduler will always be called after only 1 ITEM IN THE QUEUE HAS BEEN MODIFIED
+  // either 1 task is removed, 1 task prio is changed
+  TCB *t_comp = ready_queue-> front;
+  TCB *prev = ready_queue-> front;
+  if (t_comp-> state == DORMANT) {
+    // the first task has exited, so all tasks are going to be bumped up
+    ready_queue-> front = t_comp-> next; 
+    // return the new highest priority task in the queue 
+    return ready_queue-> front; 
+  }
+  while (prev != NULL) {
+    // check if any have been modified
+    // set compare pointer to next task
+    t_comp = t_comp-> next; 
+    if (prev->prio > t_comp->prio) {      
+      // the task in front has a lower priority, so I can essentially remove the node and reinsert it into its proper order
+      prev-> next = t_comp-> next; 
+      queue_add(t_comp); 
+      // now that the task is added correctly, I can return the first item in the queue 
+      return ready_queue-> front; 
+    }
+    // set prev pointer to next task
+    prev = prev-> next; 
+  }  
+  // if we reach this, that means that the order of the tasks has not changed
+  // can be because we change the priority of the task, but the queue maintains proper order
+  // simply return the front task of the queue 
+  return ready_queue-> front; 
 }
-
-
 
 /**************************************************************************//**
  * @brief       initialize all boot-time tasks in the system,
@@ -177,16 +248,36 @@ int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
     p_tcb->state    = RUNNING;
     g_num_active_tasks++;
     gp_current_task = p_tcb;
+    // update the schedule ready queue by adding the new task in the appropriate order
+    // this is the first task, so obviously this will be the highest priority task 
+    // only task in the ready queue, so there will be no tasks after it
+    p_tcb-> next = NULL; 
+    ready_queue-> front = ready_queue-> rear = p_tcb; 
 
     // create the rest of the tasks
     p_taskinfo = task_info;
     for ( int i = 0; i < num_tasks; i++ ) {
         TCB *p_tcb = &g_tcbs[i+1];
+        // set the priority of each tcb to be medium
+        p_tcb-> prio = MEDIUM;
+        p_tcb-> next = NULL;
         if (k_tsk_create_new(p_taskinfo, p_tcb, i+1) == RTX_OK) {
-        	g_num_active_tasks++;
+          // update the schedule ready queue by adding the new task in the appropriate order
+          // the front of the queue is the highest prio task, which should be the current task
+          // add the task to the end of the queue 
+          queue_add(p_tcb);
+          g_num_active_tasks++;
+          // run scheduler and may have to premptive run new task
+          k_tsk_run_new(); 
         }
         p_taskinfo++;
     }
+
+    // set the rest of the tcbs to be dormant 
+    for (int i = num_tasks; i < MAX_TASKS; i++) {
+      g_tcbs[i].state = DORMANT;
+    }
+
     k_mem_init();
     return RTX_OK;
 }
@@ -370,7 +461,25 @@ int k_tsk_run_new(void)
  *****************************************************************************/
 int k_tsk_yield(void)
 {
-    return k_tsk_run_new();
+    // Example: running task E calls tsk_yield
+    // if the priority of hgihest-priority task in teh ready queue, F, is STRICTLY less than that of E, then E continues
+    // otherwise, F is scheduled and E is added to the back of the ready queue (last task among tasks with same priority)
+
+    // at the beginning of the function, the front of the priority queue will be the running task 
+    // compare this task with the priority of the method after it 
+    if (ready_queue-> front-> prio < read_queue-> front-> next-> prio) {
+      // the priority of the current running task is strictly higher than the next task
+      // that means the current running task will continue to run
+      return RTX_OK; 
+    } else {
+      // the priority of the current running task is either of a priority equal to or less than the next task
+      // I can "delete" the task and re-add it to the back of the ready of the queue in order
+      TCB* tmp = ready_queue-> front; 
+      ready_queue-> front = tmp-> next; 
+      queue_add(tmp); 
+      // the queue has been resorted via the "scheduler" since queue_add is a method of the scheduler technically
+      return k_tsk_run_new();
+    }
 }
 
 
@@ -407,7 +516,17 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
     }
     // Initialize p_taskinfo to pass into k_tsk_create_new as parameter
     RTX_TASK_INFO *p_taskinfo;
-    U8 tid = g_num_active_tasks;
+    U8 tid = 0;
+
+    for (int i = 1; i < MAX_TASKS; i++){
+      if (g_tcbs[i].state == DORMANT){
+        tid = i;
+        break;
+      }
+    }
+    if (tid == 0) {
+      return RTX_ERR;
+    }
 
     p_taskinfo-> ptask = task_entry;
     p_taskinfo-> tid = tid;
@@ -416,15 +535,19 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
 
     // Set some values for the tcb
     TCB *p_tcb = &g_tcbs[tid];
-    p_tcb->ptask = task_entry;
     p_tcb->prio = prio;
     p_tcb->priv = 0;
     p_tcb->u_stack_size = stack_size;
+    p_tcb->next = NULL;
 
     // Call the k_tsk_create_new function to allocate kernel stack
     if (k_tsk_create_new(p_taskinfo, p_tcb, tid) == RTX_OK) {
+      // add the task to the ready queue 
+        queue_add(p_tcb);
         g_num_active_tasks++;
         *task = tid
+        // run scheduler and may have to premptive run new task
+        k_tsk_run_new(); 
     } else {
       return RTX_ERR;
     };
@@ -439,7 +562,14 @@ void k_tsk_exit(void)
 #ifdef DEBUG_0
     printf("k_tsk_exit: entering...\n\r");
 #endif /* DEBUG_0 */
-
+    //Check if current task is not NULL, and not the null task, and is RUNNING
+    if (gp_current_task != NULL && gp_current_task->tid != TID_NULL && gp_current_task->state == RUNNING) {
+        gp_current_task->state = DORMANT;
+        gp_current_task->k_sp = NULL;
+        k_mem_dealloc(gp_current_task->u_sp); //deallote user stack memory, assuming kernel stack memory will be overwritten by the next task
+        gp_current_task->u_sp = NULL;
+        g_num_active_tasks--;
+        k_tsk_run_new();
     return;
 }
 
@@ -449,7 +579,33 @@ int k_tsk_set_prio(task_t task_id, U8 prio)
     printf("k_tsk_set_prio: entering...\n\r");
     printf("task_id = %d, prio = %d.\n\r", task_id, prio);
 #endif /* DEBUG_0 */
-    return RTX_OK;    
+    //Check if task_id is valid, not null task, and not equal to the priority for null task
+    if (task_id != NULL; task_id > MAX_TASKS)
+    {
+        return RTX_ERR;
+    }
+    if (prio != PRIO_RT || prio != HIGH || prio != MEDIUM || prio != LOW || prio != LOWEST) {
+      return RTX_ERR; 
+    }
+    // cannot change the priority of the null task
+    if (task_id == 0) {
+      return RTX_ERR; 
+    }
+    // cannot change the priority of a task to prio_null
+    if (prio == PRIO_NULL) {
+      return RTX_ERR; 
+    }
+    //Check if the current task is a user task, which cannot change the prio of a kernel task
+    if (gp_current_task->priv == 0 && g_tcb[task_id]->priv == 1)
+    {
+        return RTX_ERR;
+    }
+    //Change the task_id's priority from g_tcb to prio
+    g_tcb[task_id]->prio = prio;
+    // have to rearrange the queue in case the priorities have changed
+    // rearranged task mayb preempt the current task that called this function and run immediately 
+    k_tsk_run_new();
+    return RTX_OK;
 }
 
 // obtain task status information from the kernel identified with task_id
