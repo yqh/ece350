@@ -1,0 +1,7 @@
+Right click project folder in the Project Explorer 
+    -> Properties -> C/C++ Build -> Settings -> Arm Linker 5 -> Image Layout
+
+Image entry point (--entry): __Vectors
+Scatter file (--scatter)   : "${workspace_loc:/${ProjName}/scatter1.sct}"
+
+Note you need to put the double quotes around the location of the scatter file.
