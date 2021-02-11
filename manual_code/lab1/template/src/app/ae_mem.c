@@ -288,6 +288,40 @@ int test_throughput(void){
 	return 1;
 }
 
+int test4mock(){
+	void *p[15];
+	p[0] = mem_alloc(8);
+	p[1] = mem_alloc(8);
+	p[2] = mem_alloc(8);
+	p[3] = mem_alloc(8);
+	p[4] = mem_alloc(8);
+	p[5] = mem_alloc(8);
+	p[6] = mem_alloc(8);
+	p[7] = mem_alloc(8);
+	p[8] = mem_alloc(8);
+	p[9] = mem_alloc(8);
+
+	mem_dealloc(p[0]);
+	mem_dealloc(p[2]);
+	mem_dealloc(p[4]);
+	mem_dealloc(p[6]);
+	mem_dealloc(p[8]);
+
+	printf("Extfrag Regions: %d\r\n", mem_count_extfrag(8+12+1));
+	printf("Extfrag Regions: %d\r\n", mem_count_extfrag(8+12));
+
+	p[10] = mem_alloc(8);
+	p[11] = mem_alloc(8);
+	p[12] = mem_alloc(8);
+	p[13] = mem_alloc(8);
+	p[14] = mem_alloc(8);
+
+	printf("Extfrag Regions: %d\r\n", mem_count_extfrag(8+12+1));
+	printf("Extfrag Regions: %d\r\n", mem_count_extfrag(8+12));
+
+	return 1;
+}
+
 int test_mem(void) {
 // Function Tests:
 //	U32 result = 0;
@@ -312,6 +346,13 @@ int test_mem(void) {
 //	}
 //
 //  return result == 63;
+
+//  Failing Testcase:
+	U32 result = 0;
+	if(test4Mock()){
+		result |= BIT(0);
+	}
+	return 1;
 
 // 	Throughput Test: (function needs to be updated
 //	test_throughput();
