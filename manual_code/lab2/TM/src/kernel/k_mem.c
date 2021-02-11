@@ -99,11 +99,11 @@ U32* k_alloc_p_stack(task_t tid)
 }
 
 int k_mem_init(void) {
-   unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
-//#ifdef DEBUG_0
-//    printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
-//    printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
-//#endif /* DEBUG_0 */
+    unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
+#ifdef DEBUG_0
+   printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
+   printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
+#endif /* DEBUG_0 */
 
     //check if end addr is valid
     unsigned int totalSize = 0xBFFFFFFF - end_addr;
@@ -114,6 +114,7 @@ int k_mem_init(void) {
     // round end_addr to nearest 8
     if (end_addr % 8 != 0) {
         end_addr = ((unsigned int)(end_addr / 8)) * 8 + 8;
+
     }
 
     // cast end_addr to pointer given in end_addr
@@ -242,10 +243,10 @@ int k_mem_dealloc(void *ptr) {
 }
 
 int k_mem_count_extfrag(size_t size) {
-//#ifdef DEBUG_0
-//    printf("k_mem_extfrag: size = %d\r\n", size);
-//#endif /* DEBUG_0 */
-    // return RTX_OK;
+#ifdef DEBUG_0
+   printf("k_mem_extfrag: size = %d\r\n", size);
+#endif /* DEBUG_0 */
+
 
     unsigned int memRegionSize;
     int regionCount = 0;
@@ -261,6 +262,7 @@ int k_mem_count_extfrag(size_t size) {
         }
         curNode = curNode->next; // idk if this is the right way to goto next node
     }
+
 
     return regionCount;
 }

@@ -105,7 +105,7 @@
                                 								
                                 <option id="com.arm.tool.c.linker.option.entry.1823257737" name="Image entry point (--entry)" superClass="com.arm.tool.c.linker.option.entry" useByScannerDiscovery="false" value="__Vectors" valueType="string"/>
                                 								
-                                <option id="com.arm.tool.c.linker.option.scatter.2119067715" name="Scatter file (--scatter)" superClass="com.arm.tool.c.linker.option.scatter" useByScannerDiscovery="false" value="&quot;${workspace_loc:/${ProjName}/scatter1.sct}&quot;" valueType="string"/>
+                                <option id="com.arm.tool.c.linker.option.scatter.2119067715" name="Scatter file (--scatter)" superClass="com.arm.tool.c.linker.option.scatter" useByScannerDiscovery="false" value="&quot;N:\ECE350\ece350\manual_code\lab2\TM\scatter_DE1_SoC.sct&quot;" valueType="string"/>
                                 							
                             </tool>
                             							
@@ -114,6 +114,12 @@
                         </toolChain>
                         					
                     </folderInfo>
+                    					
+                    <sourceEntries>
+                        						
+                        <entry excluding="src/board/VE_A9" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        					
+                    </sourceEntries>
                     				
                 </configuration>
                 			

@@ -123,6 +123,148 @@ The memory map of the OS image may look like the following:
 ---------------------------------------------------------------------------*/ 
 
 /*
+ *==========================================================================
+ *                            SCHEDULER VARIABLES
+ *==========================================================================
+ */
+
+static const int h_array_size = MAX_TASKS;
+static TCB* heap[h_array_size];
+static U32 current_size = 0;
+static U32 g_task_count = 0;
+
+/*
+ *===========================================================================
+ *                            SCHEDULER FUNCTIONS
+ *===========================================================================
+ */
+
+int compare(TCB *t1, TCB* t2) {
+    int result = (*t1).prio < (*t2).prio || ((*t1).prio == (*t2).prio && (*t1).task_count <= (*t2).task_count);
+  //  printf("V1: %d, %d, %d - V2: %d, %d, %d - Result: %d\r\n", t1->tid, t1->prio, t1->task_count, t2->tid, t2->prio, t2->task_count, result);
+    return result;
+}
+
+void swap(TCB** t1, TCB** t2) {
+    TCB* t;
+    t = *t1;
+    *t1 = *t2;
+    *t2 = t;
+}
+
+int parent(int i) {
+    return (i > 0 && i < h_array_size) ? (i - 1) / 2 : -1;
+}
+
+int left_child(int i) {
+    return (2*i + 1 < current_size && i >= 0) ? 2*i + 1: -1;
+}
+
+int right_child(int i) {
+    return (2*i + 2 < current_size && i >= 0) ? 2*i + 2 : -1;
+}
+
+void increase_key(TCB* heap[], int i) {
+    while(i >= 0 && parent(i) >= 0 && !compare(heap[parent(i)], heap[i])) {
+        swap(&heap[i], &heap[parent(i)]);
+        i = parent(i);
+    }
+}
+
+void decrease_key(TCB* heap[], int i) {
+    int max_index = i;
+
+    int l = left_child(i);
+
+    if (l > 0 && compare(heap[l], heap[max_index])) {
+        max_index = l;
+    }
+
+    int r = right_child(i);
+
+    if (r > 0 && compare(heap[r], heap[max_index])) {
+        max_index = r;
+    }
+
+    if (i != max_index) {
+        swap(&heap[i], &heap[max_index]);
+        decrease_key(heap, max_index);
+    }
+}
+
+int insert(TCB* heap[], TCB* value) {
+    if (current_size + 1== h_array_size) {
+        return -1;
+    }
+
+    g_task_count += 1;
+    (*value).task_count = g_task_count;
+    heap[current_size] = value;
+    increase_key(heap, current_size);
+    current_size ++;
+    return 0;
+}
+
+int16_t maximum(TCB* heap[]) {
+    return current_size == 0 ? -1 : heap[0]->tid;
+}
+
+int16_t extract_max(TCB* heap[]) {
+	if (current_size == 0) { return 0; }
+
+    int16_t max_value = maximum(heap);
+
+    current_size --;
+    heap[0] = heap[current_size];
+    decrease_key(heap, 0);
+
+    return max_value;
+}
+
+int find_value(TCB* heap[], U8 tid) {
+    int i;
+    for (i = 0; i < current_size; i++) {
+        if (heap[i]->tid == tid) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+void reset_priority(TCB* heap[], U8 tid, U8 priority) {
+    int index = find_value(heap, tid);
+    if (index < 0) { return; }
+
+    TCB v = *heap[index];
+
+    g_task_count += 1;
+    heap[index]->prio = priority;
+    heap[index]->task_count = g_task_count;
+
+    if (compare(heap[index], &v)) {
+        increase_key(heap, index);
+    } else {
+        decrease_key(heap, index);
+    }
+}
+
+void remove_id(TCB* heap[], U8 tid) {
+	if (current_size == 0) { return; }
+
+    int i = find_value(heap, tid);
+
+    if (i < 0) { return; }
+
+    //printf("found id: %d\n", i);
+    heap[i] = heap[0];
+    heap[i]->task_count += 1;
+    increase_key(heap, i);
+    //print_heap(heap, current_size);
+    extract_max(heap);
+}
+
+/*
  *===========================================================================
  *                            FUNCTIONS
  *===========================================================================
@@ -136,14 +278,32 @@ The memory map of the OS image may look like the following:
  *
  *****************************************************************************/
 
-TCB *scheduler(void)
-{
-    task_t tid = gp_current_task->tid;
-    return &g_tcbs[(++tid)%g_num_active_tasks];
-
+int currently_running() {
+	return gp_current_task && gp_current_task->state == RUNNING;
 }
 
+TCB *scheduler(void)
+{
+	int16_t tid = maximum(heap);
+	//int16_t tid = extract_max(heap);
+	if (tid < 0) { return gp_current_task; }
 
+	TCB* current_tcb = gp_current_task;
+	TCB* max_ready_tcb = &g_tcbs[(U8)tid];
+
+	// current task has higher priority
+	if (gp_current_task->state != DORMANT && compare(current_tcb, max_ready_tcb)) {
+
+		return gp_current_task;
+	}
+
+	gp_current_task = max_ready_tcb;
+    extract_max(heap);
+    insert(heap, current_tcb);
+
+    return gp_current_task;
+
+}
 
 /**************************************************************************//**
  * @brief       initialize all boot-time tasks in the system,
@@ -177,6 +337,12 @@ int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
     p_tcb->state    = RUNNING;
     g_num_active_tasks++;
     gp_current_task = p_tcb;
+
+    // initialize all TCB task ids and states to DORMANT
+    for(int i = 1; i < MAX_TASKS; i++){
+        g_tcbs[i].state = DORMANT;
+        g_tcbs[i].tid = i;
+    }
 
     // create the rest of the tasks
     p_taskinfo = task_info;
@@ -218,7 +384,7 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         return RTX_ERR;
     }
 
-    p_tcb ->tid = tid;
+    p_tcb->tid = tid;
     p_tcb->state = READY;
 
     /*---------------------------------------------------------------
@@ -260,6 +426,10 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         //********************************************************************//
         *(--sp) = (U32) k_alloc_p_stack(tid);
 
+        // store user stack hi pointer in TCB
+        p_tcb -> u_stack_hi = *sp + (p_tcb -> u_stack_size);    // user stack hi grows downwards
+        p_tcb->u_stack_size = p_taskinfo->u_stack_size;
+
         // uR12, uR11, ..., uR0
         for ( int j = 0; j < 13; j++ ) {
             *(--sp) = 0x0;
@@ -286,7 +456,12 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         *(--sp) = 0x0;
     }
 
-    p_tcb->msp = sp;
+    p_tcb->msp = sp;                        // store msp in TCB
+    p_tcb->ptask = p_taskinfo->ptask;       // store task entry in TCB
+    p_tcb->prio = p_taskinfo->prio;         // store priority in TCB
+    p_tcb->priv = p_taskinfo->priv;         // store privilege in
+
+    insert(heap, p_tcb);
 
     return RTX_OK;
 }
@@ -383,21 +558,116 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
     printf("k_tsk_create: entering...\n\r");
     printf("task = 0x%x, task_entry = 0x%x, prio=%d, stack_size = %d\n\r", task, task_entry, prio, stack_size);
 #endif /* DEBUG_0 */
-    return RTX_OK;
 
+    // TODO: `k_tsk_create` is non-blocking, but can be preempted by `scheduler`
+    // TODO: check pointers
+    // TODO: error checking additional conditions
+
+    // TID pointer NULL
+    if (task == NULL){
+        return RTX_ERR;
+    }
+
+    // Task entry pointer NULL
+    if (task_entry == NULL){
+        return RTX_ERR;
+    }
+
+    // Maximum number of tasks reached
+    if (g_num_active_tasks == MAX_TASKS){
+        return RTX_ERR;
+    }
+
+    // stack size too small
+    if (stack_size < PROC_STACK_SIZE){
+        return RTX_ERR;
+    }
+
+    // stack size too big
+    size_t ALL_HEAP = 0xFFFFFFFF;
+    size_t suitable_regions = k_mem_count_extfrag(ALL_HEAP) - k_mem_count_extfrag(stack_size);
+    if (!suitable_regions){
+        return RTX_ERR;
+    }
+
+    // stack_size not 8 bytes aligned
+    if (stack_size % 8 != 0){
+        return RTX_ERR;
+    }
+
+    // prio invalid
+    if (prio != HIGH && prio != MEDIUM && prio != LOW && prio != LOWEST){
+        return RTX_ERR;
+    }
+
+    RTX_TASK_INFO task_info;
+    TCB * tcb = NULL;
+    
+    // linear traverse to find free TID in g_tcbs;
+    for (int i=0; i < MAX_TASKS; i++){
+        // get dormant TCB
+        if(g_tcbs[i].state == DORMANT){
+            tcb = &g_tcbs[i];
+            break;
+        }
+    }
+    
+    // get TID and store in buffer
+    *task = tcb->tid;
+
+    // fill in task_info
+    task_info.prio = prio;
+    task_info.priv = 0;
+    task_info.u_stack_size = stack_size;
+    task_info.ptask = task_entry;
+    
+    // call k_tsk_create_new
+    if (k_tsk_create_new(&task_info, tcb, *task) == RTX_ERR){
+        return RTX_ERR;
+    }
+
+    g_num_active_tasks++;
+    //scheduler(); do we need to call?
+
+//    if (currently_running()) {
+//    	k_tsk_yield();
+//    } else {
+//    	return RTX_ERR;
+//    }
+
+
+    return RTX_OK;
 }
 
 void k_tsk_exit(void) 
 {
-// #ifdef DEBUG_0
-//     printf("k_tsk_exit: entering...\n\r");
-// #endif /* DEBUG_0 */
+
+#ifdef DEBUG_0
+    printf("k_tsk_exit: entering...\n\r");
+#endif /* DEBUG_0 */
+
     gp_current_task->state = DORMANT;
-    
-    // TODO assume this works since I dont have the tcb changes to merge in yet
-    k_mem_dealloc(gp_current_task->u_stack_hi);
-    g_num_active_tasks -=1;
-    k_tsk_run_new();
+
+    TCB* p_tcb_old = gp_current_task;
+    gp_current_task = scheduler();
+
+    p_tcb_old->state = DORMANT;
+    k_mem_dealloc((void*)p_tcb_old->u_stack_hi);
+
+    g_num_active_tasks--;
+    remove_id(heap, p_tcb_old->tid);
+
+    if ( gp_current_task == NULL  ) {
+        gp_current_task = p_tcb_old;        // revert back to the old task
+        return;
+    }
+
+    // at this point, gp_current_task != NULL and p_tcb_old != NULL
+    if (gp_current_task != p_tcb_old) {
+        gp_current_task->state = RUNNING;   // change state of the to-be-switched-in  tcb
+        k_tsk_switch(p_tcb_old);            // switch stacks
+    }
+
     return;
 }
 
@@ -407,7 +677,50 @@ int k_tsk_set_prio(task_t task_id, U8 prio)
     printf("k_tsk_set_prio: entering...\n\r");
     printf("task_id = %d, prio = %d.\n\r", task_id, prio);
 #endif /* DEBUG_0 */
-    return RTX_OK;    
+
+    // TODO: This function never blocks, but can be preempted. what does this mean?
+    // TODO: if try to set null task to prio PRIO_NULL, do I let it or error?
+
+    // prio invalid or PRIO_NULL
+    if (prio != HIGH && prio != MEDIUM && prio != LOW && prio != LOWEST){
+        return RTX_ERR;
+    }
+
+    // dormant TCB
+    if (g_tcbs[task_id].state == DORMANT){
+        return RTX_ERR;
+    }
+
+    if (prio == g_tcbs[task_id].prio) {
+    	return RTX_OK;
+    }
+
+    // valid TID
+    if (task_id > 0 && task_id < MAX_TASKS){
+        // user-mode task can change prio of any user-mode task
+        // user-mode task cannot change prio of kernel task
+        // kernel task can change prio of any user-mode or kernel task
+
+        if(gp_current_task->priv == 1){
+            g_tcbs[task_id].prio = prio;
+        } else {
+            if(g_tcbs[task_id].priv == 1){
+                return RTX_ERR;
+            } else {
+                g_tcbs[task_id].prio = prio;
+            }
+        }
+
+        reset_priority(heap, task_id, prio);
+    // Need to figure out what "can be pre-empted" means
+    // Should calling set_prio switch threads?
+        // _tsk_run_new(); // Need to figure out what "can be pre-empted" means
+        // Should calling set_prio switch threads?
+
+        return RTX_OK;
+    }else{
+        return RTX_ERR;
+    }
 }
 
 int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
@@ -416,22 +729,41 @@ int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
     printf("k_tsk_get: entering...\n\r");
     printf("task_id = %d, buffer = 0x%x.\n\r", task_id, buffer);
 #endif /* DEBUG_0 */    
+    
+    // error checking
     if (buffer == NULL) {
         return RTX_ERR;
     }
-    /* The code fills the buffer with some fake task information. 
-       You should fill the buffer with correct information    */
-    buffer->tid = task_id;
-    buffer->prio = 99;
-    buffer->state = MEDIUM;
-    buffer->priv = 0;
-    buffer->ptask = 0x0;
-    buffer->k_sp = 0xBEEFDEAD;
-    buffer->k_stack_size = KERN_STACK_SIZE;
-    buffer->u_sp = 0xDEADBEEF;
-    buffer->u_stack_size = 0x200;
+    // Dormant TCB
+    if (g_tcbs[task_id].state == DORMANT){
+        return RTX_ERR;
+    }
 
-    return RTX_OK;     
+    // valid TID excluding 0
+    if (task_id > 0 && task_id < MAX_TASKS){
+        buffer->tid = task_id;
+        buffer->prio = g_tcbs[task_id].prio;
+        buffer->state = g_tcbs[task_id].state;
+        buffer->priv = g_tcbs[task_id].priv;
+        buffer->ptask = g_tcbs[task_id].ptask;
+        buffer->k_stack_hi = *(g_k_stacks[task_id]) + KERN_STACK_SIZE;  // kernel stack hi grows downwards
+        buffer->k_stack_size = KERN_STACK_SIZE;         
+        buffer->u_stack_hi = g_tcbs[task_id].u_stack_hi;
+        buffer->u_stack_size = g_tcbs[task_id].u_stack_size;
+        buffer->u_sp = *(g_tcbs[task_id].msp) - 56;     // 56 bytes down from msp (msp, R0... R12, sp)
+
+        if (task_id == gp_current_task->tid){
+            int regVal = __current_sp();         // store value of SP register in regVal
+            buffer->k_sp = regVal;
+        }else{
+            buffer->k_sp = *(g_tcbs[task_id].msp);
+        }
+
+        return RTX_OK;
+
+    }else{
+        return RTX_ERR;
+    }     
 }
 
 int k_tsk_ls(task_t *buf, int count){
