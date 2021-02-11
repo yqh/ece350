@@ -65,6 +65,14 @@ U32 g_k_stacks[MAX_TASKS][KERN_STACK_SIZE >> 2] __attribute__((aligned(8)));
 //process stack for tasks in SYS mode
 U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
 
+typedef struct Node {
+	unsigned int size;
+	int isFree;
+	struct Node *next;
+} Node;
+
+Node* HEAD = NULL;
+
 /*
  *===========================================================================
  *                            FUNCTIONS
@@ -84,9 +92,29 @@ U32* k_alloc_p_stack(task_t tid)
 int k_mem_init(void) {
     unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
 #ifdef DEBUG_0
-    printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
-    printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
+   printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
+   printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
 #endif /* DEBUG_0 */
+
+    //check if end addr is valid
+    unsigned int totalSize = 0xBFFFFFFF - end_addr;
+    if(totalSize <= 0) {
+    	return RTX_ERR;
+    }
+
+    // round end_addr to nearest 4
+    if (end_addr % 4 != 0) {
+        end_addr = ((unsigned int)(end_addr / 4)) * 4 + 4;
+    }
+
+    // cast end_addr to pointer given in end_addr
+    HEAD = (Node*) end_addr;
+
+    // setup head
+    HEAD->size = totalSize - sizeof(Node);
+    HEAD->isFree = 1;
+    HEAD->next = NULL;
+
     return RTX_OK;
 }
 
@@ -106,9 +134,29 @@ int k_mem_dealloc(void *ptr) {
 
 int k_mem_count_extfrag(size_t size) {
 #ifdef DEBUG_0
-    printf("k_mem_extfrag: size = %d\r\n", size);
+   printf("k_mem_extfrag: size = %d\r\n", size);
 #endif /* DEBUG_0 */
-    return RTX_OK;
+
+    unsigned int memRegionSize;
+    int regionCount = 0;
+
+    Node* curNode = HEAD; // HEAD is global var
+
+    while(curNode != NULL){
+        memRegionSize = curNode->size + sizeof(Node);
+        if(curNode->isFree){
+            if(memRegionSize < size){
+                regionCount++;
+            }
+        }
+        curNode = curNode->next;
+    }
+
+#ifdef DEBUG_0
+   printf("k_mem_extfrag: regions = %d\r\n", regionCount);
+#endif /* DEBUG_0 */
+
+    return regionCount;
 }
 
 /*

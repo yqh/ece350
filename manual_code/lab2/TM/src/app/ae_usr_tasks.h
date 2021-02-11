@@ -40,8 +40,23 @@
 #ifndef USR_TASK_H_
 #define USR_TASK_H_
 
+extern char s_buffer[255];
+
 void task1(void);
 void task2(void);
+
+void dumdum(void);
+
+void stask0(void);
+void stask1(void);
+void stask2(void);
+void stask3(void);
+void stask4(void);
+void stask5(void);
+void stask6(void);
+void stask7(void);
+void stask8(void);
+void stask9(void);
 
 #endif // ! USR_TASK_H_
 
