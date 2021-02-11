@@ -130,8 +130,10 @@ void* k_mem_alloc(size_t size) {
     }
 
     if (size == curr->size){
+        curr->isFree=0;
         return (void*)((U32)curr + sizeof(Node));
     } else if (size < curr->size && (curr->size < (size + sizeof(Node)))) {
+        curr->isFree=0;
         return (void*)((U32)curr + sizeof(Node));
     } else {
         //make a new node

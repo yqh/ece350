@@ -65,13 +65,22 @@ U32 g_k_stacks[MAX_TASKS][KERN_STACK_SIZE >> 2] __attribute__((aligned(8)));
 //process stack for tasks in SYS mode
 U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
 
+// Global head
+Node* HEAD = NULL;
+
+/*
+ *==========================================================================
+ *                            STRUCTS
+ *==========================================================================
+ */
+
 typedef struct Node {
 	unsigned int size;
-	int isFree;
+	U8 isFree;
+    task_t owner;
 	struct Node *next;
 } Node;
 
-Node* HEAD = NULL;
 
 /*
  *===========================================================================
@@ -102,9 +111,10 @@ int k_mem_init(void) {
     	return RTX_ERR;
     }
 
-    // round end_addr to nearest 4
-    if (end_addr % 4 != 0) {
-        end_addr = ((unsigned int)(end_addr / 4)) * 4 + 4;
+    // round end_addr to nearest 8
+    if (end_addr % 8 != 0) {
+        end_addr = ((unsigned int)(end_addr / 8)) * 8 + 8;
+
     }
 
     // cast end_addr to pointer given in end_addr
@@ -119,16 +129,116 @@ int k_mem_init(void) {
 }
 
 void* k_mem_alloc(size_t size) {
-#ifdef DEBUG_0
-    printf("k_mem_alloc: requested memory size = %d\r\n", size);
-#endif /* DEBUG_0 */
-    return NULL;
+//#ifdef DEBUG_0
+//    printf("k_mem_alloc: requested memory size = %d\r\n", size);
+//#endif /* DEBUG_0 */
+
+    if (size == 0) {
+        return NULL;
+    }
+
+    // 8 byte align
+    if (size % 8 != 0) {
+        size = ((unsigned int)(size / 8)) * 8 + 8;
+    }
+
+    Node* curr = HEAD;
+
+    while(curr != NULL) {
+    	if (size <= curr->size && curr->isFree) {
+    		break;
+    	}
+    	curr = curr->next;
+    }
+
+    // couldn't allocate since no free space
+    if (curr == NULL) {
+    	return NULL;
+    }
+    
+    //TODO: assign TID ownership
+
+    if (size == curr->size){
+        curr->owner = gp_current_task->tid;
+        return (void*)((U32)curr + sizeof(Node));
+    } else if (size < curr->size && (curr->size < (size + sizeof(Node)))) {
+        curr->owner = gp_current_task->tid;
+        return (void*)((U32)curr + sizeof(Node));
+    } else {
+        //make a new node
+        // might need to use an unsigned depending on how types work
+        Node* newNode = (Node*)((unsigned int)curr + sizeof(Node) + size);
+        newNode->isFree = 1;
+        newNode->size = curr->size - size - sizeof(Node);
+        newNode->next = curr->next;
+
+        curr->isFree=0;
+        curr->size = size;
+        curr->next = newNode;
+        curr->owner = gp_current_task->tid;
+        // Cast curr to U32 to ensure pointer arithmetic works
+        // Pointer addition works by adding by increment of sizeof the pointer
+        // argument. If curr is of type Node* and we add sizeof(Node), we add
+        // sizeof(Node)^2 amount of bytes.
+        return (void*)((U32)curr + sizeof(Node));
+    }
+}
+
+Node* mergeNode(Node* first, Node* second) {
+	if (first > second) {
+		return NULL;
+	}
+
+	Node* result = first;
+	result->size = first->size + second->size + sizeof(Node);
+	result->next = second->next;
+
+	return result;
 }
 
 int k_mem_dealloc(void *ptr) {
-#ifdef DEBUG_0
-    printf("k_mem_dealloc: freeing 0x%x\r\n", (U32) ptr);
-#endif /* DEBUG_0 */
+//#ifdef DEBUG_0
+//    printf("k_mem_dealloc: freeing 0x%x\r\n", (U32) ptr);
+//#endif /* DEBUG_0 */
+
+    Node* curr = HEAD;
+    Node* prev = NULL;
+
+    while (ptr != (char*)curr + sizeof(Node)) {
+    	if (curr->next == NULL) {
+    		return RTX_ERR;
+    	}
+
+    	prev = curr;
+    	curr = curr->next;
+//    	printf("0x%x\n", (U32)((char*)curr + sizeof(Node) + curr->size));
+    }
+
+    // Double free
+    if (curr->isFree > 0) {
+    	return RTX_ERR;
+    }
+    
+    if (!gp_current_task->priv) {
+        if (gp_current_task->tid != curr->owner){
+            return RTX_ERR;
+        }
+    }
+    
+
+    curr->isFree = 1;
+
+    // Merge neighboring nodes
+    if (prev && prev->isFree > 0) {
+    	curr = mergeNode(prev, curr);
+    }
+
+    if (curr->next && curr->next->isFree > 0) {
+    	curr = mergeNode(curr, curr->next);
+    }
+
+//    print_list();
+
     return RTX_OK;
 }
 
@@ -136,6 +246,7 @@ int k_mem_count_extfrag(size_t size) {
 #ifdef DEBUG_0
    printf("k_mem_extfrag: size = %d\r\n", size);
 #endif /* DEBUG_0 */
+
 
     unsigned int memRegionSize;
     int regionCount = 0;
@@ -149,12 +260,9 @@ int k_mem_count_extfrag(size_t size) {
                 regionCount++;
             }
         }
-        curNode = curNode->next;
+        curNode = curNode->next; // idk if this is the right way to goto next node
     }
 
-#ifdef DEBUG_0
-   printf("k_mem_extfrag: regions = %d\r\n", regionCount);
-#endif /* DEBUG_0 */
 
     return regionCount;
 }
