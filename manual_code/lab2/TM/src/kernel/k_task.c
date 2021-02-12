@@ -292,7 +292,7 @@ TCB *scheduler(void)
 	TCB* max_ready_tcb = &g_tcbs[(U8)tid];
 
 	// current task has higher priority
-	if (gp_current_task->state != DORMANT && compare(current_tcb, max_ready_tcb)) {
+	if (gp_current_task->state != DORMANT && current_tcb->prio < max_ready_tcb->prio) {
 
 		return gp_current_task;
 	}
@@ -427,7 +427,7 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         *(--sp) = (U32) k_alloc_p_stack(tid);
 
         // store user stack hi pointer in TCB
-        p_tcb -> u_stack_hi = *sp + (p_tcb -> u_stack_size);    // user stack hi grows downwards
+        p_tcb->u_stack_hi = *sp + p_taskinfo->u_stack_size;    // user stack hi grows downwards
         p_tcb->u_stack_size = p_taskinfo->u_stack_size;
 
         // uR12, uR11, ..., uR0
@@ -641,6 +641,7 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
 
 void k_tsk_exit(void) 
 {
+
 #ifdef DEBUG_0
     printf("k_tsk_exit: entering...\n\r");
 #endif /* DEBUG_0 */
@@ -745,11 +746,11 @@ int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
         buffer->state = g_tcbs[task_id].state;
         buffer->priv = g_tcbs[task_id].priv;
         buffer->ptask = g_tcbs[task_id].ptask;
-        buffer->k_stack_hi = *(g_k_stacks[task_id]) + KERN_STACK_SIZE;  // kernel stack hi grows downwards
+        buffer->k_stack_hi = (U32) (&g_k_stacks[task_id]) + KERN_STACK_SIZE;  // kernel stack hi grows downwards
         buffer->k_stack_size = KERN_STACK_SIZE;         
         buffer->u_stack_hi = g_tcbs[task_id].u_stack_hi;
         buffer->u_stack_size = g_tcbs[task_id].u_stack_size;
-        buffer->u_sp = *(g_tcbs[task_id].msp) - 56;     // 56 bytes down from msp (msp, R0... R12, sp)
+        buffer->u_sp = *(g_tcbs[task_id].msp - 56);     // 56 bytes down from msp (msp, R0... R12, sp)
 
         if (task_id == gp_current_task->tid){
             int regVal = __current_sp();         // store value of SP register in regVal

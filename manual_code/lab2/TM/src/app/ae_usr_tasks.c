@@ -68,6 +68,12 @@ void dumdum(void){
     tsk_exit();
 }
 
+void checkSP(void){
+    SER_PutStr ("checkSP: I will yield\n\r");
+    tsk_yield();
+    tsk_exit();
+}
+
 /**
  * @brief: a dummy task1
  */

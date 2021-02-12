@@ -47,6 +47,8 @@ void task2(void);
 
 void dumdum(void);
 
+void checkSP(void);
+
 void stask0(void);
 void stask1(void);
 void stask2(void);
