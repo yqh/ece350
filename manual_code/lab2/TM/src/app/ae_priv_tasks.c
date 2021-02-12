@@ -80,6 +80,23 @@ void printResult(int passFail){
     }
 }
 
+void priv_task_check_sp(void){
+    task_t tid1;
+    RTX_TASK_INFO task_info1;
+    RTX_TASK_INFO task_info2;
+    
+    // 1. create new user task with high priority
+    // 2. yield to new user task
+    // 3. k_tsk_get() before new task has chance to SVC
+    // 3. user task 
+    k_tsk_create(&tid1, &checkSP, HIGH, 0x400);
+    k_tsk_get(tid1, &task_info1);
+    k_tsk_yield();
+    k_tsk_get(tid1, &task_info2);
+	
+    while(1);
+}
+
 void priv_task_entry(void){
 
     RTX_TASK_INFO task_info;
