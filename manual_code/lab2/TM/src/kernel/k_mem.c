@@ -95,7 +95,7 @@ U32* k_alloc_k_stack(task_t tid)
 
 U32* k_alloc_p_stack(task_t tid)
 {
-    return g_p_stacks[tid+1];
+    return mem_alloc(g_tcbs[tid].u_stack_size);
 }
 
 int k_mem_init(void) {
@@ -160,9 +160,11 @@ void* k_mem_alloc(size_t size) {
 
     if (size == curr->size){
         curr->owner = gp_current_task->tid;
+        curr->isFree=0;
         return (void*)((U32)curr + sizeof(Node));
     } else if (size < curr->size && (curr->size < (size + sizeof(Node)))) {
         curr->owner = gp_current_task->tid;
+        curr->isFree=0;
         return (void*)((U32)curr + sizeof(Node));
     } else {
         //make a new node
@@ -224,7 +226,6 @@ int k_mem_dealloc(void *ptr) {
             return RTX_ERR;
         }
     }
-    
 
     curr->isFree = 1;
 
