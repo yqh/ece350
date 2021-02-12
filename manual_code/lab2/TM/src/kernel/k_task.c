@@ -70,7 +70,6 @@ U32             g_num_active_tasks = 0;		// number of non-dormant tasks
 
 /*---------------------------------------------------------------------------
 The memory map of the OS image may look like the following:
-
                        RAM_END+---------------------------+ High Address
                               |                           |
                               |                           |
@@ -119,7 +118,6 @@ The memory map of the OS image may look like the following:
                               |                           |     |
                               |                           |     V
                      RAM_START+---------------------------+ Low Address
-
 ---------------------------------------------------------------------------*/
 
 /*
@@ -156,6 +154,7 @@ void queue_add(TCB* t_block) {
       t_comp = t_comp-> next;
       // compare the priorities of the task to be added and the current task in the queue
       // 0 Prio == HIGHEST
+
       if(t_block-> prio < t_comp-> prio) {
         // if the prio is the less, then we have found where to insert the task in the ready queue
         // the previous task that has a higher priority will now have next point to the new added task
@@ -165,12 +164,13 @@ void queue_add(TCB* t_block) {
         break;
       }
       prev = prev-> next;
+      if (t_comp == NULL) {
+        // technically should never get here since the last task in the queue should always be the PRIO NULL TASK
+        // we cannot add a task with prio >= 255
+        printf("OOPS, WE SHOULDN'T BE HERE");
+      }
     }
-    if (t_comp == NULL) {
-      // technically should never get here since the last task in the queue should always be the PRIO NULL TASK
-      // we cannot add a task with prio >= 255
-      printf("OOPS, WE SHOULDN'T BE HERE");
-    }
+
   }
 }
 
@@ -310,11 +310,10 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
 
     U32 *sp;
 
-    if (p_taskinfo == NULL || p_tcb == NULL)
+    if (p_tcb == NULL)
     {
         return RTX_ERR;
     }
-
     p_tcb ->tid = tid;
     p_tcb->state = READY;
 
@@ -328,7 +327,7 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
 
     // store the stack pointer in the k_sp
     p_tcb->k_sp = (U32)sp;
-
+    printf("TEST 2");
     // 8B stack alignment adjustment
     if ((U32)sp & 0x04) {   // if sp not 8B aligned, then it must be 4B aligned
         sp--;               // adjust it to 8B aligned
@@ -345,7 +344,6 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
      *         16 registers listed in push order
      *         <xPSR, PC, uSP, uR12, uR11, ...., uR0>
      * -------------------------------------------------------------*/
-
     // if kernel task runs under SVC mode, then no need to create user context stack frame for SVC handler entering
     // since we never enter from SVC handler in this case
     // uSP: initial user stack
@@ -368,7 +366,6 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
             *(--sp) = 0x0;
         }
     }
-
     /*---------------------------------------------------------------
      *  Step3: create task kernel initial context on kernel stack
      *
@@ -382,12 +379,10 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         // kernel thread LR: return to the entry point of the task
         *(--sp) = (U32) (p_taskinfo->ptask);
     }
-
     // kernel stack R0 - R12, 13 registers
     for ( int j = 0; j < 13; j++) {
         *(--sp) = 0x0;
     }
-
     p_tcb->msp = sp;
 
     return RTX_OK;
@@ -519,35 +514,32 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
       return RTX_ERR;
     }
     // return error if prio is invalid
-    if (prio != PRIO_RT || prio != HIGH || prio != MEDIUM || prio != LOW || prio != LOWEST || prio != PRIO_NULL) {
+    if (prio != PRIO_RT && prio != HIGH && prio != MEDIUM && prio != LOW && prio != LOWEST && prio != PRIO_NULL) {
       return RTX_ERR;
     }
     // Initialize p_taskinfo to pass into k_tsk_create_new as parameter
     RTX_TASK_INFO *p_taskinfo;
     U8 tid = 0;
-
     for (int i = 1; i < MAX_TASKS; i++){
-      if (g_tcbs[i].state == DORMANT){
+      if (g_tcbs[i].state != READY && g_tcbs[i].state != RUNNING && g_tcbs[i].state != BLK_MEM && g_tcbs[i].state != BLK_MSG && g_tcbs[i].state != SUSPENDED){
         tid = i;
         break;
       }
     }
+
     if (tid == 0) {
       return RTX_ERR;
     }
-
     p_taskinfo-> ptask = task_entry;
     p_taskinfo-> tid = tid;
     p_taskinfo-> priv = 0;
     p_taskinfo-> prio = prio;
-
     // Set some values for the tcb
     TCB *p_tcb = &g_tcbs[tid];
     p_tcb->prio = prio;
     p_tcb->priv = 0;
     p_tcb->u_stack_size = stack_size;
     p_tcb->next = NULL;
-
     // Call the k_tsk_create_new function to allocate kernel stack
     if (k_tsk_create_new(p_taskinfo, p_tcb, tid) == RTX_OK) {
       // add the task to the ready queue

@@ -120,6 +120,7 @@ int k_mem_init(void) {
     // the linked list will be of a single node until we start allocating and splitting the chunk so the next node will be NULL
     struct node_t* head = (struct node_t*) end_addr;
     head -> size = (RAM_END - end_addr) - sizeof(struct node_t);
+    printf("Size of the initial user stack allocation: %d\r\n", head->size);
     head -> next = NULL;
     head -> prev = NULL;
     head -> allocated = false;
