@@ -96,7 +96,7 @@ U32* k_alloc_p_stack(task_t tid) {
     void* mem = k_mem_alloc(g_tcbs[tid].u_stack_size);
     Node* node = (Node*)mem - 1;
     node->owner = 0;
-    return (U32*) ( mem + g_tcbs[tid].u_stack_size);
+    return (U32*) ((char*)mem + g_tcbs[tid].u_stack_size);
 }
 
 int k_mem_init(void) {
