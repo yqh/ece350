@@ -47,7 +47,7 @@
 #include "Serial.h"
 #ifdef DEBUG_0
 #include "printf.h"
-#include "k_tash.h"
+#include "k_task.h"
 #include "common.h"
 #include <stdbool.h>
 #endif  /* DEBUG_0 */
@@ -172,9 +172,9 @@ void* k_mem_alloc(size_t size) {
     p-> padding = padding;
     p-> owner_id = gp_current_task-> tid;
     // increment the pointer such that the return value will be pointing directly to the memory region instead of the header of the node
-    struct node_t *ret = ++p; 
+    struct node_t *ret = ++p;
     // now have the pointer that points to the user stack, so I can set my tcb->u_sp
-    gp_current_task->u_sp = (U32)&ret; 
+    gp_current_task->u_sp = (U32)&ret;
     return ret;
 }
 
@@ -195,14 +195,14 @@ int k_mem_dealloc(void *ptr) {
         return RTX_ERR;
     }
     // can only deallocate if the input memory is owned by the calling task (running task)
-    if (p-> owner_id !== gp_current_task->tid) {
+    if (p-> owner_id != gp_current_task->tid) {
         return RTX_ERR;
     }
     // "free" the dynamic memory
     p-> allocated = false;
 
-    // set the user stack pointer to null for the current tcb 
-    gp_current_task->u_sp = NULL; 
+    // set the user stack pointer to null for the current tcb
+    gp_current_task->u_sp = NULL;
 
     // check if memory region is adjacent to the other free memory regions
     // can do this using our doubly linked list
