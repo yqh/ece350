@@ -427,7 +427,7 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         *(--sp) = (U32) k_alloc_p_stack(tid);
 
         // store user stack hi pointer in TCB
-        p_tcb->u_stack_hi = *sp + p_taskinfo->u_stack_size;    // user stack hi grows downwards
+        p_tcb->u_stack_hi = *sp;    // user stack hi grows downwards
         p_tcb->u_stack_size = p_taskinfo->u_stack_size;
 
         // uR12, uR11, ..., uR0
