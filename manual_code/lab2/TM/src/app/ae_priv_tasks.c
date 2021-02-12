@@ -144,11 +144,15 @@ void priv_task_entry(void){
     printResult(task_info.state == READY);
     SER_PutStr ("Compare Privilege:\n\r");
     printResult(task_info.priv == 0);
+    SER_PutStr ("Compare k stack pointer to k stack hi:\n\r");
+    printResult(task_info.k_sp == task_info.k_stack_hi);
+    SER_PutStr ("Compare u stack pointer to u stack hi:\n\r");
+    printResult(task_info.u_sp == task_info.u_stack_hi);
     
-    if (result == 8){
+    if (result == 10){
     	printf(">>>>>>>>>> TESTS PASSED <<<<<<<<<<<< \n\r");
     }else{
-    	printf(">>>>>>>>>> TESTS FAILED:  %d <<<<<<<<<<<< \n\r", 8 - result);
+    	printf(">>>>>>>>>> TESTS FAILED:  %d <<<<<<<<<<<< \n\r", 10 - result);
     }
 
     result = 1;
