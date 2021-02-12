@@ -54,6 +54,8 @@ int     k_mem_dealloc       (void *ptr);
 int     k_mem_count_extfrag (size_t size);
 U32    *k_alloc_k_stack     (task_t tid);
 U32    *k_alloc_p_stack     (task_t tid);
+int     countNodes          (void);
+int     memLeakCheck        (void);
 #endif // ! K_MEM_H_
 
 /*
