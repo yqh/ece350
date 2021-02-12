@@ -107,7 +107,7 @@ int k_mem_init(void) {
 #endif /* DEBUG_0 */
 
     //check if end addr is valid
-    unsigned int totalSize = 0xBFFFFFFF - end_addr;
+    unsigned int totalSize = RAM_END - end_addr;
     if(totalSize <= 0) {
     	return RTX_ERR;
     }
