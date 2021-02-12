@@ -63,19 +63,19 @@
  * @note  You will need to add more fields to this structure.
  */
 typedef struct tcb {
-    struct tcb *next;   /**> next tcb, not used in this example         */
-    U32        *msp;    /**> msp of the task, TCB_MSP_OFFSET = 4        */
+    struct tcb          *next;   /**> next tcb, not used in this example         */
+    U32                 *msp;    /**> msp of the task, TCB_MSP_OFFSET = 4        */
     void                (*ptask)();         /**> task entry address                 */
+    U8                  prio;   /**> Execution priority                         */      
     U32                 k_sp;               /**> current kernel stack pointer       */
+    U8                  state;  /**> task state                                 */      
     U32                 k_stack_hi;         /**> kernel stack base (high addr.)     */
+    U8                  priv;   /**> = 0 unprivileged, =1 privileged            */      
     U32                 u_sp;               /**> current user stack pointer         */
     U32                 u_stack_hi;         /**> user stack base addr. (high addr.) */
     U16                 k_stack_size;       /**> kernel stack size in bytes         */
     U16                 u_stack_size;       /**> user stack size in bytes           */
     task_t              tid;                /**> task ID                            */
-    U8                  prio;               /**> execution priority                 */
-    U8                  state;              /**> task state                         */
-    U8                  priv;               /**> = 0 unprivileged, =1 privileged    */
     struct timeval_rt   tv_cpu;             /**> task execution cpu time            */
     struct timeval_rt   tv_wall;            /**> task execution wall clock time     */
 
