@@ -68,6 +68,8 @@ U32 g_k_stacks[MAX_TASKS][KERN_STACK_SIZE >> 2] __attribute__((aligned(8)));
 //process stack for tasks in SYS mode
 U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
 
+extern TCB *gp_current_task;
+
 /*
  *===========================================================================
  *                            FUNCTIONS
@@ -106,18 +108,18 @@ int k_mem_init(void) {
 #ifdef DEBUG_0
     printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
     printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
-    //printf("diff: %d\r\n", 0xBFFFFFFF - end_addr);
+    //printf("diff: %d\r\n", RAM_END - end_addr);
     //printf("size: %d\r\n", sizeof(node_t));
 #endif /* DEBUG_0 */
     // sanity check (first have to check if free space is zero
-    if (0xBFFFFFFF - end_addr <= 0) {
+    if (RAM_END - end_addr <= 0) {
         return RTX_ERR;
     }
     // the head of the linked list should point to the end_addr
     // the size of the head of the linked list will be the entire free memory since on init there will only be one large chunk
     // the linked list will be of a single node until we start allocating and splitting the chunk so the next node will be NULL
     struct node_t* head = (struct node_t*) end_addr;
-    head -> size = (0xBFFFFFFF - end_addr) - sizeof(struct node_t);
+    head -> size = (RAM_END - end_addr) - sizeof(struct node_t);
     head -> next = NULL;
     head -> prev = NULL;
     head -> allocated = false;
@@ -170,7 +172,10 @@ void* k_mem_alloc(size_t size) {
     p-> padding = padding;
     p-> owner_id = gp_current_task-> tid;
     // increment the pointer such that the return value will be pointing directly to the memory region instead of the header of the node
-    return ++p;
+    struct node_t *ret = ++p; 
+    // now have the pointer that points to the user stack, so I can set my tcb->u_sp
+    gp_current_task->u_sp = (U32)&ret; 
+    return ret;
 }
 
 int k_mem_dealloc(void *ptr) {
@@ -195,6 +200,9 @@ int k_mem_dealloc(void *ptr) {
     }
     // "free" the dynamic memory
     p-> allocated = false;
+
+    // set the user stack pointer to null for the current tcb 
+    gp_current_task->u_sp = NULL; 
 
     // check if memory region is adjacent to the other free memory regions
     // can do this using our doubly linked list

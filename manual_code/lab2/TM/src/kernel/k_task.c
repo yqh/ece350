@@ -133,8 +133,11 @@ struct Queue {
   TCB *rear;
 };
 
-struct Queue *ready_queue; 
+struct Queue *ready_queue = (struct Queue*)k_mem_alloc(sizeof(struct Queue)); 
 
+// function to add a t_block to the queue 
+// follows strict priority ordering and first come first serve
+// (newer tasks will be placed behind older tasks of the same priority)
 void queue_add(TCB* t_block) {
   // start at the head of the ready queue; 
   TCB* t_comp = ready_queue-> front;
@@ -278,7 +281,6 @@ int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
       g_tcbs[i].state = DORMANT;
     }
 
-    k_mem_init();
     return RTX_OK;
 }
 /**************************************************************************//**
@@ -321,6 +323,9 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
     ///////sp = g_k_stacks[tid] + (KERN_STACK_SIZE >> 2) ;
     sp = k_alloc_k_stack(tid);
 
+    // store the stack pointer in the k_sp 
+    p_tcb->k_sp = (U32)sp; 
+
     // 8B stack alignment adjustment
     if ((U32)sp & 0x04) {   // if sp not 8B aligned, then it must be 4B aligned
         sp--;               // adjust it to 8B aligned
@@ -351,7 +356,8 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         //*** allocate user stack from the user space, not implemented yet ***//
         //********************************************************************//
 
-        *(--sp) = (U32) p_tcb->u_sp;
+        *(--sp) = (U32) k_alloc_p_stack(tid);
+        p_tcb->u_sp = (U32)sp; 
 
 
         // uR12, uR11, ..., uR0
@@ -359,7 +365,6 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
             *(--sp) = 0x0;
         }
     }
-
 
     /*---------------------------------------------------------------
      *  Step3: create task kernel initial context on kernel stack
@@ -564,13 +569,28 @@ void k_tsk_exit(void)
 #endif /* DEBUG_0 */
     //Check if current task is not NULL, and not the null task, and is RUNNING
     if (gp_current_task != NULL && gp_current_task->tid != TID_NULL && gp_current_task->state == RUNNING) {
-        gp_current_task->state = DORMANT;
-        gp_current_task->k_sp = NULL;
-        k_mem_dealloc(gp_current_task->u_sp); //deallote user stack memory, assuming kernel stack memory will be overwritten by the next task
-        gp_current_task->u_sp = NULL;
-        g_num_active_tasks--;
-        k_tsk_run_new();
-    return;
+      // set the current task to null
+      gp_current_task->state = DORMANT;
+      // reduce the number of active tasks      
+      g_num_active_tasks--;
+      // actually should run a modified version of k_tsk_run_new() because k_tsk_run_new() will set this task to ready instead of dormant
+
+      // modified k_tsk_run_new()
+      // grab the next priority task in the ready queue 
+      // initially the front of the queue is the current task that we just set to dormant so the ready queue should remove that from the queue and return the next in line
+      TCB *p_tcb_old = gp_current_task;
+      gp_current_task = scheduler();
+      if (gp_current_task == NULL) {
+        printf("SCHEDULER ERROR"); // should not get this, should at the very least return the null task
+      }
+      // compare to make sure the next task in the queue is not the same task as the current task that we just set dormant
+      if (gp_current_task != p_tcb_old) {
+        // set the state of the newe highest priority task to running
+        gp_current_task-> state = RUNNING; 
+        // old task is already set state to dormant
+        k_tsk_switch(p_tcb_old); 
+      }
+    }   
 }
 
 int k_tsk_set_prio(task_t task_id, U8 prio) 
@@ -623,17 +643,38 @@ int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
     if (task_id < 0 || task_id > MAX_TASKS-1) {
       return RTX_ERR;
     }
+
+    // return error when called on a dormant task
+    if (g_tcbs[(int)task_id]->state == DORMANT) {
+      return RTX_ERR; 
+    }
+
     /* The code fills the buffer with some fake task information. 
        You should fill the buffer with correct information    */
+
+    // note that each unpriviledged user-mode task has a user-space stack and a kernel stack
+    // priviledged kernel task only has kernel stack; 
     buffer->tid = task_id;
-    buffer->prio = 99;
-    buffer->state = MEDIUM;
-    buffer->priv = 0;
-    buffer->ptask = 0x0;
-    buffer->k_sp = 0xBEEFDEAD;
-    buffer->k_stack_size = KERN_STACK_SIZE;
-    buffer->u_sp = 0xDEADBEEF;
-    buffer->u_stack_size = 0x200;
+    buffer->prio = g_tcbs[(int)task_id]->prio;
+    buffer->state = g_tcbs[(int)task_id]->state;
+    buffer->priv = g_tcbs[(int)task_id]->priv;
+    buffer->ptask = g_tcbs[(int)task_id]->ptask;
+    
+    // k_tsk_create_new runs SVC_RESTORE which sotres the user stack pointer on top in R0, on top of the kernel stack
+    if (g_tcbs[(int)task_id]-> priv == 1) {
+      // only has kernel stack 
+      // user stuff can be set to NULL
+      buffer-> u_sp = NULL;
+      buffer-> u_stack_size = NULL; 
+    } else {
+      // has kernel and user stack 
+      // the stack pointer was assigned during the mem_alloc call 
+      buffer-> u_sp = g_tcbs[(int)task_id]->u_sp; 
+      buffer-> u_stack_size = g_tcbs[(int)task_id]->u_stack_size;
+    }
+    // kernel stack info
+    buffer-> k_sp = g_tcbs[(int)task_id]->k_sp; 
+    buffer-> k_stack_size = KERN_STACK_SIZE;
 
     return RTX_OK;     
 }
