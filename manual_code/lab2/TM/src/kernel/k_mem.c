@@ -65,9 +65,6 @@ U32 g_k_stacks[MAX_TASKS][KERN_STACK_SIZE >> 2] __attribute__((aligned(8)));
 //process stack for tasks in SYS mode
 U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
 
-// Global head
-Node* HEAD = NULL;
-
 /*
  *==========================================================================
  *                            STRUCTS
@@ -81,6 +78,8 @@ typedef struct Node {
 	struct Node *next;
 } Node;
 
+// Global head
+Node* HEAD = NULL;
 
 /*
  *===========================================================================
@@ -266,6 +265,28 @@ int k_mem_count_extfrag(size_t size) {
 
 
     return regionCount;
+}
+
+int countNodes(){
+	Node* n = HEAD;
+	int ret = 0;
+	while(n != NULL) {
+		ret += 1;
+		n = n->next;
+	}
+	return ret;
+}
+
+int memLeakCheck(){
+    unsigned int howMuchMem = 0;
+    Node* curNode = HEAD;
+    while(curNode != NULL){
+        howMuchMem += curNode->size + sizeof(Node);
+        curNode = curNode->next;
+    }
+    unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
+    unsigned int totalSize = 0xBFFFFFFF - end_addr;
+    return howMuchMem == totalSize;
 }
 
 /*
