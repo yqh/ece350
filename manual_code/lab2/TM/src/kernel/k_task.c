@@ -424,10 +424,10 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         //********************************************************************//
         //*** allocate user stack from the user space, not implemented yet ***//
         //********************************************************************//
-        *(--sp) = (U32) (k_alloc_p_stack(tid)) + p_taskinfo->u_stack_size;
+        *(--sp) = (U32) k_alloc_p_stack(tid);
 
         // store user stack hi pointer in TCB
-        p_tcb->u_stack_hi = *sp;    // user stack hi grows downwards
+        p_tcb->u_stack_hi = *sp + p_taskinfo->u_stack_size;    // user stack hi grows downwards
         p_tcb->u_stack_size = p_taskinfo->u_stack_size;
 
         // uR12, uR11, ..., uR0
@@ -746,7 +746,7 @@ int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
         buffer->state = g_tcbs[task_id].state;
         buffer->priv = g_tcbs[task_id].priv;
         buffer->ptask = g_tcbs[task_id].ptask;
-        buffer->k_stack_hi = (U32) (&g_k_stacks[task_id + 1]);  // kernel stack hi grows downwards
+        buffer->k_stack_hi = (U32) (&g_k_stacks[task_id]) + KERN_STACK_SIZE;  // kernel stack hi grows downwards
         buffer->k_stack_size = KERN_STACK_SIZE;         
         buffer->u_stack_hi = g_tcbs[task_id].u_stack_hi;
         buffer->u_stack_size = g_tcbs[task_id].u_stack_size;
@@ -755,7 +755,7 @@ int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
         if (task_id == gp_current_task->tid){
             int regVal = __current_sp();         // store value of SP register in regVal
             buffer->k_sp = regVal;
-        } else {
+        }else{
             buffer->k_sp = *(g_tcbs[task_id].msp);
         }
 
