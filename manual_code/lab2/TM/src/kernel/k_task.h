@@ -81,5 +81,6 @@ int  k_tsk_get          (task_t task_id, RTX_TASK_INFO *buffer);
 int  k_tsk_create_rt    (task_t *tid, TASK_RT *task, RTX_MSG_HDR *msg_hdr, U32 num_msgs);
 void k_tsk_done_rt      (void);
 void k_tsk_suspend      (struct timeval_rt *tv);
+void queue_add			(TCB* t_block);
 
 #endif // ! K_TASK_H_
