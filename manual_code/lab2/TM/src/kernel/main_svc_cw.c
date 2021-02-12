@@ -89,13 +89,14 @@ int main()
     	printf("RTX INIT FAILED\r\n");
     	return RTX_ERR;
     }
-
+    printf("mode = 0x%x\r\n", mode);
     // start the RTX and built-in tasks
     if (mode == MODE_SVC) {
         gp_current_task = NULL;
         k_rtx_init(task_info, 2);
     }
-
+    printf("mode = 0x%x\r\n", mode);
+    task1();
     task_null();
 
     // We should never reach here!!!

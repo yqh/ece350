@@ -68,7 +68,7 @@ typedef struct tcb {
     void                (*ptask)();         /**> task entry address                 */
     U32                 k_sp;               /**> current kernel stack pointer       */
     U32                 k_stack_hi;         /**> kernel stack base (high addr.)     */
-    U32*                 u_sp;               /**> current user stack pointer         */
+    U32                 u_sp;               /**> current user stack pointer         */
     U32                 u_stack_hi;         /**> user stack base addr. (high addr.) */
     U16                 k_stack_size;       /**> kernel stack size in bytes         */
     U16                 u_stack_size;       /**> user stack size in bytes           */
@@ -76,6 +76,13 @@ typedef struct tcb {
     U8                  prio;               /**> execution priority                 */
     U8                  state;              /**> task state                         */
     U8                  priv;               /**> = 0 unprivileged, =1 privileged    */
+    struct timeval_rt   tv_cpu;             /**> task execution cpu time            */
+    struct timeval_rt   tv_wall;            /**> task execution wall clock time     */
+
+    /* The following only applies to real-time tasks */
+    struct timeval_rt   p_n;                /**> period in seconds and microseconds */
+    RTX_MSG_HDR        *msg_hdr;            /**> real-time task message header      */
+    U32                 num_msgs;           /**> real-time task mailbox capacity    */
 } TCB;
 
 /*

@@ -48,11 +48,24 @@ void task1(void)
 {
     task_t tid;
     RTX_TASK_INFO task_info;
-    
+    printf("---Starting Point of Test1===\r\n");
     SER_PutStr ("task1: entering \n\r");
     /* do something */
     tsk_create(&tid, &task2, LOW, 0x200);  /*create a user task */
+    printf("The TID: %d\r\n", tid);
+    printf("Mem size: %d\r\n", k_mem_count_extfrag(1070576251));
+    printf("%d\n", k_mem_count_extfrag(1070500000));
     tsk_get(tid, &task_info);
+
+    printf("Priority: %d\r\n", task_info.prio);
+    printf("State: %d\r\n", task_info.state);
+    printf("Privilege: %d\r\n", task_info.priv);
+    printf("P_Task 0x%x\r\n", task_info.ptask);
+    printf("Kernel SP 0x%x\r\n", task_info.k_sp);
+    printf("Kernel Stack Size %d\r\n", task_info.k_stack_size);
+    printf("User SP 0x%x\r\n", task_info.u_sp);
+    printf("User Stack Size: 0x%x\r\n", task_info.u_stack_size);
+
     tsk_set_prio(tid, LOWEST);
     /* terminating */
     tsk_exit();
