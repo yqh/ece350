@@ -46,6 +46,7 @@ void task1(void);
 void task2(void);
 
 void dumdum(void);
+void dumdum2(void);
 
 void dataOwner(void);
 void dataThief(void);

@@ -84,6 +84,20 @@ void dumdum(void){
     tsk_exit();
 }
 
+void dumdum2(void){
+    SER_PutStr ("I have brain damage\n\r");
+    int a = 2;
+    int b = a + 8;
+    int c = powerOf(a, b);
+    int d = 4 + c;
+    int e = powerOf(a, d);
+
+    RTX_TASK_INFO task_info;
+
+    tsk_get(2, &task_info);
+    tsk_exit();
+}
+
 void dataOwner(void){
 	SER_PutStr(":diamond: :hand:\n\r");
 	gmeStonks = mem_alloc(420);

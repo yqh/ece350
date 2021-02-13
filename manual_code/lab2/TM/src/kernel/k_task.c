@@ -546,6 +546,8 @@ int k_tsk_run_new(void)
  *****************************************************************************/
 int k_tsk_yield(void)
 {
+	g_task_count++;
+	gp_current_task->task_count = g_task_count;
     return k_tsk_run_new();
 }
 
@@ -753,15 +755,15 @@ int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
         buffer->k_stack_size = KERN_STACK_SIZE;         
         buffer->u_stack_hi = g_tcbs[task_id].u_stack_hi;
         buffer->u_stack_size = g_tcbs[task_id].u_stack_size;
-        buffer->u_sp = *(g_tcbs[task_id].msp - 14);     // 56 bytes down from msp (msp, R0... R12, sp)
+
+        buffer->u_sp = * (U32*)((U32) g_tcbs[task_id].msp + 108);
 
         if (task_id == gp_current_task->tid){
             int regVal = __current_sp();         // store value of SP register in regVal
             buffer->k_sp = regVal;
         }else{
-            buffer->k_sp = *(g_tcbs[task_id].msp);
+            buffer->k_sp = (U32) g_tcbs[task_id].msp;
         }
-
         return RTX_OK;
 
     }else{

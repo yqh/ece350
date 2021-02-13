@@ -80,6 +80,18 @@ void printResult(int passFail){
     }
 }
 
+void priv_check_usp(void){
+
+    RTX_TASK_INFO task_info;
+    task_t tid;
+
+    // k_tsk_get(gp_current_task->tid, &task_info);
+    k_tsk_create(&tid, &dumdum, HIGH, 0x400);
+    k_tsk_yield();
+    //k_tsk_get(gp_current_task->tid, &task_info);
+    k_tsk_exit();
+}
+
 void priv_task_check_sp(void){
     task_t tid1;
     RTX_TASK_INFO task_info1;
