@@ -64,6 +64,7 @@
 char s_buffer[255];
 
 U32 * gmeStonks;
+U32 * bitCoinWallet;
 
 int powerOf(int a, int b){
 	int result = 1;
@@ -86,15 +87,27 @@ void dumdum(void){
 void dataOwner(void){
 	SER_PutStr(":diamond: :hand:\n\r");
 	gmeStonks = mem_alloc(420);
-	tsk_yield();
+	if(tsk_set_prio(1, HIGH) == RTX_ERR){
+		SER_PutStr("Could not set prio of kernel task\n\r");
+	}
+    int a = 2;
+    int b = a + 8;
+    int c = powerOf(a, b);
+
 	tsk_exit();
 }
 
 void dataThief(void){
 	SER_PutStr(":brrrrrrrr:\n\r");
+	bitCoinWallet = mem_alloc(0x400);
+    int a = 2;
+    int b = a + 8;
+    int c = powerOf(a, b);
 	if(mem_dealloc(gmeStonks) == RTX_ERR){
 		SER_PutStr("Test Passed\n\r");
 	}
+	mem_dealloc(bitCoinWallet);
+	tsk_set_prio(3, MEDIUM);
 	tsk_exit();
 }
 

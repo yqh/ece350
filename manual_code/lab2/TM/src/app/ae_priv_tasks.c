@@ -97,6 +97,24 @@ void priv_task_check_sp(void){
     while(1);
 }
 
+void testDataOwnership(void){
+    task_t owner;
+    task_t thief;
+
+    SER_PutStr ("Start of testDataOwnership\n\r");
+
+	k_tsk_create(&owner, &dataOwner, HIGH, 0x200);
+	k_tsk_create(&thief, &dataThief, HIGH, 0x200);
+
+	k_tsk_set_prio(1, MEDIUM);
+
+	k_tsk_yield();
+
+	SER_PutStr ("Melvin Capital Bad\n\r");
+
+	while(1);
+}
+
 void priv_task_entry(void){
 
     RTX_TASK_INFO task_info;
@@ -219,7 +237,15 @@ void priv_task_entry(void){
 
     result = 1;
 
-    SER_PutStr (">>>>>>>>>>>>>>>>>>>>> 1. tsk_create Stress Function Test:\n\r");
+    SER_PutStr (">>>>>>>>>>>>>>>>>>>>> 6. tsk_create Stress Test:\n\r");
+
+    // Testing max_tasks
+    for(int i = 3; i < MAX_TASKS; i++){             // 0 is Null Task, 1 is this kernel task
+        k_tsk_create(&tid, &dumdum, LOW, 0x200);
+    }
+
+    SER_PutStr ("Creating Another Task Fails:\n\r");
+    printResult(k_tsk_create(&tid, &dumdum, LOW, 0x400) == RTX_ERR);
 
     // Testing max_tasks
     for(int i = 3; i < MAX_TASKS; i++){             // 0 is Null Task, 1 is this kernel task
@@ -237,6 +263,8 @@ void priv_task_entry(void){
 
     k_tsk_set_prio(gp_current_task->tid, LOWEST);
     k_tsk_yield();
+
+    SER_PutStr (">>>>>>>>>>>>>>>>>>>>> 7. TCB Reuse Test:\n\r");
 
     // Testing reusability
     k_tsk_create(&tid, &dumdum, LOW, 0x400);
