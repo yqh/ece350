@@ -105,6 +105,7 @@ void priv_task_check_sp(void){
     k_tsk_get(tid1, &task_info1);
     k_tsk_yield();
     k_tsk_get(tid1, &task_info2);
+    k_tsk_get(gp_current_task->tid, &task_info2);
 	
     while(1);
 }
