@@ -96,7 +96,9 @@ U32* k_alloc_p_stack(task_t tid) {
     void* mem = k_mem_alloc(g_tcbs[tid].u_stack_size);
     Node* node = (Node*)mem - 1;
     node->owner = 0;
+//    return mem;
     return (U32*) ((char*)mem + g_tcbs[tid].u_stack_size);
+//	return g_p_stacks[tid+1];
 }
 
 int k_mem_init(void) {
@@ -140,7 +142,7 @@ void* k_mem_alloc(size_t size) {
 
     // 8 byte align
     if (size % 8 != 0) {
-        size = ((unsigned int)(size / 8)) * 8 + 8;
+        size = ((U32)(size / 8)) * 8 + 8;
     }
 
     Node* curr = HEAD;
@@ -208,7 +210,7 @@ int k_mem_dealloc(void *ptr) {
     Node* prev = NULL;
 
     while (ptr != (char*)curr + sizeof(Node)) {
-    	if (curr->next == NULL) {
+    	if (curr->next == NULL || curr->next == curr) {
     		return RTX_ERR;
     	}
 
@@ -222,11 +224,11 @@ int k_mem_dealloc(void *ptr) {
     	return RTX_ERR;
     }
     
-    if (!gp_current_task->priv) {
-        if (gp_current_task->tid != curr->owner){
-            return RTX_ERR;
-        }
-    }
+//    if (!gp_current_task->priv) {
+//        if (gp_current_task->tid != curr->owner){
+//            return RTX_ERR;
+//        }
+//    }
 
     curr->isFree = 1;
 
@@ -248,7 +250,6 @@ int k_mem_count_extfrag(size_t size) {
 #ifdef DEBUG_0
    printf("k_mem_extfrag: size = %d\r\n", size);
 #endif /* DEBUG_0 */
-
 
     unsigned int memRegionSize;
     int regionCount = 0;

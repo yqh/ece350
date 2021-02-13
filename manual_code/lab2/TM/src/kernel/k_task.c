@@ -424,11 +424,11 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         //********************************************************************//
         //*** allocate user stack from the user space, not implemented yet ***//
         //********************************************************************//
+        p_tcb->u_stack_size = p_taskinfo->u_stack_size;
         *(--sp) = (U32) k_alloc_p_stack(tid);
 
         // store user stack hi pointer in TCB
         p_tcb->u_stack_hi = *sp;    // user stack hi grows downwards
-        p_tcb->u_stack_size = p_taskinfo->u_stack_size;
 
         // uR12, uR11, ..., uR0
         for ( int j = 0; j < 13; j++ ) {
@@ -449,6 +449,8 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
     } else {
         // kernel thread LR: return to the entry point of the task
         *(--sp) = (U32) (p_taskinfo->ptask);
+        p_tcb->u_stack_hi = p_taskinfo->u_stack_size;    // user stack hi grows downwards
+        p_tcb->u_stack_size = p_taskinfo->u_stack_size;
     }
 
     // kernel stack R0 - R12, 13 registers
@@ -523,8 +525,10 @@ int k_tsk_run_new(void)
 
     // at this point, gp_current_task != NULL and p_tcb_old != NULL
     if (gp_current_task != p_tcb_old) {
-        gp_current_task->state = RUNNING;   // change state of the to-be-switched-in  tcb
-        p_tcb_old->state = READY;           // change state of the to-be-switched-out tcb
+    	gp_current_task->state = RUNNING;   // change state of the to-be-switched-in  tcb
+    	if(p_tcb_old->state != DORMANT){
+            p_tcb_old->state = READY;       // change state of the to-be-switched-out tcb
+    	}
         k_tsk_switch(p_tcb_old);            // switch stacks
     }
 
@@ -651,8 +655,9 @@ void k_tsk_exit(void)
     TCB* p_tcb_old = gp_current_task;
     gp_current_task = scheduler();
 
-    p_tcb_old->state = DORMANT;
-    k_mem_dealloc((void*)p_tcb_old->u_stack_hi);
+    if(p_tcb_old->priv == 0){
+    	k_mem_dealloc((void *) ((U32)p_tcb_old->u_stack_hi - p_tcb_old->u_stack_size));
+    }
 
     g_num_active_tasks--;
     remove_id(heap, p_tcb_old->tid);
@@ -746,11 +751,11 @@ int k_tsk_get(task_t task_id, RTX_TASK_INFO *buffer)
         buffer->state = g_tcbs[task_id].state;
         buffer->priv = g_tcbs[task_id].priv;
         buffer->ptask = g_tcbs[task_id].ptask;
-        buffer->k_stack_hi = (U32) (&g_k_stacks[task_id]) + KERN_STACK_SIZE;  // kernel stack hi grows downwards
+        buffer->k_stack_hi = (U32) (&g_k_stacks[task_id+1]);  // kernel stack hi grows downwards
         buffer->k_stack_size = KERN_STACK_SIZE;         
         buffer->u_stack_hi = g_tcbs[task_id].u_stack_hi;
         buffer->u_stack_size = g_tcbs[task_id].u_stack_size;
-        buffer->u_sp = *(g_tcbs[task_id].msp - 56);     // 56 bytes down from msp (msp, R0... R12, sp)
+        buffer->u_sp = *(g_tcbs[task_id].msp - 14);     // 56 bytes down from msp (msp, R0... R12, sp)
 
         if (task_id == gp_current_task->tid){
             int regVal = __current_sp();         // store value of SP register in regVal

@@ -72,11 +72,11 @@ void printResult(int passFail){
     numtests++;
     if(passFail == 1){
         SER_PutStr ("--- Success ---\n\r");
-//        result << 1;
-//        result += 1;
+        result << 1;
+        result += 1;
     } else {
         SER_PutStr ("--- !!! FAILURE !!! ---\n\r");
-//        result << 1;
+        result << 1;
     }
 }
 

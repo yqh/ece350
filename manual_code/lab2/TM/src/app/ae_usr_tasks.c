@@ -63,8 +63,21 @@
 
 char s_buffer[255];
 
+int powerOf(int a, int b){
+	int result = 1;
+	for(int i = 0; i < b; i++){
+		result = result * a;
+	}
+	return result;
+}
+
 void dumdum(void){
     SER_PutStr ("I have brain damage\n\r");
+//    int a = 2;
+//    int b = a + 8;
+//    int c = powerOf(a, b);
+//    int d = 4 + c;
+//    int e = powerOf(a, d);
     tsk_exit();
 }
 
