@@ -43,6 +43,7 @@
 #include "k_HAL_CA.h"
 #include "interrupt.h"
 #include "Serial.h"
+#include "k_task.h"
 
 #pragma push
 #pragma arm
