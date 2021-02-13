@@ -717,10 +717,8 @@ int k_tsk_set_prio(task_t task_id, U8 prio)
         }
 
         reset_priority(heap, task_id, prio);
-    // Need to figure out what "can be pre-empted" means
-    // Should calling set_prio switch threads?
-        // _tsk_run_new(); // Need to figure out what "can be pre-empted" means
-        // Should calling set_prio switch threads?
+
+        k_tsk_yield();
 
         return RTX_OK;
     }else{
