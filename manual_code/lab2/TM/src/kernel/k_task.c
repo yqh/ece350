@@ -128,7 +128,6 @@ The memory map of the OS image may look like the following:
 
 struct Queue {
   TCB *front;
-  TCB *rear;
 };
 
 struct Queue *ready_queue;
@@ -258,30 +257,32 @@ int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
     // this is the first task, so obviously this will be the highest priority task
     // only task in the ready queue, so there will be no tasks after it
     p_tcb-> next = NULL;
-    ready_queue-> front = ready_queue-> rear = p_tcb;
+    ready_queue-> front p_tcb;
+
+    // set the rest of the tcbs to be dormant
+    for (int i = 1; i < MAX_TASKS; i++) {
+      TCB *p_tcb_d = &g_tcbs[i]; 
+      p_tcb_d-> state = DORMANT;
+    }
 
     // create the rest of the tasks
     p_taskinfo = task_info;
     for ( int i = 0; i < num_tasks; i++ ) {
-        TCB *p_tcb = &g_tcbs[i+1];
+        TCB *p_tcb_new = &g_tcbs[i+1];
         // set the priority of each tcb to be medium
-        p_tcb-> prio = MEDIUM;
-        p_tcb-> next = NULL;
-        if (k_tsk_create_new(p_taskinfo, p_tcb, i+1) == RTX_OK) {
+        p_tcb_new-> prio = MEDIUM;
+        p_tcb_new-> next = NULL;
+        p_tcb_new-> priv = 1;
+        if (k_tsk_create_new(p_taskinfo, p_tcb_new, i+1) == RTX_OK) {
           // update the schedule ready queue by adding the new task in the appropriate order
           // the front of the queue is the highest prio task, which should be the current task
           // add the task to the end of the queue
-          queue_add(p_tcb);
+          queue_add(p_tcb_new);
           g_num_active_tasks++;
           // run scheduler and may have to premptive run new task
           k_tsk_run_new();
         }
         p_taskinfo++;
-    }
-
-    // set the rest of the tcbs to be dormant
-    for (int i = num_tasks; i < MAX_TASKS; i++) {
-      g_tcbs[i].state = DORMANT;
     }
 
     return RTX_OK;
@@ -436,7 +437,7 @@ int k_tsk_run_new(void)
     }
 
     p_tcb_old = gp_current_task;
-    gp_current_task = scheduler();
+    gp_current_task = ready_queue-> front;
 
     if ( gp_current_task == NULL  ) {
         gp_current_task = p_tcb_old;        // revert back to the old task
@@ -521,7 +522,8 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
     RTX_TASK_INFO *p_taskinfo;
     U8 tid = 0;
     for (int i = 1; i < MAX_TASKS; i++){
-      if (g_tcbs[i].state != READY && g_tcbs[i].state != RUNNING && g_tcbs[i].state != BLK_MEM && g_tcbs[i].state != BLK_MSG && g_tcbs[i].state != SUSPENDED){
+      TCB *p_tcb_d = &g_tcbs[i]; 
+      if (p_tcb_d->state == DORMANT){
         tid = i;
         break;
       }

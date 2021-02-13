@@ -93,9 +93,7 @@ typedef struct {
 
 struct node_t {
     int size;
-    bool allocated;
     struct node_t *next;
-    struct node_t *prev;
     int padding;
     task_t owner_id;
 }* node_head = NULL;
@@ -122,10 +120,8 @@ int k_mem_init(void) {
     head -> size = (RAM_END - end_addr) - sizeof(struct node_t);
     printf("Size of the initial user stack allocation: %d\r\n", head->size);
     head -> next = NULL;
-    head -> prev = NULL;
-    head -> allocated = false;
     head -> padding = 0;
-    head -> owner_id = TID_NULL;
+    head -> owner_id = 0;
     node_head = head;
     return RTX_OK;
 }
@@ -144,7 +140,7 @@ void* k_mem_alloc(size_t size) {
     struct node_t *p = node_head;
     while(p != NULL) {
         // printf("addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p, p->size, p->allocated ? "true" : "false");
-        if (size + sizeof(struct node_t) <= p->size && !p->allocated) {
+        if (size + sizeof(struct node_t) <= p->size && p-> owner_id == 0) {
             break;
         }
         p = p->next;
@@ -162,14 +158,11 @@ void* k_mem_alloc(size_t size) {
     struct node_t *n = (struct node_t*) newAddr;
     n-> size = p-> size - size - sizeof(struct node_t);
     n-> next = p-> next;
-    n-> allocated = false;
-    n-> prev = p;
     n-> padding = 0;
-    n-> owner_id = p-> owner_id;
+    n-> owner_id = 0;
 
     p-> size = size;
     p-> next = n;
-    p-> allocated = true;
     p-> padding = padding;
     p-> owner_id = gp_current_task-> tid;
     // increment the pointer such that the return value will be pointing directly to the memory region instead of the header of the node
@@ -191,7 +184,7 @@ int k_mem_dealloc(void *ptr) {
     // check if the ptr is actually pointing to an allocated memory region
     // decrement the point so now we are pointing to the memory address of the header of the node instead of the memory region
     struct node_t *p = (struct node_t*)ptr-1;
-    if (!p->allocated) {
+    if (p-> owner_id == 0) {
         // if allocated is false that means that ptr was not returned by a previous mem_alloc() call or has already been previously called by mem_dealloc()
         return RTX_ERR;
     }
@@ -200,7 +193,7 @@ int k_mem_dealloc(void *ptr) {
         return RTX_ERR;
     }
     // "free" the dynamic memory
-    p-> allocated = false;
+    p-> owner_id = 0;
 
     // set the user stack pointer to null for the current tcb
     gp_current_task->u_sp = NULL;
@@ -209,30 +202,17 @@ int k_mem_dealloc(void *ptr) {
     // can do this using our doubly linked list
     // first check the next node to see if it has been allocated
     // printf("next chunk addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p-> next, p-> next->size, p-> next->allocated ? "true" : "false");
-    if (p-> next != NULL && !p-> next-> allocated) {
-        // if next ptr is pointing at a free memory region, I can merge the two regions
-        // essentially deleting the next node and merging it with p node
-        // have to account for padding
-        // can simply subtract memory addresses to get the byte difference and set that as the size
-        p-> size += p-> next-> size + sizeof(struct node_t) + p-> padding + p-> next-> padding;
-        p-> padding = 0;
-        // p-> next becomes what the next node was pointing at
-        p-> next = p-> next-> next;
-        // also have to update the next node's previous node to point back to p
-        p-> next-> prev = p;
-    }
-    // then check the previous node to see if it has been allocated
-    // printf("prev chunk addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p-> prev, p-> prev->size, p-> prev->allocated ? "true" : "false");
-    if (p-> prev != NULL && !p-> prev-> allocated) {
-        // if the prev ptr is pointing to a free memory region, then I can merge the two regions
-        // will be deleting the ptr node and merging it with its previous
-        // have to account for padding
-        //struct node_t * pr = p-> prev;
-        p-> prev-> size += p-> size + sizeof(struct node_t) + p-> padding + p-> prev-> padding;
-        p-> prev-> padding = 0;
-        p-> prev-> next = p-> next;
-        // since we merged this node, we have to also update the following node as well
-        p-> next-> prev = p-> prev;
+    // parse the linked list for fragmentation
+    struct node_t *p_parse = node_head;
+    while(p_parse != NULL) {
+        if(p_parse -> owner_id == 0 && p_parse-> next != NULL && p_parse->next-> owner_id == 0)
+        {
+            p_parse-> size += p_parse-> next-> size + sizeof(struct node_t) + p_parse-> padding + p_parse-> next-> padding;
+            p_parse-> padding = 0;
+            // p-> next becomes what the next node was pointing at
+            p_parse-> next = p_parse-> next-> next;
+        }
+        p_parse = p_parse->next;
     }
     return RTX_OK;
 }
@@ -249,7 +229,7 @@ int k_mem_count_extfrag(size_t size) {
     while(p != NULL) {
         // check if chunk is unallocated and its size is less than the threshold
         // printf("addr: 0x%x chunk size: %d allocated: %s\r\n", (U32)p, p->size, p->allocated ? "true" : "false");
-        if ((p->size + sizeof(struct node_t)) < size && !p-> allocated) {
+        if ((p->size + sizeof(struct node_t)) < size && p-> owner_id == 0) {
             // update the counter
             ++counter;
         }
