@@ -224,11 +224,11 @@ int k_mem_dealloc(void *ptr) {
     	return RTX_ERR;
     }
     
-//    if (!gp_current_task->priv) {
-//        if (gp_current_task->tid != curr->owner){
-//            return RTX_ERR;
-//        }
-//    }
+   if (!gp_current_task->priv) {
+       if (gp_current_task->tid != curr->owner){
+           return RTX_ERR;
+       }
+   }
 
     curr->isFree = 1;
 

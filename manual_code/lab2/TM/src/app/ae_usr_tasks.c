@@ -63,6 +63,8 @@
 
 char s_buffer[255];
 
+U32 * gmeStonks;
+
 int powerOf(int a, int b){
 	int result = 1;
 	for(int i = 0; i < b; i++){
@@ -73,12 +75,27 @@ int powerOf(int a, int b){
 
 void dumdum(void){
     SER_PutStr ("I have brain damage\n\r");
-//    int a = 2;
-//    int b = a + 8;
-//    int c = powerOf(a, b);
-//    int d = 4 + c;
-//    int e = powerOf(a, d);
+    int a = 2;
+    int b = a + 8;
+    int c = powerOf(a, b);
+    int d = 4 + c;
+    int e = powerOf(a, d);
     tsk_exit();
+}
+
+void dataOwner(void){
+	SER_PutStr(":diamond: :hand:\n\r");
+	gmeStonks = mem_alloc(420);
+	tsk_yield();
+	tsk_exit();
+}
+
+void dataThief(void){
+	SER_PutStr(":brrrrrrrr:\n\r");
+	if(mem_dealloc(gmeStonks) == RTX_ERR){
+		SER_PutStr("Test Passed\n\r");
+	}
+	tsk_exit();
 }
 
 void checkSP(void){
