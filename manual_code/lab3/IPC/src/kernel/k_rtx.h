@@ -44,7 +44,7 @@
 #include "k_rtx_init.h"
 #include "k_task.h"
 #include "k_mem.h"
-//#include "k_msg.h" // lab3
+#include "k_msg.h" 
 #endif /* ! K_RTX_H_ */
 /*
  *===========================================================================
