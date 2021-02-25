@@ -112,6 +112,7 @@
 
 /* Mailbox Sizes */
 #define MIN_MBX_SIZE        1       /* minimum mailbox size in bytes */
+#define KCD_MBX_SIZE        0x200   /* task proc space stack size in bytes */
 
 /* Time Macros */
 #define MIN_RTX_QTM         100     /* minimum time granularity of RTX in microseconds */

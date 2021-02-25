@@ -40,6 +40,8 @@
 #ifndef USR_TASK_H_
 #define USR_TASK_H_
 
+void kcd_task(void);
+
 void task1(void);
 void task2(void);
 
