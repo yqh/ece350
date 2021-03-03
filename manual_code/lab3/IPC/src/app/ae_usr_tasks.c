@@ -70,18 +70,18 @@ void task2(void)
     int i = 0;
     int j = 0;
     for (i = 1;;i++) {
-            char out_char = 'a' + i%10;
-            for (j = 0; j < 5; j++ ) {
-                SER_PutChar(0,out_char);
-            }
-            SER_PutStr(0,"\n\r");
-
-            for ( x = 0; x < 5000000; x++); // some artifical delay
+//            char out_char = 'a' + i%10;
+//            for (j = 0; j < 5; j++ ) {
+//                SER_PutChar(0,out_char);
+//            }
+//            SER_PutStr(0,"\n\r");
+//
+//            for ( x = 0; x < 5000000; x++); // some artifical delay
             if ( i%6 == 0 ) {
-                SER_PutStr(0,"usr_task2 before yielding cpu.\n\r");
+//                SER_PutStr(0,"usr_task2 before yielding cpu.\n\r");
                 ret_val = tsk_yield();
-                SER_PutStr(0,"usr_task2 after yielding cpu.\n\r");
-                printf("usr_task2: ret_val=%d\n\r", ret_val);
+//                SER_PutStr(0,"usr_task2 after yielding cpu.\n\r");
+//                printf("usr_task2: ret_val=%d\n\r", ret_val);
             }
         }
     /* terminating */
