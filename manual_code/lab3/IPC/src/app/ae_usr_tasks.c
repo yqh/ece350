@@ -46,16 +46,7 @@
  */
 void task1(void)
 {
-    task_t tid;
-    RTX_TASK_INFO task_info;
-    
-    SER_PutStr (0,"task1: entering \n\r");
-    /* do something */
-    tsk_create(&tid, &task2, LOW, 0x200);  /*create a user task */
-    tsk_get(tid, &task_info);
-    tsk_set_prio(tid, LOWEST);
-    /* terminating */
-    tsk_exit();
+	tsk_exit();
 }
 
 /**
@@ -63,29 +54,32 @@ void task1(void)
  */
 void task2(void)
 {
-    SER_PutStr (0,"task2: entering \n\r");
-    /* do something */
-    long int x = 0;
-    int ret_val = 10;
-    int i = 0;
-    int j = 0;
-    for (i = 1;;i++) {
-//            char out_char = 'a' + i%10;
-//            for (j = 0; j < 5; j++ ) {
-//                SER_PutChar(0,out_char);
-//            }
-//            SER_PutStr(0,"\n\r");
-//
-//            for ( x = 0; x < 5000000; x++); // some artifical delay
-            if ( i%6 == 0 ) {
-//                SER_PutStr(0,"usr_task2 before yielding cpu.\n\r");
-                ret_val = tsk_yield();
-//                SER_PutStr(0,"usr_task2 after yielding cpu.\n\r");
-//                printf("usr_task2: ret_val=%d\n\r", ret_val);
-            }
-        }
-    /* terminating */
-    //tsk_exit();
+	mbx_create(KCD_MBX_SIZE);
+	while(1) {
+		void* msg = mem_alloc(200);
+		RTX_MSG_HDR* hdr = msg;
+		hdr->length = sizeof(RTX_MSG_HDR) + 13;
+		char hello_world[13] = "hello world\n\r";
+
+		for (int i = 0; i < 13; i++) {
+			*((char*)msg + sizeof(RTX_MSG_HDR) + i) = hello_world[i];
+		}
+
+		send_msg(TID_KCD, msg);
+		mem_dealloc(msg);
+	}
+}
+
+void kcd_task(void)
+{
+	mbx_create(KCD_MBX_SIZE);
+	while(1) {
+		task_t sender_tid;
+		char* recv_buf = mem_alloc(KCD_MBX_SIZE);
+		int ret_val = recv_msg(&sender_tid, recv_buf, KCD_MBX_SIZE);
+
+		SER_PutStr(0, recv_buf + sizeof(RTX_MSG_HDR));
+	}
 }
 /*
  *===========================================================================

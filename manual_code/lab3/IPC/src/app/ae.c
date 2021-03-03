@@ -110,10 +110,16 @@ void ae_set_task_info(RTX_TASK_INFO *tasks, int num_tasks) {
         tasks[i].prio = HIGH;
         tasks[i].priv = 1;
     }
-    tasks[0].ptask = &priv_task1;
-    tasks[1].ptask = &priv_task2;
-    tasks[2].ptask = &task2;
-    tasks[2].priv = 0;
+    tasks[0].ptask = &priv_task2;
+    tasks[0].prio = LOWEST;
+
+    RTX_TASK_INFO kcd_info;
+    kcd_info.u_stack_size = KCD_MBX_SIZE;
+    kcd_info.prio = HIGH;
+    kcd_info.ptask = &kcd_task;
+    kcd_info.priv = 0;
+
+    k_tsk_create_new(&kcd_info, &g_tcbs[TID_KCD], TID_KCD);
     return;
 }
 

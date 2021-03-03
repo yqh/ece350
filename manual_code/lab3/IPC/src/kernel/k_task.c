@@ -292,14 +292,19 @@ TCB *scheduler(void)
 	TCB* max_ready_tcb = &g_tcbs[(U8)tid];
 
 	// current task has higher priority
-	if (gp_current_task->state != DORMANT && current_tcb->prio < max_ready_tcb->prio) {
+	if (gp_current_task->state != DORMANT &&
+		gp_current_task->state != BLK_MSG &&
+		current_tcb->prio < max_ready_tcb->prio) {
 
 		return gp_current_task;
 	}
 
 	gp_current_task = max_ready_tcb;
     extract_max(heap);
-    insert(heap, current_tcb);
+
+    if (current_tcb->state != BLK_MSG) {
+    	insert(heap, current_tcb);
+    }
 
     return gp_current_task;
 
@@ -462,6 +467,7 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
     p_tcb->ptask = p_taskinfo->ptask;       // store task entry in TCB
     p_tcb->prio = p_taskinfo->prio;         // store priority in TCB
     p_tcb->priv = p_taskinfo->priv;         // store privilege in
+    p_tcb->mailbox = 0;
 
     insert(heap, p_tcb);
 
@@ -526,7 +532,7 @@ int k_tsk_run_new(void)
     // at this point, gp_current_task != NULL and p_tcb_old != NULL
     if (gp_current_task != p_tcb_old) {
     	gp_current_task->state = RUNNING;   // change state of the to-be-switched-in  tcb
-    	if(p_tcb_old->state != DORMANT){
+    	if(p_tcb_old->state != DORMANT && p_tcb_old->state != BLK_MSG){
             p_tcb_old->state = READY;       // change state of the to-be-switched-out tcb
     	}
         k_tsk_switch(p_tcb_old);            // switch stacks
@@ -661,6 +667,10 @@ void k_tsk_exit(void)
     	k_mem_dealloc((void *) ((U32)p_tcb_old->u_stack_hi - p_tcb_old->u_stack_size));
     }
 
+    if (p_tcb_old->mailbox) {
+    	k_mem_dealloc((void*)p_tcb_old->mailbox);
+    }
+
     g_num_active_tasks--;
     remove_id(heap, p_tcb_old->tid);
 
@@ -776,6 +786,55 @@ int k_tsk_ls(task_t *buf, int count){
     printf("k_tsk_ls: buf=0x%x, count=%d\r\n", buf, count);
 #endif /* DEBUG_0 */
     return 0;
+}
+
+void k_tsk_block(void) {
+	if (gp_current_task->state != RUNNING) {
+		return;
+	}
+
+	gp_current_task->state = BLK_MSG;
+	k_tsk_run_new();
+}
+
+void k_tsk_unblock (TCB *task) {
+	if (!task) { return; }
+
+	if (task->state != BLK_MSG) {
+		return;
+	}
+
+	task->state = READY;
+
+	// Unblocked task has higher priority
+	if (compare(task, gp_current_task)) {
+		// Preempt current task
+
+	    TCB *p_tcb_old = NULL;
+
+	    p_tcb_old = gp_current_task;
+	    gp_current_task = task;
+
+	    // We move this preempted task to the front of the ready queue
+	    // We do not change the fifo counter of the preempted task
+	    // So it should remain at the front
+	    insert(heap, p_tcb_old);
+
+	    // at this point, gp_current_task != NULL and p_tcb_old != NULL
+	    if (gp_current_task != p_tcb_old) {
+	    	gp_current_task->state = RUNNING;   // change state of the to-be-switched-in  tcb
+	    	if(p_tcb_old->state != DORMANT){
+	            p_tcb_old->state = READY;       // change state of the to-be-switched-out tcb
+	    	}
+	        k_tsk_switch(p_tcb_old);            // switch stacks
+	    }
+	} else {
+		// Add unblocked lower priority task to the back of the ready queue
+		// We increment fifo counter so it explicitly goes to the back
+		g_task_count++;
+		task->task_count = g_task_count;
+		insert(heap, task);
+	}
 }
 
 /*
