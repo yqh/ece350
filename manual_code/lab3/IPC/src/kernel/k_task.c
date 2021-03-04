@@ -823,9 +823,7 @@ void k_tsk_unblock (TCB *task) {
 	    // at this point, gp_current_task != NULL and p_tcb_old != NULL
 	    if (gp_current_task != p_tcb_old) {
 	    	gp_current_task->state = RUNNING;   // change state of the to-be-switched-in  tcb
-	    	if(p_tcb_old->state != DORMANT){
-	            p_tcb_old->state = READY;       // change state of the to-be-switched-out tcb
-	    	}
+	        p_tcb_old->state = READY;       // change state of the to-be-switched-out tcb
 	        k_tsk_switch(p_tcb_old);            // switch stacks
 	    }
 	} else {
@@ -835,6 +833,8 @@ void k_tsk_unblock (TCB *task) {
 		task->task_count = g_task_count;
 		insert(heap, task);
 	}
+
+	return;
 }
 
 /*

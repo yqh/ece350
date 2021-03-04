@@ -177,7 +177,7 @@ typedef struct rtx_msg_hdr {
     U32                 length;             /**> length of the mssage including the message header size */
     U32                 type;               /**> type of the message */
     task_t              tid;                /**> Sender tid */
-} RTX_MSG_HDR;
+} __attribute__((aligned(8)))RTX_MSG_HDR;
 
 /**
  * @brief Task information structure
@@ -201,7 +201,7 @@ typedef struct rtx_task_info {
     struct timeval_rt   p_n;                /**> period in seconds and microseconds */
     RTX_MSG_HDR        *msg_hdr;            /**> real-time task message header      */
     U32                 num_msgs;           /**> real-time task mailbox capacity    */
-} RTX_TASK_INFO;
+} __attribute__((aligned(8)))RTX_TASK_INFO;
 
 /**
  * @brief Real-time task information structure

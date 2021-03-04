@@ -76,7 +76,7 @@ typedef struct Node {
 	U8 isFree;
     task_t owner;
 	struct Node *next;
-} Node;
+} __attribute__((aligned(8)))Node;
 
 // Global head
 Node* HEAD = NULL;
@@ -86,6 +86,8 @@ Node* HEAD = NULL;
  *                            FUNCTIONS
  *===========================================================================
  */
+
+int glob = 0;
 
 U32* k_alloc_k_stack(task_t tid)
 {
@@ -197,6 +199,11 @@ Node* mergeNode(Node* first, Node* second) {
 	Node* result = first;
 	result->size = first->size + second->size + sizeof(Node);
 	result->next = second->next;
+
+	if ((U32)result % 8 != 0 || (U32)result->next % 8 != 0) {
+		int j = 0;
+		int i = j;
+	}
 
 	return result;
 }
