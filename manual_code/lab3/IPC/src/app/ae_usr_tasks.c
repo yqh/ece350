@@ -42,7 +42,7 @@
 
 /**
  * C++ version 0.4 char* style "itoa":
- * Written by Lukás Chmela
+ * Written by Lukï¿½s Chmela
  * Released under GPLv3.
  */
 char* itoa(int value, char* result, int base) {
@@ -116,10 +116,148 @@ void kcd_task(void)
 	mbx_create(KCD_MBX_SIZE);
 	task_t sender_tid;
 	char* recv_buf = mem_alloc(KCD_MBX_SIZE);
+
+	// 62 valid option commands for registration
+	U8 cmd_reg[62];
+	for (int i=0; i<62; i++){
+		cmd_reg[i] = 0;
+	}
+
+	// KEY_IN queue
+	U8 cmd_queue[64];
+	for (int i=0; i<64; i++){
+		cmd_queue[i] = 0;
+	}
+
+	U8 cmd_queue_counter = 0;
+	U8 cmd_len = 0;
+	U8 cmd_invalid = 0;
+
 	while(1) {
 		int ret_val = recv_msg(&sender_tid, recv_buf, KCD_MBX_SIZE);
 
 		SER_PutStr(0, recv_buf + sizeof(RTX_MSG_HDR));
+
+		RTX_MSG_HDR* msg_hdr = (RTX_MSG_HDR*)(recv_buf);
+
+		// process KCD_REG or KEY_IN type messages
+		if (ret_val && msg_hdr->type == KCD_REG){
+			// command registration
+
+			// TODO: error check message data only be 1 char
+
+			// get command identifier
+			U8 *buf = recv_buf;
+			U8 cmd_id = *(buf + sizeof(RTX_MSG_HDR));
+
+			// TODO: error check valid cmd_id
+
+			// convert cmd_id to ascii and offset
+			U8 index = 0;
+
+			if (cmd_id > 47 && cmd_id < 58){
+				// 0-9 = 48-57
+				index = cmd_id - 48;
+			}else if (cmd_id > 64 && cmd_id < 91){
+				// A-Z = 65-90
+				index = cmd_id - 55;
+			}else if (cmd_id > 96 && cmd_id < 123){
+				// a-z = 97-122
+				index = cmd_id - 61;
+			}
+
+			// store it in cmd_reg
+			cmd_reg[index] = cmd_id;
+
+		} else if (ret_val && msg_hdr->type == KEY_IN){
+			// Keyboard Input
+
+			// get command char
+			U8 *buf = recv_buf;
+			U8 cmd_char = *(buf + sizeof(RTX_MSG_HDR));
+			cmd_len++;
+
+			// first character should be %
+			if (cmd_len == 0 && cmd_char != 37){
+				cmd_invalid = 1;
+			}
+
+			// command length (including % and enter) larger than 64 bytes
+			if (cmd_len > 64){
+				cmd_invalid = 1;
+			}
+
+			// TODO: write charIsValid(), figure out what is a valid char?
+			if (!charIsValid(cmd_char)){
+				cmd_invalid = 1;
+			}
+
+			if (cmd_invalid == 0){
+				// valid command
+				// if enter: dequeue and create string
+				if (cmd_char == 13){
+					// populate command message buffer
+					RTX_MSG_HDR *cmd_msg;
+					cmd_msg->type = KCD_CMD;
+					cmd_msg->length = sizeof(RTX_MSG_HDR) + cmd_len - 2; // exclude % and enter
+
+					// TODO: verify if string create works
+					U8 *cmd_string_temp = cmd_msg + sizeof(RTX_MSG_HDR);
+					for(int i=1; i<cmd_queue_counter; i++){	// exclude %
+						*cmd_string_temp = cmd_queue[i];
+						cmd_string_temp += 1;
+					}
+
+					task_t recv_tid = cmd_reg[cmd_queue[1]];
+
+					// check validity of cmd_id and task_id and cmd_len
+					RTX_TASK_INFO task_info;
+					k_tsk_get(recv_tid, &task_info);
+
+					// unregistered cmd_id or invalid tid
+					if(recv_tid <= 0 || task_info.state == DORMANT || recv_tid > MAX_TASKS){
+						SER_PutStr(0, "Command cannot be processed");
+					}else{
+						// send message to registered task id
+						int msg_sent = send_msg(recv_tid, (void *) cmd_msg);
+						if (!msg_sent){
+							SER_PutStr(0, "Command cannot be processed");
+						}
+					}
+					
+					// reset
+					for(int i=0; i<64; i++){
+						cmd_queue[i] = 0;
+					}
+					cmd_queue_counter = 0;
+					cmd_len = 0;
+					cmd_invalid = 0;
+
+				}else{
+					if(cmd_len >= 64){
+						cmd_invalid = 1;
+					}else{
+						// enqueue KEY_IN msg data
+						cmd_queue[cmd_queue_counter] = cmd_char;
+						cmd_queue_counter++;
+					}
+				}
+			}else{
+				// invalid command
+				// if enter: dequeue and output failure message
+				if (cmd_char == 13){
+					SER_PutStr(0, "Invalid Command");
+
+					// reset
+					for(int i=0; i<64; i++){
+						cmd_queue[i] = 0;
+					}
+					cmd_queue_counter = 0;
+					cmd_len = 0;
+					cmd_invalid = 0;
+				}
+			}
+		}
 	}
 }
 /*
