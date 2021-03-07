@@ -111,6 +111,37 @@ void task2(void)
 	}
 }
 
+U8 charIsValid(U8 character){
+    // if (character > 47 && character < 58){
+    //     // 0-9 = 48-57
+    //     return character - 48;
+    // }else if (character > 64 && character < 91){
+    //     // A-Z = 65-90
+    //     return character - 55;
+    // }else if (character > 96 && character < 123){
+    //     // a-z = 97-122
+    //     return character - 61;
+    // } else {
+    //     return 255;
+    // }
+    return 1;
+}
+
+U8 charToIndex(U8 character){
+    if (character > 47 && character < 58){
+        // 0-9 = 48-57
+        return character - 48;
+    }else if (character > 64 && character < 91){
+        // A-Z = 65-90
+        return character - 55;
+    }else if (character > 96 && character < 123){
+        // a-z = 97-122
+        return character - 61;
+    } else {
+        return 255;
+    }
+}
+
 void kcd_task(void)
 {
 	mbx_create(KCD_MBX_SIZE);
@@ -153,18 +184,7 @@ void kcd_task(void)
 			// TODO: error check valid cmd_id
 
 			// convert cmd_id to ascii and offset
-			U8 index = 0;
-
-			if (cmd_id > 47 && cmd_id < 58){
-				// 0-9 = 48-57
-				index = cmd_id - 48;
-			}else if (cmd_id > 64 && cmd_id < 91){
-				// A-Z = 65-90
-				index = cmd_id - 55;
-			}else if (cmd_id > 96 && cmd_id < 123){
-				// a-z = 97-122
-				index = cmd_id - 61;
-			}
+			U8 index = charToIndex(cmd_id);
 
 			// store it in cmd_reg
 			cmd_reg[index] = cmd_id;
@@ -202,15 +222,15 @@ void kcd_task(void)
 					cmd_msg->length = sizeof(RTX_MSG_HDR) + cmd_len - 2; // exclude % and enter
 
 					// TODO: verify if string create works
-					U8 *cmd_string_temp = cmd_msg + sizeof(RTX_MSG_HDR);
+					U8 *cmd_string_temp = (U8*)(cmd_msg + sizeof(RTX_MSG_HDR));
 					for(int i=1; i<cmd_queue_counter; i++){	// exclude %
 						*cmd_string_temp = cmd_queue[i];
 						cmd_string_temp += 1;
 					}
 
-					task_t recv_tid = cmd_reg[cmd_queue[1]];
+					task_t recv_tid = cmd_reg[charToIndex(cmd_queue[1])];
 
-					// check validity of cmd_id and task_id and cmd_len
+					// TODO: check validity of cmd_id and task_id and cmd_len
 					RTX_TASK_INFO task_info;
 					k_tsk_get(recv_tid, &task_info);
 

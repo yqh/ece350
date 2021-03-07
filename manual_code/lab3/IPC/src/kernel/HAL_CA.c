@@ -44,6 +44,7 @@
 #include "interrupt.h"
 #include "Serial.h"
 #include "k_task.h"
+#include "k_msg.h"
 
 #pragma push
 #pragma arm
@@ -236,8 +237,19 @@ void SER_Interrupt(void)
   {
 	while(Rx_Data_Ready())	        // read while Data Ready is valid
 	{
-	      char c = Rx_Read_Data();	// would also clear the interrupt if last character is read
-	      SER_PutChar(1, c);	// display back
+	    char c = Rx_Read_Data();	// would also clear the interrupt if last character is read
+	    SER_PutChar(1, c);	// display back
+
+        RTX_MSG_HDR *cmd_msg;
+		cmd_msg->type = KEY_IN;
+		cmd_msg->length = sizeof(RTX_MSG_HDR) + 1; // exclude % and enter
+
+        U8 * buffer = (U8*)cmd_msg;
+        buffer += sizeof(RTX_MSG_HDR);
+        * buffer = c;
+
+        k_send_msg(TID_KCD, (void *) cmd_msg);
+
 	}
   }
   else{                                 // unexpected interrupt type
