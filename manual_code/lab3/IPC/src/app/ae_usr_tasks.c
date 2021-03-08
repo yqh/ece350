@@ -283,22 +283,22 @@ void kcd_task(void)
 
 void kcd_waiting(void){
     while(1){
-        SER_PutStr(0, "Uno");
-        SER_PutStr(0, "Dos");
-        SER_PutStr(0, "Tres");
-        SER_PutStr(0, "Cuatro");
-        SER_PutStr(0, "Cinco");
-        SER_PutStr(0, "Seis");
-        SER_PutStr(0, "Siete");
-        SER_PutStr(0, "Ocho");
-        SER_PutStr(0, "Nueve");
-        SER_PutStr(0, "Diez");
-        SER_PutStr(0, "Once");
-        SER_PutStr(0, "Doce");
-        SER_PutStr(0, "Trece");
-        SER_PutStr(0, "Catorce");
-        SER_PutStr(0, "Quince");
-        SER_PutStr(0, "Dieciseis");
+        SER_PutStr(0, "Uno\r\n");
+        SER_PutStr(0, "Dos\r\n");
+        SER_PutStr(0, "Tres\r\n");
+        SER_PutStr(0, "Cuatro\r\n");
+        SER_PutStr(0, "Cinco\r\n");
+        SER_PutStr(0, "Seis\r\n");
+        SER_PutStr(0, "Siete\r\n");
+        SER_PutStr(0, "Ocho\r\n");
+        SER_PutStr(0, "Nueve\r\n");
+        SER_PutStr(0, "Diez\r\n");
+        SER_PutStr(0, "Once\r\n");
+        SER_PutStr(0, "Doce\r\n");
+        SER_PutStr(0, "Trece\r\n");
+        SER_PutStr(0, "Catorce\r\n");
+        SER_PutStr(0, "Quince\r\n");
+        SER_PutStr(0, "Dieciseis\r\n");
         tsk_yield();
     }
 }

@@ -37,8 +37,8 @@
  *              The code borrowed ideas from ARM RTX source code
  *
  *****************************************************************************/
- 
-#include "common.h"
+
+#include "common_ext.h"
 #include "k_inc.h"
 #include "k_HAL_CA.h"
 #include "interrupt.h"
@@ -237,18 +237,15 @@ void SER_Interrupt(void)
   {
 	while(Rx_Data_Ready())	        // read while Data Ready is valid
 	{
-	    char c = Rx_Read_Data();	// would also clear the interrupt if last character is read
-	    SER_PutChar(1, c);	// display back
+	        char c = Rx_Read_Data();	// would also clear the interrupt if last character is read
+	        SER_PutChar(1, c);	// display back
 
-        RTX_MSG_HDR *cmd_msg;
-		cmd_msg->type = KEY_IN;
-		cmd_msg->length = sizeof(RTX_MSG_HDR) + 1; // exclude % and enter
+                RTX_MSG_KEY_IN msg;
+                msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+                msg.hdr.type = KEY_IN;
+                msg.data = c;
 
-        U8 * buffer = (U8*)cmd_msg;
-        buffer += sizeof(RTX_MSG_HDR);
-        * buffer = c;
-
-        k_send_msg(TID_KCD, (void *) cmd_msg);
+                k_send_msg(TID_KCD, &msg);
 
 	}
   }
