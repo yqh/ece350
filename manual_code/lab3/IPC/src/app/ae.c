@@ -116,10 +116,10 @@ void ae_set_task_info(RTX_TASK_INFO *tasks, int num_tasks) {
     tasks[0].prio = HIGH;
     tasks[0].priv = 0;
 
-    // tasks[1].u_stack_size = KCD_MBX_SIZE;
-    // tasks[1].ptask = &kcd_task;
-    // tasks[1].prio = HIGH;
-    // tasks[1].priv = 0;
+    tasks[1].u_stack_size = 0x200;
+    tasks[1].ptask = &kcd_waiting;
+    tasks[1].prio = LOW;
+    tasks[1].priv = 0;
 
     return;
 }

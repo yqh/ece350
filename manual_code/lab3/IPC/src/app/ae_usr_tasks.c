@@ -280,6 +280,29 @@ void kcd_task(void)
 		}
 	}
 }
+
+void kcd_waiting(void){
+    while(1){
+        SER_PutStr(0, "Uno");
+        SER_PutStr(0, "Dos");
+        SER_PutStr(0, "Tres");
+        SER_PutStr(0, "Cuatro");
+        SER_PutStr(0, "Cinco");
+        SER_PutStr(0, "Seis");
+        SER_PutStr(0, "Siete");
+        SER_PutStr(0, "Ocho");
+        SER_PutStr(0, "Nueve");
+        SER_PutStr(0, "Diez");
+        SER_PutStr(0, "Once");
+        SER_PutStr(0, "Doce");
+        SER_PutStr(0, "Trece");
+        SER_PutStr(0, "Catorce");
+        SER_PutStr(0, "Quince");
+        SER_PutStr(0, "Dieciseis");
+        tsk_yield();
+    }
+}
+
 /*
  *===========================================================================
  *                             END OF FILE

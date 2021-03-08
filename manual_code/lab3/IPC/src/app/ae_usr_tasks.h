@@ -41,6 +41,7 @@
 #define USR_TASK_H_
 
 extern void kcd_task(void);
+void kcd_waiting(void);
 
 void task1(void);
 void task2(void);
