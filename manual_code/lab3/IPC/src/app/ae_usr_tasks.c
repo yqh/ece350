@@ -127,6 +127,21 @@ U8 charIsValid(U8 character){
     return 1;
 }
 
+U8 charIsAlphaNum(U8 character){
+    if (character > 47 && character < 58){
+        // 0-9 = 48-57
+        return 1;
+    }else if (character > 64 && character < 91){
+        // A-Z = 65-90
+        return 1;
+    }else if (character > 96 && character < 123){
+        // a-z = 97-122
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 U8 charToIndex(U8 character){
     if (character > 47 && character < 58){
         // 0-9 = 48-57
@@ -175,14 +190,21 @@ void kcd_task(void)
 		if (ret_val && msg_hdr->type == KCD_REG){
 			// command registration
 
-			// TODO: error check message data only be 1 char
+			RTX_MSG_CHAR * msg = (RTX_MSG_CHAR*) recv_buf;
+
+			if (msg->hdr.length != sizeof(RTX_MSG_CHAR)){
+				// ignore message if data more than 1 char
+				continue;
+			}
 
 			// get command identifier
-			U8 *buf = recv_buf;
-			U8 cmd_id = *(buf + sizeof(RTX_MSG_HDR));
+			U8 cmd_id = msg->data;
 
-			// TODO: error check valid cmd_id
-
+			if (charIsAlphaNum(cmd_id) == 0){
+				// invalid cmd_id
+				continue;
+			}
+			
 			// convert cmd_id to ascii and offset
 			U8 index = charToIndex(cmd_id);
 
@@ -193,8 +215,8 @@ void kcd_task(void)
 			// Keyboard Input
 
 			// get command char
-			U8 *buf = recv_buf;
-			U8 cmd_char = *(buf + sizeof(RTX_MSG_HDR));
+			RTX_MSG_CHAR * msg = (RTX_MSG_CHAR*) recv_buf;
+			U8 cmd_char = msg->data;
 			cmd_len++;
 
 			// first character should be %
@@ -217,15 +239,18 @@ void kcd_task(void)
 				// if enter: dequeue and create string
 				if (cmd_char == 13){
 					// populate command message buffer
-					RTX_MSG_HDR *cmd_msg;
-					cmd_msg->type = KCD_CMD;
-					cmd_msg->length = sizeof(RTX_MSG_HDR) + cmd_len - 2; // exclude % and enter
+
+					void* msg = mem_alloc(sizeof(RTX_MSG_HDR) + cmd_len - 2);
+					RTX_MSG_HDR* hdr = msg;
+
+					//RTX_MSG_HDR *cmd_msg;
+					hdr->type = KCD_CMD;
+					hdr->length = sizeof(RTX_MSG_HDR) + cmd_len - 2; // exclude % and enter
 
 					// TODO: verify if string create works
-					U8 *cmd_string_temp = (U8*)(cmd_msg + sizeof(RTX_MSG_HDR));
-					for(int i=1; i<cmd_queue_counter; i++){	// exclude %
-						*cmd_string_temp = cmd_queue[i];
-						cmd_string_temp += 1;
+					for(int i=0; i<cmd_queue_counter-1; i++){
+						// exclude % at i=0
+						*((char*)msg + sizeof(RTX_MSG_HDR) + i) = cmd_queue[i+1];
 					}
 
 					task_t recv_tid = cmd_reg[charToIndex(cmd_queue[1])];
@@ -238,8 +263,10 @@ void kcd_task(void)
 					if(recv_tid <= 0 || task_info.state == DORMANT || recv_tid > MAX_TASKS){
 						SER_PutStr(0, "Command cannot be processed");
 					}else{
+						
 						// send message to registered task id
-						int msg_sent = send_msg(recv_tid, (void *) cmd_msg);
+						int msg_sent = send_msg(recv_tid, msg);
+
 						if (!msg_sent){
 							SER_PutStr(0, "Command cannot be processed");
 						}

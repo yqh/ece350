@@ -240,7 +240,7 @@ void SER_Interrupt(void)
 	        char c = Rx_Read_Data();	// would also clear the interrupt if last character is read
 	        SER_PutChar(1, c);	// display back
 
-                RTX_MSG_KEY_IN msg;
+                RTX_MSG_CHAR msg;
                 msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
                 msg.hdr.type = KEY_IN;
                 msg.data = c;

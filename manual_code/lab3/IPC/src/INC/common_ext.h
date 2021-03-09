@@ -59,10 +59,10 @@
  *===========================================================================
  */
 
-typedef struct rtx_msg_key_in {
+typedef struct rtx_msg_char {
     RTX_MSG_HDR     hdr;
     char            data;                /**> Sender tid */
-} RTX_MSG_KEY_IN;
+} RTX_MSG_CHAR;
 
 /*
  *===========================================================================
