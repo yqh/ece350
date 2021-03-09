@@ -220,7 +220,7 @@ void kcd_task(void)
 			cmd_len++;
 
 			// first character should be %
-			if (cmd_len == 0 && cmd_char != 37){
+			if (cmd_len == 1 && cmd_char != 37){
 				cmd_invalid = 1;
 			}
 
@@ -263,7 +263,7 @@ void kcd_task(void)
 					if(recv_tid <= 0 || task_info.state == DORMANT || recv_tid > MAX_TASKS){
 						SER_PutStr(0, "Command cannot be processed");
 					}else{
-						
+
 						// send message to registered task id
 						int msg_sent = send_msg(recv_tid, msg);
 
