@@ -79,7 +79,7 @@ void kcd_task(void)
 
 		RTX_MSG_HDR* msg_hdr = (RTX_MSG_HDR*)(recv_buf);
 
-        if (msg_hdr->length != sizeof(RTX_MSG_CHAR)){
+        if (msg_hdr->length != sizeof(RTX_MSG_HDR) + 1;){
             // ignore message if data more than 1 char
             SER_PutStr(0, "KCD_IN: Unexpected message length");
             continue;
