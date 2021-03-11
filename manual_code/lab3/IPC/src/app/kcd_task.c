@@ -79,17 +79,17 @@ void kcd_task(void)
 
 		RTX_MSG_HDR* msg_hdr = (RTX_MSG_HDR*)(recv_buf);
 
+        if (msg_hdr->length != sizeof(RTX_MSG_CHAR)){
+            // ignore message if data more than 1 char
+            SER_PutStr(0, "KCD_IN: Unexpected message length");
+            continue;
+        }
+
 		// process KCD_REG or KEY_IN type messages
 		if (ret_val == RTX_OK && msg_hdr->type == KCD_REG){
 			// command registration
 
 			RTX_MSG_CHAR * msg = (RTX_MSG_CHAR*) recv_buf;
-
-			if (msg->hdr.length != sizeof(RTX_MSG_CHAR)){
-				// ignore message if data more than 1 char
-				SER_PutStr(0, "Reg: Unexpected message length");
-				continue;
-			}
 
 			// get command identifier
 			U8 cmd_id = msg->data;
