@@ -176,8 +176,7 @@ typedef struct rtx_sys_info {
 typedef struct rtx_msg_hdr {
     U32                 length;             /**> length of the mssage including the message header size */
     U32                 type;               /**> type of the message */
-    task_t              tid;                /**> Sender tid */
-} __attribute__((aligned(8)))RTX_MSG_HDR;
+} RTX_MSG_HDR;
 
 /**
  * @brief Task information structure

@@ -120,6 +120,7 @@ void ae_set_task_info(RTX_TASK_INFO *tasks, int num_tasks) {
     kcd_info.priv = 0;
 
     k_tsk_create_new(&kcd_info, &g_tcbs[TID_KCD], TID_KCD);
+
     return;
 }
 

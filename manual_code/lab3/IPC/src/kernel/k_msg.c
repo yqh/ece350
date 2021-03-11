@@ -6,6 +6,7 @@
  */
 
 #include "k_msg.h"
+#include "common_ext.h"
 
 #ifdef DEBUG_0
 #include "printf.h"
@@ -21,6 +22,10 @@ typedef struct circular_buffer {
 	U32 data_end; // End of "valid data" in memory.
 } __attribute__((aligned(8)))C_BUFFER;
 
+typedef struct c_metadata {
+	task_t sender_tid;
+} __attribute__((aligned(8)))C_METADATA;
+
 void mem_cpy(void* source, void* dest, size_t len) {
 	for (int i = 0; i < len; i++) {
 		*((char*)dest+i) = *((char*)source+i);
@@ -29,6 +34,10 @@ void mem_cpy(void* source, void* dest, size_t len) {
 
 // Prereq: addr is aligned
 U32 align_increment(U32 addr, U32 increment, U32 alignment) {
+	if ((addr + increment) % alignment == 0) {
+		return addr + increment;
+	}
+
 	return addr + increment + (alignment - increment % alignment);
 }
 
@@ -36,9 +45,13 @@ U32 align_increment(U32 addr, U32 increment, U32 alignment) {
 // TODO: Do not wrap the header because I need the
 // struct intact to read the length properly
 // E.g., just wrap if buffer_end - data_start < RTX_MSG_HDR
-int c_insert(C_BUFFER* mailbox, void* buf, size_t length) {
+int c_insert(C_BUFFER* mailbox, void* buf) {
+
+	RTX_MSG_HDR* hdr = buf;
+	C_METADATA meta = {gp_current_task->tid};
 
     U32 mailbox_len = mailbox->buffer_end - mailbox->buffer_start;
+    U32 length = hdr->length + sizeof(C_METADATA);
     if (mailbox_len < length) {
     	return RTX_ERR;
     }
@@ -50,36 +63,56 @@ int c_insert(C_BUFFER* mailbox, void* buf, size_t length) {
     		return RTX_ERR;
     	}
 
-    	mem_cpy(buf, (void*)mailbox->data_end, length);
+    	mem_cpy(&meta, (void*)mailbox->data_end, sizeof(C_METADATA));
+    	mem_cpy(buf,
+    			(void*)(mailbox->data_end + sizeof(C_METADATA)),
+				length - sizeof(C_METADATA));
     	mailbox->data_end = align_increment(mailbox->data_end, length, 8);
+
+        if (mailbox->data_end >= mailbox->buffer_end - (sizeof(C_METADATA) + sizeof(RTX_MSG_HDR))) {
+        	mailbox->data_end = mailbox->buffer_start;
+        }
 
     	return RTX_OK;
     }
 
-    // If data_end >= data_start, data_end wrapping through buffer_end
-    // must not exceed data_start
-
-    if (length > (mailbox->buffer_end - mailbox->data_end + 1 +
-    		      mailbox->data_start - mailbox->buffer_start)) {
-    	return RTX_ERR;
-    }
-
-    if (length <= (mailbox->buffer_end - mailbox->data_end)) {
-    	mem_cpy(buf, (void*)mailbox->data_end, length);
+    if (mailbox->data_end + length <= mailbox->buffer_end) {
+    	mem_cpy(&meta, (void*)mailbox->data_end, sizeof(C_METADATA));
+    	mem_cpy(buf,
+    			(void*)(mailbox->data_end + sizeof(C_METADATA)),
+				length - sizeof(C_METADATA));
     	mailbox->data_end = align_increment(mailbox->data_end, length, 8);
 
-    } else {
-        mem_cpy(buf,
-        		(void*)mailbox->data_end,
-        		mailbox->buffer_end - mailbox->data_end);
+        if (mailbox->data_end >= mailbox->buffer_end - (sizeof(C_METADATA) + sizeof(RTX_MSG_HDR))) {
+        	mailbox->data_end = mailbox->buffer_start;
+        }
 
-        mem_cpy((void*)((char*)buf + mailbox->buffer_end - mailbox->data_end),
-        		(void*)mailbox->buffer_start,
-        		 length - (mailbox->buffer_end - mailbox->data_end));
+    	return RTX_OK;
+    }
 
-        mailbox->data_end = align_increment(mailbox->data_start,
-        									length - (mailbox->buffer_end - mailbox->data_end),
-											8);
+    //
+    U32 first_copy_length = mailbox->buffer_end - mailbox->data_end;
+
+
+    mem_cpy(&meta, (void*)mailbox->data_end, sizeof(C_METADATA));
+    mailbox->data_end = align_increment(mailbox->data_end, sizeof(C_METADATA), 8);
+
+    mem_cpy(buf, (void*)mailbox->data_end, sizeof(RTX_MSG_HDR));
+    mailbox->data_end = align_increment(mailbox->data_end, sizeof(RTX_MSG_HDR), 8);
+
+    mem_cpy((char*)buf + sizeof(RTX_MSG_HDR),
+    		(void*)mailbox->data_end
+			, first_copy_length - sizeof(C_METADATA) - sizeof(RTX_MSG_HDR));
+    mailbox->data_end = mailbox->buffer_start;
+
+    mem_cpy((char*)buf + first_copy_length - sizeof(C_METADATA),
+    		(void*)mailbox->data_end
+			, length - first_copy_length);
+
+    mailbox->data_end = align_increment(mailbox->data_end, length - first_copy_length, 8);
+
+    if (mailbox->data_end >= mailbox->buffer_end - (sizeof(C_METADATA) + sizeof(RTX_MSG_HDR))) {
+    	mailbox->data_end = mailbox->buffer_start;
     }
 
     return RTX_OK;
@@ -134,23 +167,11 @@ int k_send_msg(task_t receiver_tid, const void *buf) {
     }
 
     C_BUFFER* mailbox = (C_BUFFER*)tcb->mailbox;
-
-    SER_PutStr("Data_start: %x, data_end, %x, diff: %x", mailbox->data_start, mailbox->data_end, mailbox->data_start - mailbox->data_end);
-
-    int ret_val = c_insert(mailbox,
-    					   (void*)header,
-						   header->length);
-
-    // Prevents the header itself wrapping
-    if (mailbox->data_end + sizeof(RTX_MSG_HDR) > mailbox->buffer_end) {
-    	mailbox->data_end = mailbox->buffer_start;
-    }
+    int ret_val = c_insert(mailbox, header);
 
     if (ret_val == RTX_ERR) {
     	return ret_val;
     }
-
-    header->tid = gp_current_task->tid;
 
     // unblocking procedure
     if (tcb->state == BLK_MSG) {
@@ -172,43 +193,42 @@ int k_recv_msg(task_t *sender_tid, void *buf, size_t len) {
 
     C_BUFFER* mailbox = (C_BUFFER*)tcb.mailbox;
 
+    // Prevents the header itself wrapping
+    if (mailbox->data_start >= mailbox->buffer_end - (sizeof(C_METADATA) + sizeof(RTX_MSG_HDR))) {
+    	mailbox->data_start = mailbox->buffer_start;
+    }
+
     // No messages to receive
     while (mailbox->data_start == mailbox->data_end) {
     	k_tsk_block();
     }
 
-    RTX_MSG_HDR* msg = (RTX_MSG_HDR*)mailbox->data_start;
+    C_METADATA * meta = (C_METADATA*) mailbox->data_start;
+    RTX_MSG_HDR* msg = (RTX_MSG_HDR*)(meta + 1);
     if (len < msg->length) {
     	return RTX_ERR;
     }
 
     // Process one message
-    *sender_tid = msg->tid;
+    *sender_tid = meta->sender_tid;
+    mailbox->data_start += sizeof(C_METADATA);
     if (msg->length + mailbox->data_start <= mailbox->buffer_end) {
-    	mem_cpy((void*)((U32)mailbox->data_start),
+    	mem_cpy((void*)(mailbox->data_start),
     			buf,
 				msg->length);
-    	mailbox->data_start += msg->length;
+    	mailbox->data_start = align_increment(mailbox->data_start, msg->length, 8);
     } else {
+
     	U32 free_space = mailbox->buffer_end - mailbox->data_start;
 
     	mem_cpy((void*)((U32)mailbox->data_start),
     			buf,
 				free_space);
     	mem_cpy((void*)mailbox->buffer_start,
-    			buf,
+    			(char*)buf + free_space,
 				msg->length - free_space);
 
-    	mailbox->data_start = mailbox->buffer_start +
-			      	  	  	  msg->length -
-							  free_space;
-    }
-
-    mailbox->data_start += (8 - mailbox->data_start % 8);
-
-    // Prevents the header itself wrapping
-    if (mailbox->data_start + sizeof(RTX_MSG_HDR) > mailbox->buffer_end) {
-    	mailbox->data_start = mailbox->buffer_start;
+    	mailbox->data_start = align_increment(mailbox->buffer_start, msg->length - free_space, 8);
     }
 
     return RTX_OK;

@@ -108,6 +108,10 @@ void task2(void)
 		send_msg(TID_KCD, msg);
 		mem_dealloc(msg);
 		counter++;
+		if (counter == 39) {
+			int j = 0;
+			int kk = j;
+		}
 	}
 }
 
@@ -119,6 +123,7 @@ void kcd_task(void)
 	while(1) {
 		int ret_val = recv_msg(&sender_tid, recv_buf, KCD_MBX_SIZE);
 
+		*(recv_buf + ((RTX_MSG_HDR*)recv_buf)->length) = '\0';
 		SER_PutStr(0, recv_buf + sizeof(RTX_MSG_HDR));
 	}
 }
