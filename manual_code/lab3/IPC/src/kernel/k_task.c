@@ -330,7 +330,7 @@ int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
     RTX_TASK_INFO *p_taskinfo = &g_null_task_info;
     g_num_active_tasks = 0;
 
-    if (num_tasks > MAX_TASKS) {
+    if (num_tasks > MAX_TASKS - 1) { // num_tasks + null task <= MAX_TASKS
     	return RTX_ERR;
     }
 
@@ -350,14 +350,26 @@ int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
     }
 
     // create the rest of the tasks
-    p_taskinfo = task_info;
-    for ( int i = 0; i < num_tasks; i++ ) {
-        TCB *p_tcb = &g_tcbs[i+1];
-        if (k_tsk_create_new(p_taskinfo, p_tcb, i+1) == RTX_OK) {
-        	g_num_active_tasks++;
+    p_taskinfo = task_info;    
+    int numCreated = 0;
+    int tcb_index = 1;
+    while(numCreated != num_tasks){
+        if(p_taskinfo->ptask == kcd_task){                  // TODO: Check the Extern for KCD_TASK use function.
+            TCB *p_tcb = &g_tcbs[TID_KCD];
+            if (k_tsk_create_new(p_taskinfo, p_tcb, TID_KCD) == RTX_OK) {
+                g_num_active_tasks++;
+            }
+        } else {
+            TCB *p_tcb = &g_tcbs[tcb_index];
+            if (k_tsk_create_new(p_taskinfo, p_tcb, tcb_index) == RTX_OK) {
+                g_num_active_tasks++;
+            }
+            tcb_index++;
         }
         p_taskinfo++;
+        numCreated++;
     }
+
     return RTX_OK;
 }
 /**************************************************************************//**

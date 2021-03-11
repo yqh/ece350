@@ -105,21 +105,21 @@ void ae_set_task_info(RTX_TASK_INFO *tasks, int num_tasks) {
         return;
     }
 
-    for (int i = 0; i < num_tasks; i++ ) {
-        tasks[i].u_stack_size = 0x0;
-        tasks[i].prio = HIGH;
-        tasks[i].priv = 1;
-    }
-    tasks[0].ptask = &priv_task2;
-    tasks[0].prio = LOWEST;
+    // for (int i = 0; i < num_tasks; i++ ) {
+    //     tasks[i].u_stack_size = 0x0;
+    //     tasks[i].prio = HIGH;
+    //     tasks[i].priv = 1;
+    // }
 
-    RTX_TASK_INFO kcd_info;
-    kcd_info.u_stack_size = KCD_MBX_SIZE;
-    kcd_info.prio = HIGH;
-    kcd_info.ptask = &kcd_task;
-    kcd_info.priv = 0;
+    tasks[0].u_stack_size = 0x200;
+    tasks[0].ptask = &kcd_task;
+    tasks[0].prio = HIGH;
+    tasks[0].priv = 0;
 
-    k_tsk_create_new(&kcd_info, &g_tcbs[TID_KCD], TID_KCD);
+    tasks[1].u_stack_size = 0x200;
+    tasks[1].ptask = &kcd_waiting;
+    tasks[1].prio = LOW;
+    tasks[1].priv = 0;
 
     return;
 }

@@ -60,7 +60,7 @@ extern TCB *gp_current_task;
  */
 
 extern void task_null	(void);
-
+extern void kcd_task    (void);
 
 // Implemented by Starter Code
 

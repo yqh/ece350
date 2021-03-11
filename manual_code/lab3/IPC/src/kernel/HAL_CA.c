@@ -37,13 +37,14 @@
  *              The code borrowed ideas from ARM RTX source code
  *
  *****************************************************************************/
- 
-#include "common.h"
+
+#include "common_ext.h"
 #include "k_inc.h"
 #include "k_HAL_CA.h"
 #include "interrupt.h"
 #include "Serial.h"
 #include "k_task.h"
+#include "k_msg.h"
 
 #pragma push
 #pragma arm
@@ -236,8 +237,16 @@ void SER_Interrupt(void)
   {
 	while(Rx_Data_Ready())	        // read while Data Ready is valid
 	{
-	      char c = Rx_Read_Data();	// would also clear the interrupt if last character is read
-	      SER_PutChar(1, c);	// display back
+	        char c = Rx_Read_Data();	// would also clear the interrupt if last character is read
+	        SER_PutChar(1, c);	// display back
+
+                RTX_MSG_CHAR msg;
+                msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+                msg.hdr.type = KEY_IN;
+                msg.data = c;
+
+                k_send_msg(TID_KCD, &msg);
+
 	}
   }
   else{                                 // unexpected interrupt type

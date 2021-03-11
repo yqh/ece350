@@ -67,7 +67,7 @@ void task_null (void)
     }
 }
 
-#define num_tasks 1
+#define num_tasks 2
 
 int main() 
 {    
