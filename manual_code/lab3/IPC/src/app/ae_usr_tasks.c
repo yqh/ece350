@@ -121,6 +121,10 @@ void kcd_reg_and_exit(void){
 	msg.hdr.type = KCD_REG;
 	msg.data = 'q';
 	send_msg(TID_KCD, &msg);
+	U32 counter = 0;
+	for(int i = 100; i != 0; i--){
+		counter ++;
+	}
 	tsk_exit();
 }
 

@@ -104,7 +104,7 @@ void kcd_task(void)
 			U8 index = charToIndex(cmd_id);
 
 			// store it in cmd_reg
-			cmd_reg[index] = cmd_id;
+			cmd_reg[index] = sender_tid;
 
 		} else if (ret_val == RTX_OK && msg_hdr->type == KEY_IN){
 			// Keyboard Input
