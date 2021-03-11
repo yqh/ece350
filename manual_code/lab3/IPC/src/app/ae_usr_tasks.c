@@ -42,7 +42,7 @@
 
 /**
  * C++ version 0.4 char* style "itoa":
- * Written by Lukï¿½s Chmela
+ * Written by LukÃ¯Â¿Â½s Chmela
  * Released under GPLv3.
  */
 char* itoa(int value, char* result, int base) {
@@ -116,14 +116,13 @@ void task2(void)
 }
 
 void kcd_reg_and_exit(void){
+	mbx_create(KCD_MBX_SIZE);
 	RTX_MSG_CHAR msg;
 	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
 	msg.hdr.type = KCD_REG;
 	msg.data = 'q';
-	send_msg(TID_KCD, &msg);
-	U32 counter = 0;
-	for(int i = 100; i != 0; i--){
-		counter ++;
+	if(send_msg(TID_KCD, &msg) == RTX_OK){
+		SER_PutStr(0, "Sent Reg Msg");
 	}
 	tsk_exit();
 }
@@ -166,7 +165,7 @@ void kcd_receive_and_print(void){
 			flag = 1;
 			msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
 			msg.hdr.type = KCD_REG;
-			msg.data = 'w';
+			msg.data = 'q';
 			send_msg(TID_KCD, &msg);
 		} else if (flag == 1) {
 			flag = 2;
