@@ -82,7 +82,7 @@ void kcd_task(void)
 
         if (msg_hdr->length != sizeof(RTX_MSG_HDR) + 1){
             // ignore message if data more than 1 char
-            SER_PutStr(0, "KCD_IN: Unexpected message length\r\n");
+            // SER_PutStr(0, "KCD_IN: Unexpected message length\r\n");
             continue;
         }
 
@@ -97,7 +97,7 @@ void kcd_task(void)
 
 			if (charIsAlphaNum(cmd_id) == 0){
 				// invalid cmd_id
-				SER_PutStr(0, "Reg: Invalid Command ID\r\n");
+				// SER_PutStr(0, "Reg: Invalid Command ID\r\n");
 				continue;
 			}
 			
@@ -106,7 +106,7 @@ void kcd_task(void)
 
 			// store it in cmd_reg
 			cmd_reg[index] = sender_tid;
-			SER_PutStr(0, "Reg: Successfully registered something\r\n");
+			// SER_PutStr(0, "Reg: Successfully registered something\r\n");
 
 		} else if (msg_hdr->type == KEY_IN){
 			// Keyboard Input
@@ -119,19 +119,19 @@ void kcd_task(void)
 			// first character should be %
 			if ( (cmd_len == 1 && cmd_char != 37) || (cmd_len != 1 && cmd_char == 37) ){
 				cmd_invalid = 1;
-				SER_PutStr(0, "Key In: Percent not in the right place\r\n");
+				// SER_PutStr(0, "Key In: Percent not in the right place\r\n");
 			}
 
 			// command length (including % and enter) larger than 64 bytes
 			if (cmd_len > 64){
 				cmd_invalid = 1;
-				SER_PutStr(0, "Key In: Command Length too long\r\n");
+				// SER_PutStr(0, "Key In: Command Length too long\r\n");
 			}
 
 			// TODO: write charIsValid(), figure out what is a valid char?
 			if (!charIsValid(cmd_char)){
 				cmd_invalid = 1;
-				SER_PutStr(0, "Key In: Invalid Character Detected\r\n");
+				// SER_PutStr(0, "Key In: Invalid Character Detected\r\n");
 			}
 
 			if (cmd_invalid == 0){
@@ -162,7 +162,7 @@ void kcd_task(void)
 					// unregistered cmd_id or invalid tid
 					if(recv_tid <= 0 || task_info.state == DORMANT || recv_tid > MAX_TASKS){
 						SER_PutStr(0, "Command cannot be processed\r\n");
-						SER_PutStr(0, "Key In: Unregistered cmd_id OR invalid TID\r\n");
+						// SER_PutStr(0, "Key In: Unregistered cmd_id OR invalid TID\r\n");
 					}else{
 
 						// send message to registered task id
@@ -170,7 +170,7 @@ void kcd_task(void)
 
 						if (msg_sent == RTX_ERR){
 							SER_PutStr(0, "Command cannot be processed\r\n");
-							SER_PutStr(0, "Key In: Message failed to send\r\n");
+							// SER_PutStr(0, "Key In: Message failed to send\r\n");
 						}
 					}
 					
