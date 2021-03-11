@@ -133,7 +133,7 @@ void kcd_receive_and_print(void){
 	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
 	msg.hdr.type = KCD_REG;
 	msg.data = 'w';
-	k_send_msg(TID_KCD, &msg);
+	send_msg(TID_KCD, &msg);
 
 	U8 flag = 0;
 
@@ -163,19 +163,19 @@ void kcd_receive_and_print(void){
 			msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
 			msg.hdr.type = KCD_REG;
 			msg.data = 'w';
-			k_send_msg(TID_KCD, &msg);
+			send_msg(TID_KCD, &msg);
 		} else if (flag == 1) {
 			flag = 2;
 			msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
 			msg.hdr.type = KCD_REG;
 			msg.data = '!';
-			k_send_msg(TID_KCD, &msg);
+			send_msg(TID_KCD, &msg);
 		} else if (flag == 2) {
 			flag = 3;
 			msg.hdr.length = sizeof(RTX_MSG_HDR) + 2;
 			msg.hdr.type = KCD_REG;
 			msg.data = '!';
-			k_send_msg(TID_KCD, &msg);
+			send_msg(TID_KCD, &msg);
 		}
 		
 	}
@@ -189,7 +189,7 @@ void kcd_waiting(void){
 	msg.hdr.type = KCD_REG;
 	msg.data = 'e';
 
-	k_send_msg(TID_KCD, &msg);
+	send_msg(TID_KCD, &msg);
 
     while(1){
     	U32 counter = 0;
