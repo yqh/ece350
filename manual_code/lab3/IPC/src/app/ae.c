@@ -113,13 +113,23 @@ void ae_set_task_info(RTX_TASK_INFO *tasks, int num_tasks) {
 
     tasks[0].u_stack_size = 0x200;
     tasks[0].ptask = &kcd_task;
-    tasks[0].prio = HIGH;
+    tasks[0].prio = MEDIUM;
     tasks[0].priv = 0;
 
     tasks[1].u_stack_size = 0x200;
     tasks[1].ptask = &kcd_waiting;
     tasks[1].prio = LOW;
     tasks[1].priv = 0;
+
+    tasks[2].u_stack_size = 0x200;
+    tasks[2].ptask = &kcd_reg_and_exit;
+    tasks[2].prio = HIGH;
+    tasks[2].priv = 0;
+
+    tasks[3].u_stack_size = 0x200;
+    tasks[3].ptask = &kcd_receive_and_print;
+    tasks[3].prio = MEDIUM;
+    tasks[3].priv = 0;
 
     return;
 }

@@ -238,7 +238,11 @@ void SER_Interrupt(void)
 	while(Rx_Data_Ready())	        // read while Data Ready is valid
 	{
 	        char c = Rx_Read_Data();	// would also clear the interrupt if last character is read
-	        SER_PutChar(1, c);	// display back
+	        if( (U8) c == 13){
+	        	SER_PutStr(1, "\r\n");
+	        } else {
+		        SER_PutChar(1, c);	// display back
+	        }
 
                 RTX_MSG_CHAR msg;
                 msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;

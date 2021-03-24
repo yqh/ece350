@@ -42,7 +42,7 @@
 
 /**
  * C++ version 0.4 char* style "itoa":
- * Written by Luk�s Chmela
+ * Written by LukÃ¯Â¿Â½s Chmela
  * Released under GPLv3.
  */
 char* itoa(int value, char* result, int base) {
@@ -115,222 +115,91 @@ void task2(void)
 	}
 }
 
-U8 charIsValid(U8 character){
-    // if (character > 47 && character < 58){
-    //     // 0-9 = 48-57
-    //     return character - 48;
-    // }else if (character > 64 && character < 91){
-    //     // A-Z = 65-90
-    //     return character - 55;
-    // }else if (character > 96 && character < 123){
-    //     // a-z = 97-122
-    //     return character - 61;
-    // } else {
-    //     return 255;
-    // }
-    return 1;
+void kcd_reg_and_exit(void){
+	mbx_create(KCD_MBX_SIZE);
+	RTX_MSG_CHAR msg;
+	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+	msg.hdr.type = KCD_REG;
+	msg.data = 'q';
+	if(send_msg(TID_KCD, &msg) == RTX_OK){
+		SER_PutStr(0, "Sent Reg Msg");
+	}
+	tsk_exit();
 }
 
-U8 charIsAlphaNum(U8 character){
-    if (character > 47 && character < 58){
-        // 0-9 = 48-57
-        return 1;
-    }else if (character > 64 && character < 91){
-        // A-Z = 65-90
-        return 1;
-    }else if (character > 96 && character < 123){
-        // a-z = 97-122
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-U8 charToIndex(U8 character){
-    if (character > 47 && character < 58){
-        // 0-9 = 48-57
-        return character - 48;
-    }else if (character > 64 && character < 91){
-        // A-Z = 65-90
-        return character - 55;
-    }else if (character > 96 && character < 123){
-        // a-z = 97-122
-        return character - 61;
-    } else {
-        return 255;
-    }
-}
-
-void kcd_task(void)
-{
+void kcd_receive_and_print(void){
 	mbx_create(KCD_MBX_SIZE);
 	task_t sender_tid;
 	char* recv_buf = mem_alloc(KCD_MBX_SIZE);
 
-	// 62 valid option commands for registration
-	U8 cmd_reg[62];
-	for (int i=0; i<62; i++){
-		cmd_reg[i] = 0;
-	}
+	RTX_MSG_CHAR msg;
+	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+	msg.hdr.type = KCD_REG;
+	msg.data = 'w';
+	send_msg(TID_KCD, &msg);
 
-	// KEY_IN queue
-	U8 cmd_queue[64];
-	for (int i=0; i<64; i++){
-		cmd_queue[i] = 0;
-	}
+	U8 flag = 0;
 
-	U8 cmd_queue_counter = 0;
-	U8 cmd_len = 0;
-	U8 cmd_invalid = 0;
-
-	while(1) {
+	while(1){
 		int ret_val = recv_msg(&sender_tid, recv_buf, KCD_MBX_SIZE);
+		SER_PutStr(0, "kcd_receive_and_print: ");
 
-		*(recv_buf + ((RTX_MSG_HDR*)recv_buf)->length) = '\0';
-		SER_PutStr(0, recv_buf + sizeof(RTX_MSG_HDR));
+		if(ret_val != RTX_OK){
+			SER_PutStr(0, "Sike\r\n");
+			continue;
+		}
 
 		RTX_MSG_HDR* msg_hdr = (RTX_MSG_HDR*)(recv_buf);
 
-		// process KCD_REG or KEY_IN type messages
-		if (ret_val && msg_hdr->type == KCD_REG){
-			// command registration
+        if (msg_hdr->type != KCD_CMD){
+            // ignore message if data more than 1 char
+            SER_PutStr(0, " Not a CMD message\r\n");
+            continue;
+        }
 
-			RTX_MSG_CHAR * msg = (RTX_MSG_CHAR*) recv_buf;
+		*(recv_buf + ((RTX_MSG_HDR*)recv_buf)->length) = '\0';
+		SER_PutStr(0, recv_buf + sizeof(RTX_MSG_HDR));
+		SER_PutStr(0, "\r\n");
 
-			if (msg->hdr.length != sizeof(RTX_MSG_CHAR)){
-				// ignore message if data more than 1 char
-				continue;
-			}
-
-			// get command identifier
-			U8 cmd_id = msg->data;
-
-			if (charIsAlphaNum(cmd_id) == 0){
-				// invalid cmd_id
-				continue;
-			}
-			
-			// convert cmd_id to ascii and offset
-			U8 index = charToIndex(cmd_id);
-
-			// store it in cmd_reg
-			cmd_reg[index] = cmd_id;
-
-		} else if (ret_val && msg_hdr->type == KEY_IN){
-			// Keyboard Input
-
-			// get command char
-			RTX_MSG_CHAR * msg = (RTX_MSG_CHAR*) recv_buf;
-			U8 cmd_char = msg->data;
-			cmd_len++;
-
-			// first character should be %
-			if (cmd_len == 1 && cmd_char != 37){
-				cmd_invalid = 1;
-			}
-
-			// command length (including % and enter) larger than 64 bytes
-			if (cmd_len > 64){
-				cmd_invalid = 1;
-			}
-
-			// TODO: write charIsValid(), figure out what is a valid char?
-			if (!charIsValid(cmd_char)){
-				cmd_invalid = 1;
-			}
-
-			if (cmd_invalid == 0){
-				// valid command
-				// if enter: dequeue and create string
-				if (cmd_char == 13){
-					// populate command message buffer
-
-					void* msg = mem_alloc(sizeof(RTX_MSG_HDR) + cmd_len - 2);
-					RTX_MSG_HDR* hdr = msg;
-
-					//RTX_MSG_HDR *cmd_msg;
-					hdr->type = KCD_CMD;
-					hdr->length = sizeof(RTX_MSG_HDR) + cmd_len - 2; // exclude % and enter
-
-					// TODO: verify if string create works
-					for(int i=0; i<cmd_queue_counter-1; i++){
-						// exclude % at i=0
-						*((char*)msg + sizeof(RTX_MSG_HDR) + i) = cmd_queue[i+1];
-					}
-
-					task_t recv_tid = cmd_reg[charToIndex(cmd_queue[1])];
-
-					// TODO: check validity of cmd_id and task_id and cmd_len
-					RTX_TASK_INFO task_info;
-					k_tsk_get(recv_tid, &task_info);
-
-					// unregistered cmd_id or invalid tid
-					if(recv_tid <= 0 || task_info.state == DORMANT || recv_tid > MAX_TASKS){
-						SER_PutStr(0, "Command cannot be processed");
-					}else{
-
-						// send message to registered task id
-						int msg_sent = send_msg(recv_tid, msg);
-
-						if (!msg_sent){
-							SER_PutStr(0, "Command cannot be processed");
-						}
-					}
-					
-					// reset
-					for(int i=0; i<64; i++){
-						cmd_queue[i] = 0;
-					}
-					cmd_queue_counter = 0;
-					cmd_len = 0;
-					cmd_invalid = 0;
-
-				}else{
-					if(cmd_len >= 64){
-						cmd_invalid = 1;
-					}else{
-						// enqueue KEY_IN msg data
-						cmd_queue[cmd_queue_counter] = cmd_char;
-						cmd_queue_counter++;
-					}
-				}
-			}else{
-				// invalid command
-				// if enter: dequeue and output failure message
-				if (cmd_char == 13){
-					SER_PutStr(0, "Invalid Command");
-
-					// reset
-					for(int i=0; i<64; i++){
-						cmd_queue[i] = 0;
-					}
-					cmd_queue_counter = 0;
-					cmd_len = 0;
-					cmd_invalid = 0;
-				}
-			}
+		if (flag == 0) {
+			flag = 1;
+			msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+			msg.hdr.type = KCD_REG;
+			msg.data = 'q';
+			send_msg(TID_KCD, &msg);
+		} else if (flag == 1) {
+			flag = 2;
+			msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+			msg.hdr.type = KCD_REG;
+			msg.data = '!';
+			send_msg(TID_KCD, &msg);
+		} else if (flag == 2) {
+			flag = 3;
+			msg.hdr.length = sizeof(RTX_MSG_HDR) + 2;
+			msg.hdr.type = KCD_REG;
+			msg.data = '!';
+			send_msg(TID_KCD, &msg);
 		}
+		
 	}
 }
 
 void kcd_waiting(void){
+	mbx_create(KCD_MBX_SIZE);
+
+	RTX_MSG_CHAR msg;
+	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+	msg.hdr.type = KCD_REG;
+	msg.data = 'e';
+
+	send_msg(TID_KCD, &msg);
+
     while(1){
-        SER_PutStr(0, "Uno\r\n");
-        SER_PutStr(0, "Dos\r\n");
-        SER_PutStr(0, "Tres\r\n");
-        SER_PutStr(0, "Cuatro\r\n");
-        SER_PutStr(0, "Cinco\r\n");
-        SER_PutStr(0, "Seis\r\n");
-        SER_PutStr(0, "Siete\r\n");
-        SER_PutStr(0, "Ocho\r\n");
-        SER_PutStr(0, "Nueve\r\n");
-        SER_PutStr(0, "Diez\r\n");
-        SER_PutStr(0, "Once\r\n");
-        SER_PutStr(0, "Doce\r\n");
-        SER_PutStr(0, "Trece\r\n");
-        SER_PutStr(0, "Catorce\r\n");
-        SER_PutStr(0, "Quince\r\n");
-        SER_PutStr(0, "Dieciseis\r\n");
+    	U32 counter = 0;
+    	for(U32 timer = 0xFFFFFF; timer != 0; timer--){
+    		counter++;
+    	}
+        SER_PutStr(0, "Uno Cycle\r\n");
         tsk_yield();
     }
 }

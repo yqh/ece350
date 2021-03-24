@@ -67,7 +67,7 @@ void task_null (void)
     }
 }
 
-#define num_tasks 2
+#define num_tasks 4
 
 int main() 
 {    
@@ -88,8 +88,6 @@ int main()
     mode = __get_mode();
     printf("mode = 0x%x\r\n", mode);
 
-
-
     // System and Task set up by auto testing software
     if (ae_init(&sys_info, task_info, num_tasks) != RTX_OK) {
     	printf("RTX INIT FAILED\r\n");
@@ -101,7 +99,6 @@ int main()
         gp_current_task = NULL;
         k_rtx_init(task_info, num_tasks);
     }
-
 
     interrupt_init();
     task_null();
