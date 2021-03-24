@@ -39,6 +39,7 @@
  *****************************************************************************/
  
 #include "common.h"
+#include "common_ext.h"
 #include "k_inc.h"
 #include "k_HAL_CA.h"
 #include "interrupt.h"
@@ -46,6 +47,7 @@
 #include "k_task.h"
 #include "timer.h"
 #include "printf.h"
+#include "k_msg.h"
 
 #pragma push
 #pragma arm
@@ -241,6 +243,12 @@ void c_IRQ_Handler(void)
 			{
 				char c = UART0_GetRxData();	// would also clear the interrupt if last character is read
 				SER_PutChar(1, c);	        // display back
+                RTX_MSG_CHAR msg;
+                msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+                msg.hdr.type = KEY_IN;
+                msg.data = c;
+
+                k_send_msg(TID_KCD, &msg);
 			}
 			switch_flag = 1;
 		}
