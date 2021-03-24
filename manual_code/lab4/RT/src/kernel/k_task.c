@@ -855,7 +855,7 @@ void k_tsk_unblock (TCB *task) {
  *===========================================================================
  */
 
-int k_tsk_create_rt(task_t *tid, TASK_RT *task, RTX_MSG_HDR *msg_hdr, U32 num_msgs)
+int k_tsk_create_rt(task_t *tid, TASK_RT *task)
 {
     return 0;
 }

@@ -42,6 +42,35 @@
 
 
 /**
+ * C++ version 0.4 char* style "itoa":
+ * Written by Lukï¿½s Chmela
+ * Released under GPLv3.
+ */
+char* itoa(int value, char* result, int base) {
+    // check that the base if valid
+    if (base < 2 || base > 36) { *result = '\0'; return result; }
+
+    char* ptr = result, *ptr1 = result, tmp_char;
+    int tmp_value;
+
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+    } while ( value );
+
+    // Apply negative sign
+    if (tmp_value < 0) *ptr++ = '-';
+    *ptr-- = '\0';
+    while(ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    return result;
+}
+
+/**
  * @brief: a dummy task1
  */
 void utask1(void)
@@ -88,6 +117,95 @@ void utask2(void)
 	}
 	/* terminating */
 	// tsk_exit();
+}
+
+void kcd_reg_and_exit(void){
+	mbx_create(KCD_MBX_SIZE);
+	RTX_MSG_CHAR msg;
+	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+	msg.hdr.type = KCD_REG;
+	msg.data = 'q';
+	if(send_msg(TID_KCD, &msg) == RTX_OK){
+		SER_PutStr(0, "Sent Reg Msg");
+	}
+	tsk_exit();
+}
+
+void kcd_receive_and_print(void){
+	mbx_create(KCD_MBX_SIZE);
+	task_t sender_tid;
+	char* recv_buf = mem_alloc(KCD_MBX_SIZE);
+
+	RTX_MSG_CHAR msg;
+	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+	msg.hdr.type = KCD_REG;
+	msg.data = 'w';
+	send_msg(TID_KCD, &msg);
+
+	U8 flag = 0;
+
+	while(1){
+		int ret_val = recv_msg(&sender_tid, recv_buf, KCD_MBX_SIZE);
+		SER_PutStr(0, "kcd_receive_and_print: ");
+
+		if(ret_val != RTX_OK){
+			SER_PutStr(0, "Sike\r\n");
+			continue;
+		}
+
+		RTX_MSG_HDR* msg_hdr = (RTX_MSG_HDR*)(recv_buf);
+
+        if (msg_hdr->type != KCD_CMD){
+            // ignore message if data more than 1 char
+            SER_PutStr(0, " Not a CMD message\r\n");
+            continue;
+        }
+
+		*(recv_buf + ((RTX_MSG_HDR*)recv_buf)->length) = '\0';
+		SER_PutStr(0, recv_buf + sizeof(RTX_MSG_HDR));
+		SER_PutStr(0, "\r\n");
+
+		if (flag == 0) {
+			flag = 1;
+			msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+			msg.hdr.type = KCD_REG;
+			msg.data = 'q';
+			send_msg(TID_KCD, &msg);
+		} else if (flag == 1) {
+			flag = 2;
+			msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+			msg.hdr.type = KCD_REG;
+			msg.data = '!';
+			send_msg(TID_KCD, &msg);
+		} else if (flag == 2) {
+			flag = 3;
+			msg.hdr.length = sizeof(RTX_MSG_HDR) + 2;
+			msg.hdr.type = KCD_REG;
+			msg.data = '!';
+			send_msg(TID_KCD, &msg);
+		}
+
+	}
+}
+
+void kcd_waiting(void){
+	mbx_create(KCD_MBX_SIZE);
+
+	RTX_MSG_CHAR msg;
+	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+	msg.hdr.type = KCD_REG;
+	msg.data = 'e';
+
+	send_msg(TID_KCD, &msg);
+
+    while(1){
+    	U32 counter = 0;
+    	for(U32 timer = 0xFFFFFF; timer != 0; timer--){
+    		counter++;
+    	}
+        SER_PutStr(0, "Uno Cycle\r\n");
+        tsk_yield();
+    }
 }
 
 /*

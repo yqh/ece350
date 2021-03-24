@@ -242,13 +242,18 @@ void c_IRQ_Handler(void)
 			while(UART0_GetRxDataStatus())	// read while Data Ready is valid
 			{
 				char c = UART0_GetRxData();	// would also clear the interrupt if last character is read
-				SER_PutChar(1, c);	        // display back
-                RTX_MSG_CHAR msg;
-                msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
-                msg.hdr.type = KEY_IN;
-                msg.data = c;
+		        if( (U8) c == 13){
+		        	SER_PutStr(1, "\r\n");
+		        } else {
+			        SER_PutChar(1, c);	// display back
+		        }
 
-                k_send_msg(TID_KCD, &msg);
+	            RTX_MSG_CHAR msg;
+	            msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+	            msg.hdr.type = KEY_IN;
+	            msg.data = c;
+
+	            k_send_msg(TID_KCD, &msg);
 			}
 			switch_flag = 1;
 		}

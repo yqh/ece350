@@ -42,6 +42,10 @@
 void utask1(void);
 void utask2(void);
 
+void kcd_waiting(void);
+void kcd_reg_and_exit(void);
+void kcd_receive_and_print(void);
+
 #endif // ! USR_TASK_H_
 
 /*
