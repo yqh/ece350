@@ -27,23 +27,34 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
- *
+ * @file        k_rtx_init.h
+ * @brief       RTX System Initialization Header file
+ *              l2
  * @version     V1.2021.01
  * @authors     Yiqing Huang
  * @date        2021 JAN
  *
+ * @details
+ * @note
+ *
  *****************************************************************************/
-
  
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+#ifndef K_RTX_INIT_H_
+#define K_RTX_INIT_H_
 
-void task1(void);
-void task2(void);
+#include "k_inc.h"
+#include "interrupt.h"
+#include "timer.h"
 
-#endif // ! USR_TASK_H_
+/*
+ *===========================================================================
+ *                            FUNCTION PROTOTYPES
+ *===========================================================================
+ */
+
+int k_rtx_init  (RTX_TASK_INFO *task_info, int num_tasks);
+
+#endif /* ! K_RTX_INIT_H_ */
 
 /*
  *===========================================================================

@@ -3,7 +3,7 @@
  *
  *                  UNIVERSITY OF WATERLOO ECE 350 RTOS LAB
  *
- *                     Copyright 2020-2021 Yiqing Huang
+ *                     Copyright 2020-2021 Zehan Gao
  *                          All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,23 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
+ * @file        interrupt.c
+ * @brief       Interrupt configuration and handler code
+ * @version     V1.2021.02
+ * @authors     Zehan Gao
+ * @date        2021 FEB
  *
- * @version     V1.2021.01
- * @authors     Yiqing Huang
- * @date        2021 JAN
+ * @note		Only a skeleton for VE_A9
+ *
  *
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+void interrupt_init(void)
+{
 
-void task1(void);
-void task2(void);
+}
 
-#endif // ! USR_TASK_H_
+void disable_interrupt(void)
+{
 
-/*
- *===========================================================================
- *                             END OF FILE
- *===========================================================================
- */
+}

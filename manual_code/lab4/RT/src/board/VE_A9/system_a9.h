@@ -27,24 +27,38 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
- *
+ * @file        system_a9.h
+ * @brief       Coretx-A9 Generic CMSIS System Initialization
  * @version     V1.2021.01
  * @authors     Yiqing Huang
  * @date        2021 JAN
+ * @note
+ * @details
  *
  *****************************************************************************/
+#ifndef _SYSTEM_A9_H
+#define _SYSTEM_A9_H
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+#include "device_a9.h"
+#include "k_HAL_CA.h"
+#include "common.h"
 
-void task1(void);
-void task2(void);
+extern U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
 
-#endif // ! USR_TASK_H_
+/*
+ *===========================================================================
+ *                            FUNCTION PROTOTYPES
+ *===========================================================================
+ */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+
+extern void StackInit (void);
+extern void SystemInit (void);
+
+#endif /* _SYSTEM_A9_H */
 /*
  *===========================================================================
  *                             END OF FILE

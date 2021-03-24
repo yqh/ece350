@@ -27,23 +27,58 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
- *
+ * @file        k_rtx_init.c
+ * @brief       RTX System Initialization C file
+ *              l2
  * @version     V1.2021.01
  * @authors     Yiqing Huang
  * @date        2021 JAN
  *
+ * @details
+ * @note
+ *
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+#include "k_rtx_init.h"
+#include "Serial.h"
+#include "k_mem.h"
+#include "k_task.h"
 
-void task1(void);
-void task2(void);
+int k_rtx_init(RTX_TASK_INFO *task_info, int num_tasks)
+{
+    // Initialize UART0 Rx interrupts
+    UART0_Init();
+    // Set HPS0 timer to count down from
+    config_hps_timer(0,10000,1,0);
+    // Set A9 timer to count down from 0xFFFFFFFF every 1 us
+    // With this setting, A9 timer resets every ~1.2 hrs
+    config_a9_timer(0xFFFFFFFF,1,0,199);
 
-#endif // ! USR_TASK_H_
+    /* interrupts are already disabled when we enter here */
+    if ( k_mem_init() != RTX_OK) {
+        return RTX_ERR;
+    }
+
+    if ( k_tsk_init(task_info, num_tasks) != RTX_OK ) {
+        return RTX_ERR;
+    }
+    
+    /* start the first task */
+    //return k_tsk_start();
+    return RTX_OK;
+}
+
+int k_rtx_init_rt(RTX_SYS_INFO *sys_info, RTX_TASK_INFO *task_info, int num_tasks)
+{
+    /* initialize the scheduler here */
+    k_rtx_init(task_info, num_tasks);
+    return RTX_OK;
+}
+
+int k_get_sys_info(RTX_SYS_INFO *buffer)
+{
+    return RTX_OK;
+}
 
 /*
  *===========================================================================

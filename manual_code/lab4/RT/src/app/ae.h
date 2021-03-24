@@ -26,27 +26,53 @@
  ****************************************************************************
  */
 
+#ifndef AE_
+#define AE_
+
+#include "Serial.h"
+#include "printf.h"
+#include "rtx.h"
+#include "ae_priv_tasks.h"
+#include "ae_usr_tasks.h"
+
+/*
+ *===========================================================================
+ *                            FUNCTION PROTOTYPES
+ *===========================================================================
+ */
+
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
+ * @file        ae.h
+ * @brief       Automated Evaluation (AE) Framework Header File
  *
  * @version     V1.2021.01
  * @authors     Yiqing Huang
  * @date        2021 JAN
  *
+ * @attention
+ * @note
+ * @details
+ *
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+/*
+ *===========================================================================
+ *                            FUNCTION PROTOTYPES
+ *===========================================================================
+ */
 
-void task1(void);
-void task2(void);
+int  ae_init          (RTX_SYS_INFO *sys_info, \
+                       RTX_TASK_INFO *task_info, int num_tasks);
+int  ae_set_sys_info  (RTX_SYS_INFO *sys_info);
+void ae_set_task_info (RTX_TASK_INFO *tasks, int num_tasks);
+int  ae_start(void);
 
-#endif // ! USR_TASK_H_
+int  test_mem(void);
 
+#endif // ! AE_
 /*
  *===========================================================================
  *                             END OF FILE
  *===========================================================================
  */
+

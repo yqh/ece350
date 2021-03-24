@@ -27,26 +27,38 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
+ * @file        k_mem.h
+ * @brief       Kernel Memory Management API Header File
  *
- * @version     V1.2021.01
+ * @version     V1.2021.01.lab2
  * @authors     Yiqing Huang
  * @date        2021 JAN
  *
+ * @note        skeleton code
+ *
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
 
-void task1(void);
-void task2(void);
+#ifndef K_MEM_H_
+#define K_MEM_H_
+#include "k_inc.h"
 
-#endif // ! USR_TASK_H_
+/*
+ * ------------------------------------------------------------------------
+ *                             FUNCTION PROTOTYPES
+ * ------------------------------------------------------------------------
+ */
+int     k_mem_init          (void);
+void   *k_mem_alloc         (size_t size);
+int     k_mem_dealloc       (void *ptr);
+int     k_mem_count_extfrag (size_t size);
+U32    *k_alloc_k_stack     (task_t tid);
+U32    *k_alloc_p_stack     (task_t tid);
+#endif // ! K_MEM_H_
 
 /*
  *===========================================================================
  *                             END OF FILE
  *===========================================================================
  */
+

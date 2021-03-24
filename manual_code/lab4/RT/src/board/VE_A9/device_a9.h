@@ -27,8 +27,8 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
+ * @file        device_a9.h
+ * @brief       Cortex-A9 device header file
  *
  * @version     V1.2021.01
  * @authors     Yiqing Huang
@@ -36,15 +36,22 @@
  *
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+#ifndef DEVICE_A9_H_
+#define DEVICE_A9_H_
 
-void task1(void);
-void task2(void);
+/*
+ *===========================================================================
+ *                             MACROS
+ *===========================================================================
+ */
 
-#endif // ! USR_TASK_H_
+#define NUM_PRIV_MODES  0x00000006      // 6 privileged modes
+#define STACK_SZ        0x00000200      // 512 B stack for each mode
+#define RAM_SIZE        0x40000000      // The VE9 has 2G RAM, we only use 1G
+#define RAM_END         0xBFFFFFFF      // The VE9 RAM END is 0xFFFFFFFF, we
+                                        // only use 1G
 
+#endif
 /*
  *===========================================================================
  *                             END OF FILE

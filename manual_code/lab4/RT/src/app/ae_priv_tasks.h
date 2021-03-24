@@ -27,8 +27,8 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
+ * @file        priv_tasks.h
+ * @brief       Two privileged tasks header file
  *
  * @version     V1.2021.01
  * @authors     Yiqing Huang
@@ -36,15 +36,29 @@
  *
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+#ifndef PRIV_TASKS_H_
+#define PRIV_TASKS_H_
 
-void task1(void);
-void task2(void);
+#include "k_rtx.h"
+#include "rtx.h"
 
-#endif // ! USR_TASK_H_
+/*
+ *===========================================================================
+ *                             MACROS
+ *===========================================================================
+ */
+#define DELAY 5000000
 
+/*
+ *===========================================================================
+ *                            FUNCTION PROTOTYPES
+ *===========================================================================
+ */
+extern void task1(void);
+
+void ktask1     (void);
+
+#endif // ! PRIV_TASKS_H_
 /*
  *===========================================================================
  *                             END OF FILE

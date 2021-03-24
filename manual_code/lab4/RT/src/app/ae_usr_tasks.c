@@ -27,23 +27,68 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
+ * @file        a usr_tasks.c
+ * @brief       Two user/unprivileged  tasks: task1 and task2
  *
  * @version     V1.2021.01
  * @authors     Yiqing Huang
  * @date        2021 JAN
- *
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+#include "ae_usr_tasks.h"
+#include "rtx.h"
+#include "Serial.h"
+#include "printf.h"
 
-void task1(void);
-void task2(void);
 
-#endif // ! USR_TASK_H_
+/**
+ * @brief: a dummy task1
+ */
+void utask1(void)
+{
+	SER_PutStr(0, "utask1: entering \n\r");
+	/* do something */
+	long int x = 0;
+	int i = 0;
+	int j = 0;
+	while (1) {
+		SER_PutStr(0, "utask1: ");
+		char out_char = 'a' + i % 10;
+		for (j = 0; j < 5; j++)
+		{
+			SER_PutChar(0, out_char);
+		}
+		SER_PutStr(0, "\n\r");
+		++i;
+		for (x = 0; x < 5000000; x++)
+			; // some artifical delay
+	}
+	/* terminating */
+	// tsk_exit();
+}
+
+void utask2(void)
+{
+	SER_PutStr(0, "utask2: entering \n\r");
+	/* do something */
+	long int x = 0;
+	int i = 0;
+	int j = 0;
+	while (1)
+	{
+		SER_PutStr(0, "utask2: ");
+		char out_char = 'A' + i % 10;
+		for (j = 0; j < 5; j++) {
+			SER_PutChar(0, out_char);
+		}
+		SER_PutStr(0, "\n\r");
+		++i;
+		for (x = 0; x < 5000000; x++)
+			; // some artifical delay
+	}
+	/* terminating */
+	// tsk_exit();
+}
 
 /*
  *===========================================================================

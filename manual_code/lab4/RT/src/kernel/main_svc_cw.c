@@ -26,25 +26,67 @@
  ****************************************************************************
  */
 
+
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
- *
- * @version     V1.2021.01
+ * @file:   	main_svc.c
+ * @brief:  	main routine to start up the RTX and two initial tasks
+ * @version     V1.2021.01.lab2
  * @authors     Yiqing Huang
  * @date        2021 JAN
- *
+ * @note 		standard C library is not allowed in the final kernel code.
+ *       		A tiny printf function for embedded application development
+ *       		taken from http://www.sparetimelabs.com/tinyprintf/tinyprintf.php
+ *       		is configured to use UART0 to output when DEBUG_0 is defined.
+ *       		The init_printf(NULL, putc) MUST be called to initialize
+ *       		the printf function.
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
 
-void task1(void);
-void task2(void);
+#include "ae.h"
+#include "system_a9.h"
+#include "Serial.h"
+#include "printf.h"
+#include "k_inc.h"
+#include "k_rtx.h"
 
-#endif // ! USR_TASK_H_
+void task_null (void)
+{
+    while (1) {
+#ifdef DEBUG_0
+        for ( int i = 0; i < 5; i++ ){
+            printf("==============Task NULL===============\r\n");
+        }
+#endif
+        k_tsk_yield();
+    }
+}
 
+int main() 
+{    
+    static RTX_SYS_INFO  sys_info;
+    static RTX_TASK_INFO task_info[3];
+    char mode = __get_mode();
+
+    init_printf(NULL, putc);	// printf uses uart1 for output
+    printf("mode = 0x%x\r\n", mode);
+
+    // System and Task set up by auto testing software
+    if (ae_init(&sys_info, task_info, 3) != RTX_OK) {
+    	printf("RTX INIT FAILED\r\n");
+    	return RTX_ERR;
+    }
+
+    // start the RTX and built-in tasks
+    if (mode == MODE_SVC) {
+        gp_current_task = NULL;
+        k_rtx_init(task_info, 3);
+    }
+
+    task_null();
+
+    // We should never reach here!!!
+    return RTX_ERR;  
+}
 /*
  *===========================================================================
  *                             END OF FILE

@@ -27,8 +27,8 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
+ * @file        ae_mem.c
+ * @brief       memory lab auto-tester
  *
  * @version     V1.2021.01
  * @authors     Yiqing Huang
@@ -36,15 +36,41 @@
  *
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+#include "rtx.h"
+#include "Serial.h"
+#include "printf.h"
 
-void task1(void);
-void task2(void);
+int test_mem(void) {
+    void *p[4];
+    int n;
 
-#endif // ! USR_TASK_H_
+    U32 result = 0;
 
+    p[0] = mem_alloc(8);
+
+    if (p[0] != NULL) {
+        result |= BIT(0);
+    }
+
+    p[1] = mem_alloc(8);
+
+    if (p[1] != NULL && p[1] != p[0]) {
+        result |= BIT(1);
+    }
+
+    mem_dealloc(p[0]);
+    n = mem_count_extfrag(128);
+    if (n == 1) {
+        result |= BIT(2);
+    }
+
+    mem_dealloc(p[1]);
+    n = mem_count_extfrag(128);
+    if (n == 0) {
+        result |= BIT(3);
+    }
+    return result;
+}
 /*
  *===========================================================================
  *                             END OF FILE

@@ -27,24 +27,25 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
- *
- * @version     V1.2021.01
+ * @file        k_rtx.h
+ * @brief       Kernel API Header File
+ *              l2
+ * @version     V1.2021.01.lab2
  * @authors     Yiqing Huang
  * @date        2021 JAN
  *
+ * @note        all kernel .c files include this one
+ *
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+#ifndef K_RTX_H_
+#define K_RTX_H_
 
-void task1(void);
-void task2(void);
-
-#endif // ! USR_TASK_H_
-
+#include "k_rtx_init.h"
+#include "k_task.h"
+#include "k_mem.h"
+//#include "k_msg.h" // lab3
+#endif /* ! K_RTX_H_ */
 /*
  *===========================================================================
  *                             END OF FILE

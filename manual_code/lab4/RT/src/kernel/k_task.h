@@ -27,26 +27,59 @@
  */
 
 /**************************************************************************//**
- * @file        usr_task.h
- * @brief       Two user tasks header file
+ * @file        k_task.h
+ * @brief       Task Management Header File
  *
  * @version     V1.2021.01
  * @authors     Yiqing Huang
  * @date        2021 JAN
  *
+ * @details
+ * @note        Starter code assumes there are only two privileged tasks
+ *
  *****************************************************************************/
 
- 
-#ifndef USR_TASK_H_
-#define USR_TASK_H_
+#ifndef K_TASK_H_
+#define K_TASK_H_
 
-void task1(void);
-void task2(void);
+#include "k_inc.h"
+#include "k_HAL_CA.h"
 
-#endif // ! USR_TASK_H_
+/*
+ *==========================================================================
+ *                            GLOBAL VARIABLES
+ *==========================================================================
+ */
+
+extern TCB *gp_current_task;
 
 /*
  *===========================================================================
- *                             END OF FILE
+ *                            FUNCTION PROTOTYPES
  *===========================================================================
  */
+
+extern void task_null	(void);
+
+
+// Implemented by Starter Code
+
+int  k_tsk_init         (RTX_TASK_INFO *task_info, int num_tasks);
+                                 /* initialize all tasks in the system */
+int  k_tsk_create_new   (RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid);
+                                 /* create a new task with initial context sitting on a dummy stack frame */
+TCB *scheduler          (void);  /* return the TCB of the next ready to run task */
+void k_tsk_switch       (TCB *); /* kernel thread context switch, two stacks */
+int  k_tsk_run_new      (void);  /* kernel runs a new thread  */
+int  k_tsk_yield        (void);  /* kernel tsk_yield function */
+
+// Not implemented, to be done by students
+int  k_tsk_create       (task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size);
+void k_tsk_exit         (void);
+int  k_tsk_set_prio     (task_t task_id, U8 prio);
+int  k_tsk_get          (task_t task_id, RTX_TASK_INFO *buffer);
+int k_tsk_create_rt(task_t *tid, TASK_RT *task);
+void k_tsk_done_rt      (void);
+void k_tsk_suspend      (struct timeval_rt *tv);
+
+#endif // ! K_TASK_H_
