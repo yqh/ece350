@@ -133,7 +133,7 @@ void putc(void *p, char c)
   if ( p != NULL ) {
     SER_PutStr(0,"putc: first parameter needs to be NULL");
   } else {
-    SER_PutChar(1,c);
+    SER_PutChar(0,c);
   }
 }
 

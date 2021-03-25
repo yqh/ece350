@@ -246,7 +246,7 @@ void c_IRQ_Handler(void)
 		}
 		else
 		{   // unexpected interrupt type
-			SER_PutStr(0, "Error interrupt type\n");
+			SER_PutStr(0, "Error interrupt type!\r\n");
 		}
 	}
 	else if(interrupt_ID == HPS_TIMER0_IRQ_ID)
@@ -255,7 +255,7 @@ void c_IRQ_Handler(void)
 		a9_timer_curr = timer_get_current_val(2);	//get the current value of the free running timer
 		if ((a9_timer_last - a9_timer_curr) > 500000U)
 		{
-			printf("%d ms passed\n", ((a9_timer_last - a9_timer_curr)/1000U));
+			printf("%d ms passed!\r\n", ((a9_timer_last - a9_timer_curr)/1000U));
 			a9_timer_last = a9_timer_curr;
 		}
 	}
@@ -269,7 +269,7 @@ void c_IRQ_Handler(void)
 	}
 	else
 	{
-		printf("unrecognized interrupt");
+		printf("unrecognized interrupt!\r\n");
 	}
 	// Write to the End of Interrupt Register (ICCEOIR)
 	GIC_EndInterrupt(interrupt_ID);
