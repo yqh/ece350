@@ -82,4 +82,6 @@ int k_tsk_create_rt(task_t *tid, TASK_RT *task);
 void k_tsk_done_rt      (void);
 void k_tsk_suspend      (struct timeval_rt *tv);
 
+void wake_up(TIMEVAL curr_time);
+
 #endif // ! K_TASK_H_

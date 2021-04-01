@@ -122,6 +122,60 @@ The memory map of the OS image may look like the following:
     
 ---------------------------------------------------------------------------*/ 
 
+
+/*
+ *==========================================================================
+ *                             UTILITY
+ *==========================================================================
+ */
+
+// returns 1 if t1 is earlier than t2
+int compare_timeval(TIMEVAL t1, TIMEVAL t2) {
+	return t1.sec < t2.sec || (t1.sec == t2.sec && t1.usec < t2.usec);
+}
+
+/*
+ *==========================================================================
+ *                            EDF VARIABLES
+ *==========================================================================
+ */
+
+typedef struct edf_task_rt {
+	TASK_RT info;
+	TIMEVAL deadline;
+	int flag; // if flag is -1, not in use.
+} EDF_TASK_RT;
+
+static EDF_TASK_RT edf_array[MAX_TASKS];
+
+/*
+ *===========================================================================
+ *                            EDF FUNCTIONS
+ *===========================================================================
+ */
+
+void edf_insert(task_t tid, TASK_RT info) {
+	if (edf_array[tid].flag > 0) {
+		// this is really bad
+	}
+
+	edf_array[tid].info = info;
+
+	// TODO: fix this to use the timers
+	edf_array[tid].deadline.sec = 0;
+	edf_array[tid].deadline.usec = 0;
+
+	edf_array[tid].flag = 0;
+}
+
+void edf_remove(task_t tid) {
+	if (edf_array[tid].flag < 0) {
+		// this is really bad
+	}
+
+	edf_array[tid].flag = -1;
+}
+
 /*
  *==========================================================================
  *                            SCHEDULER VARIABLES
@@ -139,7 +193,25 @@ static U32 g_task_count = 0;
  *===========================================================================
  */
 
+extern int compare(TCB *t1, TCB* t2);
+
+int compare_rt(TCB *t1, TCB* t2) {
+	if (t1->prio != PRIO_RT || t2->prio != PRIO_RT) {
+		return compare(t1, t2);
+	}
+
+	EDF_TASK_RT rt1 = edf_array[t1->tid];
+	EDF_TASK_RT rt2 = edf_array[t2->tid];
+
+	// TODO: compare rt1 and rt2 using info + last_run
+	return compare_timeval(rt1.deadline, rt2.deadline);
+}
+
 int compare(TCB *t1, TCB* t2) {
+	if (t1->prio == PRIO_RT && t2->prio == PRIO_RT) {
+		return compare_rt(t1, t2);
+	}
+
     int result = (*t1).prio < (*t2).prio || ((*t1).prio == (*t2).prio && (*t1).task_count <= (*t2).task_count);
   //  printf("V1: %d, %d, %d - V2: %d, %d, %d - Result: %d\r\n", t1->tid, t1->prio, t1->task_count, t2->tid, t2->prio, t2->task_count, result);
     return result;
@@ -202,6 +274,7 @@ int insert(TCB* heap[], TCB* value) {
     heap[current_size] = value;
     increase_key(heap, current_size);
     current_size ++;
+
     return 0;
 }
 
@@ -266,6 +339,40 @@ void remove_id(TCB* heap[], U8 tid) {
 
 /*
  *===========================================================================
+ *                        SUSPENDED FUNCTIONS
+ *===========================================================================
+ */
+
+typedef struct suspended_task_info {
+	TIMEVAL wake_up_time;
+	int valid_flag; // if flag is -1, not in use
+} SUSPENDED_TASK_INFO;
+
+static SUSPENDED_TASK_INFO sus_array[MAX_TASKS];
+
+void suspend(task_t tid, TIMEVAL wake_up_time) {
+	sus_array[tid].wake_up_time = wake_up_time;
+	sus_array[tid].valid_flag = 0;
+}
+
+void wake_up(TIMEVAL curr_time) {
+	for (int i = 0; i < MAX_TASKS; i++) {
+		if (sus_array[i].valid_flag < 0) { continue; }
+
+		TIMEVAL wake_up_time = sus_array[i].wake_up_time;
+
+		if (compare_timeval(wake_up_time, curr_time)) {
+			TCB* tcb = &g_tcbs[i];
+			tcb->state = READY;
+			insert(heap, tcb);
+			EDF_TASK_RT info = edf_array[i];
+			// Maybe update deadline??
+		}
+	}
+}
+
+/*
+ *===========================================================================
  *                            FUNCTIONS
  *===========================================================================
  */
@@ -292,8 +399,9 @@ TCB *scheduler(void)
 	TCB* max_ready_tcb = &g_tcbs[(U8)tid];
 
 	// current task has higher priority
-	if (gp_current_task->state != DORMANT &&
-		gp_current_task->state != BLK_MSG &&
+	if (gp_current_task->state != DORMANT   &&
+		gp_current_task->state != BLK_MSG   &&
+		gp_current_task->state != SUSPENDED &&
 		current_tcb->prio < max_ready_tcb->prio) {
 
 		return gp_current_task;
@@ -302,7 +410,7 @@ TCB *scheduler(void)
 	gp_current_task = max_ready_tcb;
     extract_max(heap);
 
-    if (current_tcb->state != BLK_MSG) {
+    if (current_tcb->state != BLK_MSG && current_tcb->state != SUSPENDED) {
     	insert(heap, current_tcb);
     }
 
@@ -368,6 +476,27 @@ int k_tsk_init(RTX_TASK_INFO *task_info, int num_tasks)
         }
         p_taskinfo++;
         numCreated++;
+    }
+
+    return RTX_OK;
+}
+
+int validate_stack_size(int stack_size) {
+    // stack size too small
+    if (stack_size < PROC_STACK_SIZE){
+        return RTX_ERR;
+    }
+
+    // stack size too big
+    size_t ALL_HEAP = 0xFFFFFFFF;
+    size_t suitable_regions = k_mem_count_extfrag(ALL_HEAP) - k_mem_count_extfrag(stack_size);
+    if (!suitable_regions){
+        return RTX_ERR;
+    }
+
+    // stack_size not 8 bytes aligned
+    if (stack_size % 8 != 0){
+        return RTX_ERR;
     }
 
     return RTX_OK;
@@ -442,7 +571,7 @@ int k_tsk_create_new(RTX_TASK_INFO *p_taskinfo, TCB *p_tcb, task_t tid)
         //*** allocate user stack from the user space, not implemented yet ***//
         //********************************************************************//
         p_tcb->u_stack_size = p_taskinfo->u_stack_size;
-        *(--sp) = (U32) k_alloc_p_stack(tid);
+        *(--sp) = (U32)k_alloc_p_stack(tid);
 
         // store user stack hi pointer in TCB
         p_tcb->u_stack_hi = *sp;    // user stack hi grows downwards
@@ -544,7 +673,9 @@ int k_tsk_run_new(void)
     // at this point, gp_current_task != NULL and p_tcb_old != NULL
     if (gp_current_task != p_tcb_old) {
     	gp_current_task->state = RUNNING;   // change state of the to-be-switched-in  tcb
-    	if(p_tcb_old->state != DORMANT && p_tcb_old->state != BLK_MSG){
+    	if(p_tcb_old->state != DORMANT &&
+    	   p_tcb_old->state != BLK_MSG &&
+		   p_tcb_old->state != SUSPENDED){
             p_tcb_old->state = READY;       // change state of the to-be-switched-out tcb
     	}
         k_tsk_switch(p_tcb_old);            // switch stacks
@@ -602,21 +733,8 @@ int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size
         return RTX_ERR;
     }
 
-    // stack size too small
-    if (stack_size < PROC_STACK_SIZE){
-        return RTX_ERR;
-    }
-
-    // stack size too big
-    size_t ALL_HEAP = 0xFFFFFFFF;
-    size_t suitable_regions = k_mem_count_extfrag(ALL_HEAP) - k_mem_count_extfrag(stack_size);
-    if (!suitable_regions){
-        return RTX_ERR;
-    }
-
-    // stack_size not 8 bytes aligned
-    if (stack_size % 8 != 0){
-        return RTX_ERR;
+    if (validate_stack_size(stack_size) == RTX_ERR) {
+    	return RTX_ERR;
     }
 
     // prio invalid
@@ -681,6 +799,11 @@ void k_tsk_exit(void)
 
     if (p_tcb_old->mailbox) {
     	k_mem_dealloc((void*)p_tcb_old->mailbox);
+    }
+
+    if (p_tcb_old->prio == PRIO_RT) {
+    	edf_remove(p_tcb_old->tid);
+    	// TODO: Check deadline against timer!
     }
 
     g_num_active_tasks--;
@@ -857,13 +980,84 @@ void k_tsk_unblock (TCB *task) {
 
 int k_tsk_create_rt(task_t *tid, TASK_RT *task)
 {
-    return 0;
+	if (task->p_n.usec % 500 != 0        ||
+	    !task->task_entry                ||
+		task->rt_mbx_size < MIN_MBX_SIZE ||
+		g_num_active_tasks == MAX_TASKS  ||
+		validate_stack_size(task->u_stack_size) == RTX_ERR) {
+		return RTX_ERR;
+	}
+
+	if (g_num_active_tasks == MAX_TASKS) {
+		return RTX_ERR;
+	}
+
+	RTX_TASK_INFO task_info;
+	TCB * tcb = NULL;
+
+	for (int i = 0; i < MAX_TASKS; i++) {
+		if (g_tcbs[i].state == DORMANT) {
+			tcb = &g_tcbs[i];
+			break;
+		}
+	}
+
+	*tid = tcb->tid;
+	task_info.prio = PRIO_RT;
+	task_info.priv = 0;
+	task_info.u_stack_size = task->u_stack_size;
+	task_info.ptask = task->task_entry;
+
+	edf_insert(tcb->tid, *task);
+
+	if (k_tsk_create_new(&task_info, tcb, *tid) == RTX_ERR) {
+		return RTX_ERR;
+	}
+
+	g_num_active_tasks ++;
+
+    return RTX_OK;
 }
 
 void k_tsk_done_rt(void) {
 #ifdef DEBUG_0
     printf("k_tsk_done: Entering\r\n");
 #endif /* DEBUG_0 */
+
+    EDF_TASK_RT rt_info = edf_array[gp_current_task->tid];
+    RTX_TASK_INFO info;
+    k_tsk_get(gp_current_task->tid, &info);
+
+    // TODO: logic for suspended
+    gp_current_task->state = SUSPENDED;
+    suspend(gp_current_task->tid, rt_info.deadline);
+
+    U32* sp = (U32*)info.k_stack_hi;;
+
+    if (gp_current_task->priv == 0) {
+    	// Walk through sp to reset values
+    	--sp;
+    	*(--sp) = (U32)info.ptask;
+    	*(--sp) = info.u_stack_hi;
+
+        for ( int j = 0; j < 13; j++ ) {
+            *(--sp) = 0x0;
+        }
+
+        --sp;
+    } else {
+    	*(--sp) = (U32) info.ptask;
+    }
+
+    // kernel stack R0 - R12, 13 registers
+    for ( int j = 0; j < 13; j++) {
+        *(--sp) = 0x0;
+    }
+
+    gp_current_task->msp = sp;
+
+    k_tsk_run_new();
+
     return;
 }
 
@@ -872,6 +1066,13 @@ void k_tsk_suspend(struct timeval_rt *tv)
 #ifdef DEBUG_0
     printf("k_tsk_suspend: Entering\r\n");
 #endif /* DEBUG_0 */
+    if ((tv->sec == 0 && tv->usec == 0) || tv->usec % 500 != 0) { return; }
+
+    gp_current_task->state = SUSPENDED;
+    suspend(gp_current_task->tid, *tv);
+
+    k_tsk_run_new();
+
     return;
 }
 
