@@ -17,3 +17,12 @@ This directory contains starter code of each lab.
 
 ### `submission`
 This directory contains template files for project submissions.
+
+Within manual_code:
+
+#### `template`
+This directory contains the code the group edited for this project.
+
+The directory kernel contains the code used for memory management. 
+
+The directory app contains the file ae_mem.c which contains our testing code.

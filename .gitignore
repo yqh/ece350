@@ -32,6 +32,7 @@ manual/*.toc
 *.crf
 *.d
 *.plg
+*.xml
 # *.sct
 *.tra
 *.lnp

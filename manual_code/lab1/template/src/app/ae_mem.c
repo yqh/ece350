@@ -24,37 +24,348 @@
 #include "Serial.h"
 #include "printf.h"
 
-int test_mem(void) {
-    void *p[4];
-    int n;
+int test_coales(void) {
+	U32 result = 0;
+	if (countNodes()==1){
+		result |= BIT(0);
+	}
 
-    U32 result = 0;
+	void *p[4];
 
-    p[0] = mem_alloc(8);
+	p[0] = mem_alloc(12);
+	p[1] = mem_alloc(24);
+	p[2] = mem_alloc(48);
 
-    if (p[0] != NULL) {
-        result |= BIT(0);
-    }
-
-    p[1] = mem_alloc(8);
-
-    if (p[1] != NULL && p[1] != p[0]) {
-        result |= BIT(1);
-    }
-
-    mem_dealloc(p[0]);
-    n = mem_count_extfrag(128);
-    if (n == 1) {
-        result |= BIT(2);
+    if (countNodes()==4){
+    	result |= BIT(1);
     }
 
     mem_dealloc(p[1]);
-    n = mem_count_extfrag(128);
-    if (n == 0) {
-        result |= BIT(3);
-    }
-    return result;
+    if (countNodes()==4){
+		result |= BIT(2);
+	}
+
+    mem_dealloc(p[0]);
+	if (countNodes()==3){
+		result |= BIT(3);
+	}
+
+	mem_dealloc(p[2]);
+	if (countNodes()==1){
+		result |= BIT(4);
+	}
+
+	return result == 31;
 }
+
+int test_reuse_freed(void) {
+	void *p[4];
+	U32 result = 0;
+	if (countNodes()==1){
+		result |= BIT(0);
+	}
+
+	p[0] = mem_alloc(12);
+	p[1] = mem_alloc(24);
+	p[2] = mem_alloc(48);
+
+    if (countNodes()==4){
+    	result |= BIT(1);
+    }
+
+    mem_dealloc(p[0]);
+    if (countNodes()==4){
+		result |= BIT(2);
+	}
+
+    p[3] = mem_alloc(12);
+	if (countNodes()==4){
+		result |= BIT(3);
+	}
+
+	mem_dealloc(p[1]);
+	mem_dealloc(p[2]);
+	mem_dealloc(p[3]);
+	if (countNodes()==1){
+		result |= BIT(4);
+	}
+
+	if(memLeakCheck()==1){
+		result |= BIT(5);
+	}
+
+	return result == 63;
+}
+
+int test_reuse_freed_2(void) {
+	void *p[4];
+	U32 result = 0;
+	if (countNodes()==1){
+		result |= BIT(0);
+	}
+
+	p[0] = mem_alloc(12);
+	p[1] = mem_alloc(24);
+	p[2] = mem_alloc(48);
+
+    if (countNodes()==4){
+    	result |= BIT(1);
+    }
+
+    mem_dealloc(p[1]);
+    if (countNodes()==4){
+		result |= BIT(2);
+	}
+
+    p[3] = mem_alloc(20);
+	if (countNodes()==4){
+		result |= BIT(3);
+	}
+
+	mem_dealloc(p[0]);
+	mem_dealloc(p[2]);
+	mem_dealloc(p[3]);
+	if (countNodes()==1){
+		result |= BIT(4);
+	}
+
+	if(memLeakCheck()==1){
+		result |= BIT(5);
+	}
+
+	return result == 63;
+}
+
+int test_malloc_new_node(void) {
+	void *p[4];
+	U32 result = 0;
+	if (countNodes()==1){
+		result |= BIT(0);
+	}
+
+	p[0] = mem_alloc(12);
+	p[1] = mem_alloc(60);
+	p[2] = mem_alloc(48);
+
+    if (countNodes()==4){
+    	result |= BIT(1);
+    }
+
+	mem_dealloc(p[1]);
+    if (countNodes()==4){
+		result |= BIT(2);
+	}
+
+	p[3] = mem_alloc(12);
+	if (countNodes()==5){
+		result |= BIT(3);
+	}
+
+	mem_dealloc(p[3]);
+    if (countNodes()==4){
+		result |= BIT(4);
+	}
+
+	mem_dealloc(p[0]);
+	mem_dealloc(p[2]);
+	if (countNodes()==1){
+		result |= BIT(5);
+	}
+
+	if(memLeakCheck()==1){
+		result |= BIT(6);
+	}
+
+	return result == 127;
+}
+
+int test_mem_leak(){
+	void *p[4];
+	U32 result = 0;
+	if(memLeakCheck()==1){
+		result |= BIT(0);
+	}
+
+	p[0] = mem_alloc(12);
+
+	if(memLeakCheck()==1){
+		result |= BIT(1);
+	}
+
+	mem_dealloc(p[0]);
+
+	if(memLeakCheck()==1){
+		result |= BIT(2);
+	}
+
+	return result == 7;
+}
+
+int test_extfrag(void){
+	U32 result = 0;
+	if (countNodes() == 1){
+		result |= BIT(0);
+	}
+
+	void *p[10];
+
+	p[0] = mem_alloc(12);
+	p[1] = mem_alloc(12);
+	p[2] = mem_alloc(12);
+	p[3] = mem_alloc(12);
+	p[4] = mem_alloc(16);
+	p[5] = mem_alloc(12);
+	p[6] = mem_alloc(18);
+
+	if (countNodes() == 8){
+    	result |= BIT(1);
+    }
+
+	mem_dealloc(p[2]);
+	p[7] = mem_alloc(15);
+
+	if (countNodes() == 9){
+    	result |= BIT(2);
+    }
+
+	mem_dealloc(p[4]);
+	p[8] = mem_alloc(18);
+
+	if (countNodes() == 10){
+    	result |= BIT(3);
+    }
+
+	if (mem_count_extfrag(12+12) == 0){
+		result |= BIT(4);
+	}
+
+	if (mem_count_extfrag(13+12) == 1){
+		result |= BIT(5);
+	}
+
+	if (mem_count_extfrag(17+12) == 2){
+		result |= BIT(6);
+	}
+
+	mem_dealloc(p[0]);
+	mem_dealloc(p[1]);
+
+	mem_dealloc(p[3]);
+
+	mem_dealloc(p[5]);
+	mem_dealloc(p[6]);
+	mem_dealloc(p[7]);
+	mem_dealloc(p[8]);
+
+	return result == 127;
+}
+
+int test_utilization(void) {
+	unsigned int totalUsed = 0;
+    unsigned int counter = 0;
+    unsigned int regionSize = 1048576;
+    unsigned int magicSize = 1070585247;
+
+    while(1){
+        if (mem_alloc(regionSize) == NULL) {
+            break;
+        }
+        totalUsed += regionSize;
+        counter++;
+        if(totalUsed > magicSize){
+        	return -1;
+        }
+    }
+
+    unsigned int numAllocs = counter;
+    return 0;
+}
+
+int test_throughput(void){
+	for(int i = 0; i < 200; i++){
+		test_reuse_freed_2();
+	}
+	return 1;
+}
+
+int test4mock(){
+	void *p[15];
+	p[0] = mem_alloc(8);
+	p[1] = mem_alloc(8);
+	p[2] = mem_alloc(8);
+	p[3] = mem_alloc(8);
+	p[4] = mem_alloc(8);
+	p[5] = mem_alloc(8);
+	p[6] = mem_alloc(8);
+	p[7] = mem_alloc(8);
+	p[8] = mem_alloc(8);
+	p[9] = mem_alloc(8);
+
+	mem_dealloc(p[0]);
+	mem_dealloc(p[2]);
+	mem_dealloc(p[4]);
+	mem_dealloc(p[6]);
+	mem_dealloc(p[8]);
+
+	printf("Extfrag Regions: %d\r\n", mem_count_extfrag(8+12+1));
+	printf("Extfrag Regions: %d\r\n", mem_count_extfrag(8+12));
+
+	p[10] = mem_alloc(8);
+	p[11] = mem_alloc(8);
+	p[12] = mem_alloc(8);
+	p[13] = mem_alloc(8);
+	p[14] = mem_alloc(8);
+
+	printf("Extfrag Regions: %d\r\n", mem_count_extfrag(8+12+1));
+	printf("Extfrag Regions: %d\r\n", mem_count_extfrag(8+12));
+
+	return 1;
+}
+
+int test_mem(void) {
+// Function Tests:
+//	U32 result = 0;
+//
+//	if(test_mem_leak()){
+//		result |= BIT(0);
+//	}
+//	if(test_coales()){
+//		result |= BIT(1);
+//	}
+//	if(test_reuse_freed()){
+//		result |= BIT(2);
+//	}
+//	if(test_reuse_freed_2()){
+//		result |= BIT(3);
+//	}
+//	if(test_malloc_new_node()){
+//		result |= BIT(4);
+//	}
+//	if(test_extfrag()){
+//		result |= BIT(5);
+//	}
+//
+//  return result == 63;
+
+//  Failing Testcase:
+	U32 result = 0;
+	if(test4Mock()){
+		result |= BIT(0);
+	}
+	return 1;
+
+// 	Throughput Test: (function needs to be updated
+//	test_throughput();
+//  return 1;
+
+//  Utilization Test: Maxes out memory
+	int utilResult = test_utilization();
+	return 1;
+
+
+}
+
+
 /*
  *===========================================================================
  *                             END OF FILE

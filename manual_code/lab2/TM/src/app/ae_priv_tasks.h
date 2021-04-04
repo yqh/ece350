@@ -59,6 +59,11 @@ extern void task1(void);
 void priv_task1     (void);
 void priv_task2     (void);
 
+void priv_task_entry(void);
+void priv_tasks_scheduling(void);
+void priv_task_check_sp(void);
+void testDataOwnership(void);
+
 #endif // ! PRIV_TASKS_H_
 /*
  *===========================================================================

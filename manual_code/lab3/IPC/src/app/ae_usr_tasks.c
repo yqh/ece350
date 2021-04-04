@@ -40,22 +40,41 @@
 #include "Serial.h"
 #include "printf.h"
 
+/**
+ * C++ version 0.4 char* style "itoa":
+ * Written by LukÃ¯Â¿Â½s Chmela
+ * Released under GPLv3.
+ */
+char* itoa(int value, char* result, int base) {
+    // check that the base if valid
+    if (base < 2 || base > 36) { *result = '\0'; return result; }
+
+    char* ptr = result, *ptr1 = result, tmp_char;
+    int tmp_value;
+
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+    } while ( value );
+
+    // Apply negative sign
+    if (tmp_value < 0) *ptr++ = '-';
+    *ptr-- = '\0';
+    while(ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    return result;
+}
 
 /**
  * @brief: a dummy task1
  */
 void task1(void)
 {
-    task_t tid;
-    RTX_TASK_INFO task_info;
-    
-    SER_PutStr (0,"task1: entering \n\r");
-    /* do something */
-    tsk_create(&tid, &task2, LOW, 0x200);  /*create a user task */
-    tsk_get(tid, &task_info);
-    tsk_set_prio(tid, LOWEST);
-    /* terminating */
-    tsk_exit();
+	tsk_exit();
 }
 
 /**
@@ -63,30 +82,128 @@ void task1(void)
  */
 void task2(void)
 {
-    SER_PutStr (0,"task2: entering \n\r");
-    /* do something */
-    long int x = 0;
-    int ret_val = 10;
-    int i = 0;
-    int j = 0;
-    for (i = 1;;i++) {
-            char out_char = 'a' + i%10;
-            for (j = 0; j < 5; j++ ) {
-                SER_PutChar(0,out_char);
-            }
-            SER_PutStr(0,"\n\r");
+	mbx_create(KCD_MBX_SIZE);
+	U32 counter = 0;
+	while(1) {
+		void* msg = mem_alloc(200);
+		RTX_MSG_HDR* hdr = msg;
+		char count_str[5];
+		char* count_str_s = itoa(counter, count_str, 10);
+		char hello_world[19] = "hello world \0\0\0\0\n\r\0";
+		int i = 12;
+		while (*(count_str_s+i-12) != '\0' && i < 16) {
+			hello_world[i] = *(count_str_s + i - 12);
+			i++;
+		}
 
-            for ( x = 0; x < 5000000; x++); // some artifical delay
-            if ( i%6 == 0 ) {
-                SER_PutStr(0,"usr_task2 before yielding cpu.\n\r");
-                ret_val = tsk_yield();
-                SER_PutStr(0,"usr_task2 after yielding cpu.\n\r");
-                printf("usr_task2: ret_val=%d\n\r", ret_val);
-            }
-        }
-    /* terminating */
-    //tsk_exit();
+		hello_world[i] = '\n';
+		hello_world[i + 1] = '\r';
+		hello_world[i + 2] = '\0';
+		hdr->length = sizeof(RTX_MSG_HDR) + i + 3;
+
+		for (int i = 0; i < 19; i++) {
+			*((char*)msg + sizeof(RTX_MSG_HDR) + i) = hello_world[i];
+		}
+
+		send_msg(TID_KCD, msg);
+		mem_dealloc(msg);
+		counter++;
+		if (counter == 39) {
+			int j = 0;
+			int kk = j;
+		}
+	}
 }
+
+void kcd_reg_and_exit(void){
+	mbx_create(KCD_MBX_SIZE);
+	RTX_MSG_CHAR msg;
+	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+	msg.hdr.type = KCD_REG;
+	msg.data = 'q';
+	if(send_msg(TID_KCD, &msg) == RTX_OK){
+		SER_PutStr(0, "Sent Reg Msg");
+	}
+	tsk_exit();
+}
+
+void kcd_receive_and_print(void){
+	mbx_create(KCD_MBX_SIZE);
+	task_t sender_tid;
+	char* recv_buf = mem_alloc(KCD_MBX_SIZE);
+
+	RTX_MSG_CHAR msg;
+	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+	msg.hdr.type = KCD_REG;
+	msg.data = 'w';
+	send_msg(TID_KCD, &msg);
+
+	U8 flag = 0;
+
+	while(1){
+		int ret_val = recv_msg(&sender_tid, recv_buf, KCD_MBX_SIZE);
+		SER_PutStr(0, "kcd_receive_and_print: ");
+
+		if(ret_val != RTX_OK){
+			SER_PutStr(0, "Sike\r\n");
+			continue;
+		}
+
+		RTX_MSG_HDR* msg_hdr = (RTX_MSG_HDR*)(recv_buf);
+
+        if (msg_hdr->type != KCD_CMD){
+            // ignore message if data more than 1 char
+            SER_PutStr(0, " Not a CMD message\r\n");
+            continue;
+        }
+
+		*(recv_buf + ((RTX_MSG_HDR*)recv_buf)->length) = '\0';
+		SER_PutStr(0, recv_buf + sizeof(RTX_MSG_HDR));
+		SER_PutStr(0, "\r\n");
+
+		if (flag == 0) {
+			flag = 1;
+			msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+			msg.hdr.type = KCD_REG;
+			msg.data = 'q';
+			send_msg(TID_KCD, &msg);
+		} else if (flag == 1) {
+			flag = 2;
+			msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+			msg.hdr.type = KCD_REG;
+			msg.data = '!';
+			send_msg(TID_KCD, &msg);
+		} else if (flag == 2) {
+			flag = 3;
+			msg.hdr.length = sizeof(RTX_MSG_HDR) + 2;
+			msg.hdr.type = KCD_REG;
+			msg.data = '!';
+			send_msg(TID_KCD, &msg);
+		}
+		
+	}
+}
+
+void kcd_waiting(void){
+	mbx_create(KCD_MBX_SIZE);
+
+	RTX_MSG_CHAR msg;
+	msg.hdr.length = sizeof(RTX_MSG_HDR) + 1;
+	msg.hdr.type = KCD_REG;
+	msg.data = 'e';
+
+	send_msg(TID_KCD, &msg);
+
+    while(1){
+    	U32 counter = 0;
+    	for(U32 timer = 0xFFFFFF; timer != 0; timer--){
+    		counter++;
+    	}
+        SER_PutStr(0, "Uno Cycle\r\n");
+        tsk_yield();
+    }
+}
+
 /*
  *===========================================================================
  *                             END OF FILE

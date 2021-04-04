@@ -54,6 +54,7 @@ extern void __ch_MODE (U32 mode);
 extern void __atomic_on(void);
 extern void __atomic_off(void);
 
+
 void task_null (void)
 {
     while (1) {
@@ -66,10 +67,14 @@ void task_null (void)
     }
 }
 
+#define num_tasks 4
+
 int main() 
 {    
+
     static RTX_SYS_INFO  sys_info;
-	static RTX_TASK_INFO task_info[3];
+	static RTX_TASK_INFO task_info[num_tasks];
+
     char mode = 0;
 
     // CMSIS system initialization
@@ -84,7 +89,7 @@ int main()
     printf("mode = 0x%x\r\n", mode);
 
     // System and Task set up by auto testing software
-    if (ae_init(&sys_info, task_info, 3) != RTX_OK) {
+    if (ae_init(&sys_info, task_info, num_tasks) != RTX_OK) {
     	printf("RTX INIT FAILED\r\n");
     	return RTX_ERR;
     }
@@ -92,9 +97,8 @@ int main()
     // start the RTX and built-in tasks
     if (mode == MODE_SVC) {
         gp_current_task = NULL;
-        k_rtx_init(task_info, 3);
+        k_rtx_init(task_info, num_tasks);
     }
-
 
     interrupt_init();
     task_null();

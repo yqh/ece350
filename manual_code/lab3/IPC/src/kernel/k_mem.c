@@ -66,49 +66,237 @@ U32 g_k_stacks[MAX_TASKS][KERN_STACK_SIZE >> 2] __attribute__((aligned(8)));
 U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
 
 /*
+ *==========================================================================
+ *                            STRUCTS
+ *==========================================================================
+ */
+
+typedef struct Node {
+	unsigned int size;
+	U8 isFree;
+    task_t owner;
+	struct Node *next;
+} __attribute__((aligned(8)))Node;
+
+// Global head
+Node* HEAD = NULL;
+
+/*
  *===========================================================================
  *                            FUNCTIONS
  *===========================================================================
  */
+
+int glob = 0;
 
 U32* k_alloc_k_stack(task_t tid)
 {
     return g_k_stacks[tid+1];
 }
 
-U32* k_alloc_p_stack(task_t tid)
-{
-    return g_p_stacks[tid+1];
+U32* k_alloc_p_stack(task_t tid) {
+    void* mem = k_mem_alloc(g_tcbs[tid].u_stack_size);
+    Node* node = (Node*)mem - 1;
+    node->owner = 0;
+//    return mem;
+    return (U32*) ((char*)mem + g_tcbs[tid].u_stack_size);
+//	return g_p_stacks[tid+1];
 }
 
 int k_mem_init(void) {
     unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
 #ifdef DEBUG_0
-    printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
-    printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
+   printf("k_mem_init: image ends at 0x%x\r\n", end_addr);
+   printf("k_mem_init: RAM ends at 0x%x\r\n", RAM_END);
 #endif /* DEBUG_0 */
+
+    //check if end addr is valid
+    unsigned int totalSize = RAM_END - end_addr;
+    if(totalSize <= 0) {
+    	return RTX_ERR;
+    }
+
+    // round end_addr to nearest 8
+    if (end_addr % 8 != 0) {
+        end_addr = ((unsigned int)(end_addr / 8)) * 8 + 8;
+
+    }
+
+    // cast end_addr to pointer given in end_addr
+    HEAD = (Node*) end_addr;
+
+    // setup head
+    HEAD->size = totalSize - sizeof(Node);
+    HEAD->isFree = 1;
+    HEAD->next = NULL;
+
     return RTX_OK;
 }
 
 void* k_mem_alloc(size_t size) {
-#ifdef DEBUG_0
-    printf("k_mem_alloc: requested memory size = %d\r\n", size);
-#endif /* DEBUG_0 */
-    return NULL;
+//#ifdef DEBUG_0
+//    printf("k_mem_alloc: requested memory size = %d\r\n", size);
+//#endif /* DEBUG_0 */
+
+    if (size == 0) {
+        return NULL;
+    }
+
+    // 8 byte align
+    if (size % 8 != 0) {
+        size = ((U32)(size / 8)) * 8 + 8;
+    }
+
+    Node* curr = HEAD;
+
+    while(curr != NULL) {
+    	if (size <= curr->size && curr->isFree) {
+    		break;
+    	}
+    	curr = curr->next;
+    }
+
+    // couldn't allocate since no free space
+    if (curr == NULL) {
+    	return NULL;
+    }
+
+    //TODO: assign TID ownership
+
+    if (size == curr->size){
+        curr->owner = gp_current_task->tid;
+        curr->isFree=0;
+        return (void*)((U32)curr + sizeof(Node));
+    } else if (size < curr->size && (curr->size < (size + sizeof(Node)))) {
+        curr->owner = gp_current_task->tid;
+        curr->isFree=0;
+        return (void*)((U32)curr + sizeof(Node));
+    } else {
+        //make a new node
+        // might need to use an unsigned depending on how types work
+        Node* newNode = (Node*)((unsigned int)curr + sizeof(Node) + size);
+        newNode->isFree = 1;
+        newNode->size = curr->size - size - sizeof(Node);
+        newNode->next = curr->next;
+
+        curr->isFree=0;
+        curr->size = size;
+        curr->next = newNode;
+        curr->owner = gp_current_task->tid;
+        // Cast curr to U32 to ensure pointer arithmetic works
+        // Pointer addition works by adding by increment of sizeof the pointer
+        // argument. If curr is of type Node* and we add sizeof(Node), we add
+        // sizeof(Node)^2 amount of bytes.
+        return (void*)((U32)curr + sizeof(Node));
+    }
+}
+
+Node* mergeNode(Node* first, Node* second) {
+	if (first > second) {
+		return NULL;
+	}
+
+	Node* result = first;
+	result->size = first->size + second->size + sizeof(Node);
+	result->next = second->next;
+
+	if ((U32)result % 8 != 0 || (U32)result->next % 8 != 0) {
+		int j = 0;
+		int i = j;
+	}
+
+	return result;
 }
 
 int k_mem_dealloc(void *ptr) {
-#ifdef DEBUG_0
-    printf("k_mem_dealloc: freeing 0x%x\r\n", (U32) ptr);
-#endif /* DEBUG_0 */
+//#ifdef DEBUG_0
+//    printf("k_mem_dealloc: freeing 0x%x\r\n", (U32) ptr);
+//#endif /* DEBUG_0 */
+
+    Node* curr = HEAD;
+    Node* prev = NULL;
+
+    while (ptr != (char*)curr + sizeof(Node)) {
+    	if (curr->next == NULL || curr->next == curr) {
+    		return RTX_ERR;
+    	}
+
+    	prev = curr;
+    	curr = curr->next;
+//    	printf("0x%x\n", (U32)((char*)curr + sizeof(Node) + curr->size));
+    }
+
+    // Double free
+    if (curr->isFree > 0) {
+    	return RTX_ERR;
+    }
+
+   if (!gp_current_task->priv) {
+       if (gp_current_task->tid != curr->owner){
+           return RTX_ERR;
+       }
+   }
+
+    curr->isFree = 1;
+
+    // Merge neighboring nodes
+    if (prev && prev->isFree > 0) {
+    	curr = mergeNode(prev, curr);
+    }
+
+    if (curr->next && curr->next->isFree > 0) {
+    	curr = mergeNode(curr, curr->next);
+    }
+
+//    print_list();
+
     return RTX_OK;
 }
 
 int k_mem_count_extfrag(size_t size) {
 #ifdef DEBUG_0
-    printf("k_mem_extfrag: size = %d\r\n", size);
+   printf("k_mem_extfrag: size = %d\r\n", size);
 #endif /* DEBUG_0 */
-    return RTX_OK;
+
+    unsigned int memRegionSize;
+    int regionCount = 0;
+
+    Node* curNode = HEAD; // HEAD is global var
+
+    while(curNode != NULL){
+        memRegionSize = curNode->size + sizeof(Node);
+        if(curNode->isFree){
+            if(memRegionSize < size){
+                regionCount++;
+            }
+        }
+        curNode = curNode->next; // idk if this is the right way to goto next node
+    }
+
+
+    return regionCount;
+}
+
+int countNodes(){
+	Node* n = HEAD;
+	int ret = 0;
+	while(n != NULL) {
+		ret += 1;
+		n = n->next;
+	}
+	return ret;
+}
+
+int memLeakCheck(){
+    unsigned int howMuchMem = 0;
+    Node* curNode = HEAD;
+    while(curNode != NULL){
+        howMuchMem += curNode->size + sizeof(Node);
+        curNode = curNode->next;
+    }
+    unsigned int end_addr = (unsigned int) &Image$$ZI_DATA$$ZI$$Limit;
+    unsigned int totalSize = 0xBFFFFFFF - end_addr;
+    return howMuchMem == totalSize;
 }
 
 /*
