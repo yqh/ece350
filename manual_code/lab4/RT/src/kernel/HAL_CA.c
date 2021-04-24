@@ -211,12 +211,12 @@ __asm void IRQ_Handler(void){
 
         PUSH	{R0-R12, LR}		; Push LR_SVC and R0 - R12 onto the kernel stack
         SUB 	SP, SP, #8
-        STM     SP, {SP}^		; Push SP_USR onto the kernel stack
+        STM     SP, {LR, SP}^		; Push SP_USR onto the kernel stack
 
         BL 	c_IRQ_Handler           ; Call the uart interrupt handler for UART0 interrupt
 
 EXIT_IRQ
-        LDM     SP, {SP}^               ; Restore SP_USR and R0-R12 from their saved values on the stack
+        LDM     SP, {LR, SP}^               ; Restore SP_USR and R0-R12 from their saved values on the stack
         ADD     SP, SP, #8
         POP     {R0-R12, LR}
         RFEFD   SP!                     ; Return from exception
