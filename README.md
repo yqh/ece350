@@ -1,12 +1,6 @@
-## ECE 350 RTX Project Repository
+## ECE 350 Winter 2021 RTX Project Repository
 
-This repository contains the University of Waterloo ECE 350 Real-Time Opearting Systems Lab materials released to students. It has multiple branches. 
-
-### The master branch.
-It is for the most recent offering. 
-
-### The other branches 
-The other branches are named as `<Term>-<Processor>`. For example "F20-CM3" branch is for Fall 2020 term offering where ARM Cortex-M3 processor was the RTX designed for.
+This branch is for the University of Waterloo ECE 350 Winer 2021 Real-Time Opearting Systems Lab materials released to students. The hardware is Intel DE1-SoC FPGA board. The processor is a dual-core ARM Cortex-A9.
 
 ## File structures
 ### `manual`
