@@ -1,0 +1,5 @@
+--create .\Objects\rtx-lib.lib
+.\objects\k_rtx_init.o
+.\objects\k_mem.o
+.\objects\uart_polling.o
+.\objects\printf.o

@@ -1,0 +1,3 @@
+--create .\Objects\ae-lib.lib
+.\objects\ae.o
+.\objects\ae_mem.o
