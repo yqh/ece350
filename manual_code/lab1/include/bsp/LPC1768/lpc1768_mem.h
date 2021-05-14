@@ -37,13 +37,13 @@
  *****************************************************************************/
 #define WORD_SIZE       32                              /* word size in bits */
 #define IROM1_BASE      0x0
-#define IROM1_SIZE      0x80000
+#define IROM1_SIZE      0x80000                         /* size in bytes     */
 #define IROM_BASE       IROM1_BASE
 
 #define IRAM1_BASE      0x10000000
-#define IRAM1_SIZE      0x8000
+#define IRAM1_SIZE      0x8000                          /* size in bytes     */
 #define IRAM2_BASE      0x2007C000
-#define IRAM2_SIZE      0x8000
+#define IRAM2_SIZE      0x8000                          /* size in bytes     */
 
 #define RTX_IMG_END     (Image$$RW_IRAM1$$ZI$$Limit)    /* linker-defined symbol */
 #define RAM1_START      (U32)(&RTX_IMG_END)
