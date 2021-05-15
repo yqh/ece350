@@ -38,7 +38,7 @@ int	ae_init(RTX_SYS_INFO *sys_info,
 	if ( ae_set_sys_info(sys_info) != RTX_OK ) {
 		return RTX_ERR;
 	}
-    cb_func(arg);
+  cb_func(arg);
 	ae_set_task_info(tasks, num_tasks);
 	return RTX_OK;
 }

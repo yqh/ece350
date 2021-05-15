@@ -74,8 +74,8 @@ int main()
     U32 ctrl = 0;
     ctrl = __get_CONTROL();
     printf("ctrl = %d, We are at privileged level, so we can access SP.\r\n", ctrl); 
-	printf("Read MSP = 0x%x\r\n", __get_MSP());
-	printf("Read PSP = 0x%x\r\n", __get_PSP());
+	  printf("Read MSP = 0x%x\r\n", __get_MSP());
+	  printf("Read PSP = 0x%x\r\n", __get_PSP());
 #endif // DEBUG_1	
    
     /* initialize the third-party testing framework */
