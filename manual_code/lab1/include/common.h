@@ -82,6 +82,7 @@
 #define BUDDY               5       /* binary buddy system       */ 
 
 #define MIN_BLK_SIZE        32      /* minimum memory block size in bytes */
+#define MIN_BLK_SIZE_LOG2   5				/* log2(MIN_BLK_SIZE */
 #define MAX_MPOOLS          2       /* maximum number of memory pools */
 #define MPID_IRAM1          0       /* IRAM1 memory pool ID */
 #define MPID_IRAM2          1       /* IRAM2 memory pool ID */
