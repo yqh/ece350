@@ -42,10 +42,10 @@
 
 #define IRAM1_BASE      0x10000000
 #define IRAM1_SIZE      0x8000                          /* size in bytes     */
-#define IRAM1_SIZE_LOG2 0xF															/* log2(IRAM1_SIZE)  */
+#define IRAM1_SIZE_LOG2 0xF	                            /* log2(IRAM1_SIZE)  */
 #define IRAM2_BASE      0x2007C000
 #define IRAM2_SIZE      0x8000                          /* size in bytes     */
-#define IRAM2_SIZE_LOG2 0xF															/* log2(IRAM2_SIZE)  */
+#define IRAM2_SIZE_LOG2 0xF                             /* log2(IRAM2_SIZE)  */
 
 #define RTX_IMG_END     (Image$$RW_IRAM1$$ZI$$Limit)    /* linker-defined symbol */
 #define RAM1_START      (U32)(&RTX_IMG_END)
