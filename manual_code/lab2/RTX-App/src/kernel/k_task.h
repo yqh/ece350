@@ -82,6 +82,7 @@ int  k_tsk_yield        (void);  /* kernel tsk_yield function */
 void task_null          (void);  /* the null task */
 void k_tsk_init_first   (TASK_INIT *p_task);    /* init the first task */
 void k_tsk_start        (void);  /* start the first task */
+task_t k_tsk_gettid     (void);  /* get tid of the current running task */
 
 // Not implemented, to be done by students
 int  k_tsk_create       (task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size);

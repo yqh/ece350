@@ -88,7 +88,9 @@ void priv_task1(void)
     int j = 0;
     long int x = 0;
     int ret_val = 10;
+    task_t tid = tsk_gettid();
     
+    printf("priv_task1: TID =%d\r\n", tid);
     while (1) {
         char out_char = 'A' + i%26;
         for (j = 0; j < 5; j++ ) {
@@ -103,7 +105,7 @@ void priv_task1(void)
             uart1_put_string("priv_task1 after yielding cpu.\n\r");
             printf("priv_task1: ret_val=%d\n\r", ret_val);
 #ifdef DEBUG_0
-            printf("priv_task1: ret_val=%d\n\r", ret_val);
+            printf("priv_task1: tid = %d, ret_val=%d\n\r", tid, ret_val);
 #endif /* DEBUG_0 */
         }
     }
@@ -127,9 +129,10 @@ void task1(void)
     int ret_val = 10;
     int i = 0;
     int j = 0;
-    RTX_TASK_INFO task_info;
+    static RTX_TASK_INFO task_info; /* our stack space is small, so make it static local */
     task_t tid;
 
+    
     tsk_create(&tid, &task2, LOW, 0x200);  /*create a user task */
     tsk_get(tid, &task_info);
     dump_task_info(&task_info);
@@ -140,6 +143,8 @@ void task1(void)
     mem_dealloc(ptr);
     mem_dump();
 
+    tid = tsk_gettid();
+    printf("task1: TID =%d\r\n", tid); 
     for (i = 1;;i++) {
         char out_char = '0' + i%10;
         for (j = 0; j < 5; j++ ) {
@@ -154,7 +159,7 @@ void task1(void)
             uart1_put_string("task1 after yielding cpu.\n\r");
             printf("task1: ret_val=%d\n\r", ret_val);
 #ifdef DEBUG_0
-            printf("task1: ret_val=%d\n\r", ret_val);
+            printf("task1: tid = %d, ret_val=%d\n\r", tid, ret_val);
 #endif /* DEBUG_0 */
         }
     }

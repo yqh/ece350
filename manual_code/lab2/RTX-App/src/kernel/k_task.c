@@ -418,6 +418,14 @@ int k_tsk_yield(void)
     return k_tsk_run_new();
 }
 
+/**
+ * @brief   get task identification
+ * @return  the task ID (TID) of the calling task
+ */
+task_t k_tsk_gettid(void)
+{
+    return gp_current_task->tid;
+}
 
 /*
  *===========================================================================

@@ -122,6 +122,9 @@ extern int k_tsk_ls(task_t *buf, int count);
 #define tsk_ls(buf, count) _tsk_ls((U32)k_tsk_ls, buf, count);
 extern int __SVC_0 _tsk_ls(U32 p_func, task_t *buf, int count);
 
+extern task_t k_tsk_gettid(void);
+#define tsk_gettid() _tsk_gettid((U32)k_tsk_gettid)
+extern task_t __SVC_0 _tsk_gettid(U32 p_func);
 
 #endif // !_RTX_H_
 

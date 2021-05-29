@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>SIM_TARGET</Define>
+              <Define>SIM_TARGET DEBUG_0</Define>
               <Undefine></Undefine>
               <IncludePath>..\include;..\include\bsp\LPC1768</IncludePath>
             </VariousControls>
@@ -828,7 +828,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define></Define>
+              <Define>DEBUG_0</Define>
               <Undefine></Undefine>
               <IncludePath>..\include;..\include\bsp\LPC1768</IncludePath>
             </VariousControls>
