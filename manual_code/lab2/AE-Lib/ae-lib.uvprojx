@@ -474,6 +474,23 @@
               </Aads>
             </GroupArmAds>
           </GroupOption>
+          <Files>
+            <File>
+              <FileName>ae_tasks1_G99.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ae\ae_tasks1_G99.c</FilePath>
+            </File>
+            <File>
+              <FileName>ae_tasks2_G99.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ae\ae_tasks2_G99.c</FilePath>
+            </File>
+            <File>
+              <FileName>ae_tasks3_G99.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ae\ae_tasks3_G99.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>AE-active</GroupName>
@@ -948,6 +965,23 @@
               </Aads>
             </GroupArmAds>
           </GroupOption>
+          <Files>
+            <File>
+              <FileName>ae_tasks1_G99.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ae\ae_tasks1_G99.c</FilePath>
+            </File>
+            <File>
+              <FileName>ae_tasks2_G99.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ae\ae_tasks2_G99.c</FilePath>
+            </File>
+            <File>
+              <FileName>ae_tasks3_G99.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ae\ae_tasks3_G99.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>AE-active</GroupName>
