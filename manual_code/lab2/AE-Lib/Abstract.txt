@@ -1,0 +1,22 @@
+The AE-Lib has the following source Groups:
+
+AE:     
+    It contains ae.c implementation. You may change the implementation as long as you keep the interface of functions unchanged. 
+    But in general, this one does not need to be changed by students.
+
+AE-public:
+    It contains public testing suites released by lab staff.
+
+AE-stu:
+    It contains students' testing suites. Each testing suit is in a separate .c file. 
+    The naming convention is ae_mem<suite ID>_G<group id>.c.  For example
+    ae_mem1_G99.c is the Test Suite 1 from Group 99.
+    By default, this source group is excluded from the build.
+    
+AE-active:
+    It contains the active testing suite that you want to use.
+    By default it is empty.
+    To use a student's test suite .c file, first exclude the AE-public folder from the build.
+    Then drag the corresponding student's testing suite file to the AE-active folder.
+    
+    When students submit, they should leave the AE-active folder empty and include the AE-public folder in the build. 

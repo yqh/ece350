@@ -1,0 +1,80 @@
+ctrl = 0, We should be at privileged level upon reset, so we can access SP.
+Read MSP = 0x10004498
+Read PSP = 0x0
+k_mem_init: algo = 5
+k_mpool_init: algo = 5
+k_mpool_init: RAM range: [0x10007000, 0x10007fff].
+k_mpool_init: algo = 5
+k_mpool_init: RAM range: [0x2007c000, 0x20083fff].
+==============Task NULL===============
+==============Task NULL===============
+==============Task NULL===============
+==============Task NULL===============
+==============Task NULL===============
+AAAAA
+BBBBB
+CCCCC
+DDDDD
+EEEEE
+FFFFF
+priv_task1 before yielding cpu.
+k_tsk_create: entering...
+task = 0x100025f8, task_entry = 0xf41, prio=130, stack_size = 512
+k_tsk_get: entering...
+tid = 0, buffer = 0x100025fc.
+tid: 0
+state: 255
+prio: 99
+k_sp_base: 0xdeadbeef
+k_sp: 0xdeadbeef
+k_stack_size: 0x0
+u_sp_base: 0xdeadaaaa
+u_sp 0xdead9999
+u_stack_size: 0x8000
+k_tsk_set_prio: entering...
+task_id = 0, prio = 131.
+k_mpool_alloc: mpid = 0, size = 4, 0x4
+ptr = 0x0
+k_mpool_dealloc: mpid = 0, ptr = 0x0
+k_mpool_dealloc: mpid = 0
+11111
+22222
+33333
+44444
+55555
+66666
+task1 before yielding cpu.
+==============Task NULL===============
+==============Task NULL===============
+==============Task NULL===============
+==============Task NULL===============
+==============Task NULL===============
+priv_task1 after yielding cpu.
+priv_task1: ret_val=0
+GGGGG
+HHHHH
+IIIII
+JJJJJ
+KKKKK
+LLLLL
+priv_task1 before yielding cpu.
+task1 after yielding cpu.
+task1: ret_val=0
+77777
+88888
+99999
+00000
+11111
+22222
+task1 before yielding cpu.
+==============Task NULL===============
+==============Task NULL===============
+==============Task NULL===============
+==============Task NULL===============
+==============Task NULL===============
+priv_task1 after yielding cpu.
+priv_task1: ret_val=0
+MMMMM
+NNNNN
+OOOOO
+
