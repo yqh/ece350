@@ -44,9 +44,7 @@
 
 void set_ae_tasks(TASK_INIT *tasks, int num)
 {
-    for (int i = 0; i < num; i++ ) {
-        // this is a very small stack size due to starter code size limit, but it works.
-        // when you have dynamic user stack allocation done, choose at least 512B  as the user stack size                                                   
+    for (int i = 0; i < num; i++ ) {                                                 
         tasks[i].u_stack_size = PROC_STACK_SIZE;    
         tasks[i].prio = HIGH;
         tasks[i].priv = 1;

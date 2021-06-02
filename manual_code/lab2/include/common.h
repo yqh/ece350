@@ -96,10 +96,10 @@
 
 #define MAX_TASKS           0x10    /* maximum number of tasks in the system */
 #define KERN_STACK_SIZE     0x300   /* task kernel stack size in bytes */
-#define PROC_STACK_SIZE     0x100   /* task proc space stack size in bytes */
-#define TID_NULL            0x0     /* pre-defined Task ID for the null task */
+#define PROC_STACK_SIZE     0x200   /* minimum task user stack size in bytes */
+#define TID_NULL            0x0     /* reserved Task ID for the null task */
 #define TID_KCD             (MAX_TASKS -1)     
-                                    /* pre-defined Task ID for KCD task */
+                                    /* reserved Task ID for KCD task */
 #define TID_UART_IRQ        0xFD    /* reserved TID for UART IRQ handler which is not a task */
 #define TID_KERN            0xFE    /* reserved TID for kernel ownership */
 #define TID_UNK             0xFF    /* reserved TID for unknown ownership */
@@ -116,7 +116,7 @@
 
 /* Task States */
 #define DORMANT             0       /* terminated task state */
-#define READY               1       /* A ready to run task that has been executed */
+#define READY               1       /* A ready to run task   */
 #define RUNNING             2       /* Executing */
 #define BLK_MEM             3       /* blocked on memory */
 #define BLK_MBX             4       /* blocked on mailbox availablility */
@@ -139,6 +139,18 @@
 
 /* Time Macros */
 #define MIN_RTX_QTM         100     /* minimum time granularity of RTX in microseconds */
+
+/* TRAP NUMBERS */
+#define SVC_RTX_INIT        0x00
+#define SVC_MEM_ALLOC       0x01
+#define SVC_MEM_DEALLOC     0x02
+#define SVC_MEM_DUMP        0x03
+#define SVC_TSK_CREATE      0x04
+#define SVC_TSK_EXIT        0x05
+#define SVC_TSK_YIELD       0x06
+#define SVC_TSK_SET_PRIO    0x07
+#define SVC_TSK_GET         0x08
+#define SVC_TSK_GETTID      0x09
 
 /*
  *===========================================================================
@@ -178,7 +190,7 @@ typedef struct task_init
 {  
     void        (*ptask)();         /**< task entry address                 */
     U32         u_stack_size;       /**< user stack size in bytes           */
-    task_t      tid;                /**< task id, output param              */
+    task_t      tid;                /**< task id, output param, deprecated  */
     U8          prio;               /**< execution priority                 */
     U8          priv;               /**< = 0 unprivileged, =1 privileged    */    
 } TASK_INIT;

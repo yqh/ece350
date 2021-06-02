@@ -46,12 +46,16 @@
 int errno = 0;
 
 /**************************************************************************//**
- * @brief   	system set up before calling k_rtx_init()          
+ * @brief   	system set up before calling rtx_init() from thread mode  
+ * @pre         processor should be in thread mode using MSP, rtx_init is not called
+ * @post        PSP is intialized and points to NULL task user stack
  * @return      0 on success and non-zero on failure
- * @note        leave empty if there is nothing to be done 
+ * @note        you may add extra code here
  *****************************************************************************/
 int k_pre_rtx_init (void *args)
 {
+    __set_PSP((U32) k_alloc_p_stack(TID_NULL));
+    
     return RTX_OK;
 }
 

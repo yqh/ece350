@@ -70,7 +70,6 @@ extern void task_null	(void);
 
 
 // Implemented by Starter Code
-
 int  k_tsk_init         (TASK_INIT *task_info, int num_tasks);
                                  /* initialize all tasks in the system */
 int  k_tsk_create_new   (TASK_INIT *p_taskinfo, TCB *p_tcb, task_t tid);
@@ -85,7 +84,7 @@ void k_tsk_start        (void);  /* start the first task */
 task_t k_tsk_gettid     (void);  /* get tid of the current running task */
 
 // Not implemented, to be done by students
-int  k_tsk_create       (task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size);
+int  k_tsk_create       (task_t *task, void (*task_entry)(void), U8 prio, U32 stack_size);
 void k_tsk_exit         (void);
 int  k_tsk_set_prio     (task_t task_id, U8 prio);
 int  k_tsk_get          (task_t task_id, RTX_TASK_INFO *buffer);

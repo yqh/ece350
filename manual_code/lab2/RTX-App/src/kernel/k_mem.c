@@ -56,10 +56,10 @@ The memory map of the OS image may look like the following:
 &Image$$RW_IRAM1$$ZI$$Limit-->|---------------------------|-----+-----
                               |         ......            |     ^
                               |---------------------------|     |
-                              |      PROC_STACK_SIZE      |     |
-             g_p_stacks[15]-->|---------------------------|     |
                               |                           |     |
-                              |  other kernel proc stacks |     |
+                              |---------------------------|     |
+                              |                           |     |
+                              |      other data           |     |
                               |---------------------------|     |
                               |      PROC_STACK_SIZE      |  OS Image
               g_p_stacks[2]-->|---------------------------|     |
@@ -111,8 +111,8 @@ U32 g_k_stacks[MAX_TASKS][KERN_STACK_SIZE >> 2] __attribute__((aligned(8)));
 // task process stack (i.e. user stack) for tasks in thread mode
 // remove this bug array in your lab2 code
 // the user stack should come from MPID_IRAM2 memory pool
-U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
-
+//U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
+U32 g_p_stacks[NUM_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
 /*
  *===========================================================================
  *                            FUNCTIONS
@@ -168,7 +168,7 @@ int k_mpool_dealloc(mpool_t mpid, void *ptr)
 int k_mpool_dump (mpool_t mpid)
 {
 #ifdef DEBUG_0
-    printf("k_mpool_dealloc: mpid = %d\r\n", mpid);
+    printf("k_mpool_dump: mpid = %d\r\n", mpid);
 #endif /* DEBUG_0 */
     
     return 0;
@@ -197,6 +197,10 @@ int k_mem_init(int algo)
 U32* k_alloc_k_stack(task_t tid)
 {
     
+    if ( tid >= MAX_TASKS) {
+        errno = EAGAIN;
+        return NULL;
+    }
     U32 *sp = g_k_stacks[tid+1];
     
     // 8B stack alignment adjustment
@@ -213,7 +217,13 @@ U32* k_alloc_k_stack(task_t tid)
 
 U32* k_alloc_p_stack(task_t tid)
 {
+    if ( tid >= NUM_TASKS ) {
+        errno = EAGAIN;
+        return NULL;
+    }
+    
     U32 *sp = g_p_stacks[tid+1];
+    
     
     // 8B stack alignment adjustment
     if ((U32)sp & 0x04) {   // if sp not 8B aligned, then it must be 4B aligned

@@ -37,6 +37,7 @@
 mpool_t k_mpool_create  (int algo, U32 strat, U32 end);
 void   *k_mpool_alloc   (mpool_t mpid, size_t size);
 int     k_mpool_dealloc (mpool_t mpid, void *ptr);
+int     k_mpool_dump    (mpool_t mpid);
 
 int     k_mem_init      (int algo);
 U32    *k_alloc_k_stack (task_t tid);

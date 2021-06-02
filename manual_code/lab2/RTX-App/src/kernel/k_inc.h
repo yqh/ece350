@@ -54,7 +54,8 @@
  *===========================================================================
  */
 
-
+#define NUM_TASKS 3     // only supports three tasks in the starter code 
+                        // due to limited user stack space
 /*
  *===========================================================================
  *                             STRUCTURES
@@ -94,7 +95,8 @@ extern const U32 g_p_stack_size;    // process stack size
 extern U32 g_k_stacks[MAX_TASKS][KERN_STACK_SIZE >> 2] __attribute__((aligned(8)));
 
 // process stack for tasks, statically allocated inside the OS image  */
-extern U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
+//extern U32 g_p_stacks[MAX_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
+extern U32 g_p_stacks[NUM_TASKS][PROC_STACK_SIZE >> 2] __attribute__((aligned(8)));
 
 // task related globals are defined in k_task.c
 extern TCB *gp_current_task;    // always point to the current RUNNING task

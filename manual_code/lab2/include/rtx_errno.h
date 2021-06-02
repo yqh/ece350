@@ -4,6 +4,7 @@
 extern  int         errno;
 
 #define	EPERM       1	/* Operation not permitted */
+#define EAGAIN      11  /*  Try again */
 #define ENOMEM      12  /* Out of memory */
 #define EFAULT      14  /* Bad address */
 #define	EINVAL      22	/* Invalid argument */

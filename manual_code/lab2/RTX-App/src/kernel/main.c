@@ -71,19 +71,22 @@ int main()
     init_printf(NULL, putc);
     
     __enable_irq();
-
-#ifdef DEBUG_1    
+    
     U32 ctrl = __get_CONTROL();
+#ifdef DEBUG_1    
     printf("ctrl = %d, We should be at privileged level upon reset, so we can access SP.\r\n", ctrl); 
-	printf("Read MSP = 0x%x\r\n", __get_MSP());
-	printf("Read PSP = 0x%x\r\n", __get_PSP());
+    printf("Read MSP = 0x%x\r\n", __get_MSP);
+    printf("Read PSP = 0x%x\r\n", __get_PSP());
 #endif // DEBUG_1    
     /* initialize the third-party testing framework */
-    ae_init(&sys, tasks , NUM_INIT_TASKS, &k_pre_rtx_init, NULL);
+    ae_init(&sys, tasks , NUM_INIT_TASKS, &k_pre_rtx_init, NULL);   
    
+    __set_CONTROL(__get_CONTROL() | BIT(1));
+    __isb(15); // see https://www.keil.com/support/man/docs/armcc/armcc_chr1435075770601.htm#:~:text=This%20intrinsic%20inserts%20an%20ISB,is%20also%20an%20optimization%20barrier.
     /* start the RTX */
     rtx_init(&sys, tasks, NUM_INIT_TASKS);
 
+   
     /* We should never reach here!!! */
     return RTX_ERR;  
 }

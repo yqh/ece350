@@ -37,7 +37,7 @@
  * @details     The starter code shows one way of implementing context switching.
  *              The code only has minimal sanity check.
  *              There is no stack overflow check.
- *              The implementation assumes only two simple privileged task and
+ *              The implementation assumes only three simple tasks and
  *              NO HARDWARE INTERRUPTS.
  *              The purpose is to show how context switch could be done
  *              under stated assumptions.
@@ -60,7 +60,7 @@
 
 TCB             *gp_current_task = NULL;    // the current RUNNING task
 TCB             g_tcbs[MAX_TASKS];          // an array of TCBs
-TASK_INIT       g_null_task_info;           // The null task info
+//TASK_INIT       g_null_task_info;           // The null task info
 U32             g_num_active_tasks = 0;     // number of non-dormant tasks
 
 /*---------------------------------------------------------------------------
@@ -122,6 +122,58 @@ The memory map of the OS image may look like the following:
  *                            FUNCTIONS
  *===========================================================================
  */
+
+/**************************************************************************//**
+ * @brief   	SVC Handler
+ * @pre         PSP is used in thread mode before entering SVC Handler
+ *              SVC_Handler is configured as the highest interrupt priority
+ *****************************************************************************/
+
+void SVC_Handler(void)
+{
+    
+    U8   svc_number;
+    U32  ret  = RTX_OK;                 // default return value of a function
+    U32 *args = (U32 *) __get_PSP();    // read PSP to get stacked args
+    
+    svc_number = ((S8 *) args[6])[-2];  // Memory[(Stacked PC) - 2]
+    switch(svc_number) {
+        case SVC_RTX_INIT:
+            ret = k_rtx_init((RTX_SYS_INFO*) args[0], (TASK_INIT *) args[1], (int) args[2]);
+            break;
+        case SVC_MEM_ALLOC:
+            ret = (U32) k_mpool_alloc(MPID_IRAM1, (size_t) args[0]);
+            break;
+        case SVC_MEM_DEALLOC:
+            ret = k_mpool_dealloc(MPID_IRAM1, (void *)args[0]);
+            break;
+        case SVC_MEM_DUMP:
+            ret = k_mpool_dump(MPID_IRAM1);
+            break;
+        case SVC_TSK_CREATE:
+            ret = k_tsk_create((task_t *)(args[0]), (void (*)(void))(args[1]), (U8)(args[2]), (U16) (args[3]));
+            break;
+        case SVC_TSK_EXIT:
+            k_tsk_exit();
+            break;
+        case SVC_TSK_YIELD:
+            ret = k_tsk_yield();
+            break;
+        case SVC_TSK_SET_PRIO:
+            ret = k_tsk_set_prio((task_t) args[0], (U8) args[1]);
+            break;
+        case SVC_TSK_GET:
+            ret = k_tsk_get((task_t ) args[0], (RTX_TASK_INFO *) args[1]);
+            break;
+        case SVC_TSK_GETTID:
+            ret = k_tsk_gettid();
+            break;
+        default:
+            ret = (U32) RTX_ERR;
+    }
+    
+    args[0] = ret;      // return value saved onto the stacked R0
+}
 
 /**************************************************************************//**
  * @brief   scheduler, pick the TCB of the next to run task
@@ -197,27 +249,25 @@ int k_tsk_init(TASK_INIT *task, int num_tasks)
  *              one dummy kernel stack frame, one dummy user stack frame
  *
  * @return      RTX_OK on success; RTX_ERR on failure
- * @param       p_taskinfo  task information structure pointer
+ * @param       p_taskinfo  task initialization structure pointer
  * @param       p_tcb       the tcb the task is assigned to
  * @param       tid         the tid the task is assigned to
  *
  * @details     From bottom of the stack,
- *              we have user initial context (xPSR, PC, SP_USR, uR0-uR12)
- *              then we stack up the kernel initial context (kLR, kR0-kR12)
+ *              we have user initial context (xPSR, PC, SP_USR, uR0-uR3)
+ *              then we stack up the kernel initial context (kLR, kR4-kR12, PSP, CONTROL)
  *              The PC is the entry point of the user task
  *              The kLR is set to SVC_RESTORE
- *              30 registers in total
+ *              20 registers in total
  * @note        YOU NEED TO MODIFY THIS FILE!!!
  *****************************************************************************/
 int k_tsk_create_new(TASK_INIT *p_taskinfo, TCB *p_tcb, task_t tid)
 {
-    extern U32 SVC_RESTORE;
-    //extern U32 K_RESTORE;
+    extern U32 SVC_RTE;
 
     U32 *usp;
     U32 *ksp;
 
-    
     if (p_taskinfo == NULL || p_tcb == NULL)
     {
         return RTX_ERR;
@@ -237,6 +287,9 @@ int k_tsk_create_new(TASK_INIT *p_taskinfo, TCB *p_tcb, task_t tid)
      * -------------------------------------------------------------*/
     
     usp = k_alloc_p_stack(tid);             // ***you need to change this line***
+    if (usp == NULL) {
+        return RTX_ERR;
+    }
 
     /*-------------------------------------------------------------------
      *  Step2: create task's thread mode initial context on the user stack.
@@ -268,49 +321,31 @@ int k_tsk_create_new(TASK_INIT *p_taskinfo, TCB *p_tcb, task_t tid)
     
     // allocate kernel stack for the task
     ksp = k_alloc_k_stack(tid);
-    
-    // push the user stack pointer  
-    *(--ksp) = (U32)usp;
-    // put EXC_RETURN into LR and save it on to the kernel stack
-#ifdef RTX_THREAD_MSP
-    *(--ksp) = EXC_RETURN_THREAD_MSP;
-#else
-    *(--ksp) = EXC_RETURN_THREAD_PSP;
-#endif
-    
-    // put uR11, ..., uR4 on kernel stack, 8 registers
-        
-    for ( int j = 0; j < 8; j++ ) {
-        
-#ifdef DEBUG_0
-        *(--ksp) = 0xDEADBBB0 + j;
-#else
-        *(--ksp) = 0x0;
-#endif
+    if ( ksp == NULL ) {
+        return RTX_ERR;
     }
 
     /*---------------------------------------------------------------
      *  Step3: create task kernel initial context on kernel stack
      *
-     *         16 registers listed in push order
-     *         <kLR, kR0-kR12, xPSR, CONTROL>
+     *         12 registers listed in push order
+     *         <kLR, kR4-kR12, PSP, CONTROL>
      * -------------------------------------------------------------*/
-
-    *(--ksp) = (U32) (&SVC_RESTORE);
-    // kernel stack R0 - R12, 13 registers
-    for ( int j = 0; j < 13; j++) {
-        
+    // a task never run before directly exit
+    *(--ksp) = (U32) (&SVC_RTE);
+    // kernel stack R4 - R12, 9 registers
+#define NUM_REGS 9    // number of registers to push
+      for ( int j = 0; j < NUM_REGS; j++) {        
 #ifdef DEBUG_0
         *(--ksp) = 0xDEADCCC0 + j;
 #else
         *(--ksp) = 0x0;
 #endif
     }
+        
+    // put user sp on to the kernel stack
+    *(--ksp) = (U32) usp;
     
-    // not needed for CM3 if interrupt is disabled inside the exception handler 
-    // but we need an extra reg for 8-byte alignment, so just save it
-    *(--ksp) = INITIAL_xPSR;   
-
     // save control register so that we return with correct access level
     if (p_taskinfo->priv == 1) {  // privileged 
         *(--ksp) = __get_CONTROL() & ~BIT(0); 
@@ -328,7 +363,7 @@ int k_tsk_create_new(TASK_INIT *p_taskinfo, TCB *p_tcb, task_t tid)
  * @param       p_tcb_old, the old tcb that was in RUNNING
  * @return      RTX_OK upon success
  *              RTX_ERR upon failure
- * @pre          gp_current_task is pointing to a valid TCB
+ * @pre         gp_current_task is pointing to a valid TCB
  *              gp_current_task->state = RUNNING
  *              gp_crrent_task != p_tcb_old
  *              p_tcb_old == NULL or p_tcb_old->state updated
@@ -344,20 +379,21 @@ __asm void k_tsk_switch(TCB *p_tcb_old)
 {
         PRESERVE8
         EXPORT  K_RESTORE
-        PUSH    {R0-R12, LR}
-        MRS     R4, CONTROL
-        MRS     R5, PSR
-        PUSH    {R4-R5}
+        
+        PUSH    {R4-R12, LR}                // save general pupose registers and return address
+        MRS     R4, CONTROL                 
+        MRS     R5, PSP
+        PUSH    {R4-R5}                     // save CONTROL, PSP
         STR     SP, [R0, #TCB_MSP_OFFSET]   // save SP to p_old_tcb->msp
 K_RESTORE
         LDR     R1, =__cpp(&gp_current_task)
         LDR     R2, [R1]
-        LDR     SP, [R2, #TCB_MSP_OFFSET]   //restore msp of the gp_current_task
-                                            // no need to restore PSP, it is on the stack
+        LDR     SP, [R2, #TCB_MSP_OFFSET]   // restore msp of the gp_current_task
         POP     {R4-R5}
-        MSR     CONTROL, R4
-        MSR     PSR, R5
-        POP     {R0-R12, PC}
+        MSR     PSP, R5                     // restore PSP
+        MSR     CONTROL, R4                 // restore CONTROL
+        ISB                                 // flush pipeline, not needed for CM3 (architectural recommendation)
+        POP     {R4-R12, PC}                // restore general purpose registers and return address
 }
 
 
@@ -433,7 +469,7 @@ task_t k_tsk_gettid(void)
  *===========================================================================
  */
 
-int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U16 stack_size)
+int k_tsk_create(task_t *task, void (*task_entry)(void), U8 prio, U32 stack_size)
 {
 #ifdef DEBUG_0
     printf("k_tsk_create: entering...\n\r");
