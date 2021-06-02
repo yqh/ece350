@@ -78,11 +78,6 @@ The memory map of the OS image may look like the following:
 &Image$$RW_IRAM1$$ZI$$Limit-->|---------------------------|-----+-----
                               |         ......            |     ^
                               |---------------------------|     |
-                              |      PROC_STACK_SIZE      |     |
-             g_p_stacks[15]-->|---------------------------|     |
-                              |                           |     |
-                              |  other kernel proc stacks |     |
-                              |---------------------------|     |
                               |      PROC_STACK_SIZE      |  OS Image
               g_p_stacks[2]-->|---------------------------|     |
                               |      PROC_STACK_SIZE      |     |
