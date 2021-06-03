@@ -146,7 +146,7 @@ void SVC_Handler(void)
             ret = k_mpool_dump(MPID_IRAM1);
             break;
         case SVC_TSK_CREATE:
-            ret = k_tsk_create((task_t *)(args[0]), (void (*)(void))(args[1]), (U8)(args[2]), (U16) (args[3]));
+            ret = k_tsk_create((task_t *)(args[0]), (void (*)(void))(args[1]), (U8)(args[2]), (U32) (args[3]));
             break;
         case SVC_TSK_EXIT:
             k_tsk_exit();
