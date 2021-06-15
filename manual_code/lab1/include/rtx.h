@@ -70,7 +70,7 @@
 
 #define mem1_alloc(size)       k_mpool_alloc(MPID_IRAM1, size)
 #define mem1_dealloc(ptr)      k_mpool_dealloc(MPID_IRAM1, ptr)
-#define mem1_dump()            k_mpoo1_dump(MPID_IRAM1)
+#define mem1_dump()            k_mpool_dump(MPID_IRAM1)
 
 #define mem2_alloc(size)       k_mpool_alloc(MPID_IRAM2, size)
 #define mem2_dealloc(ptr)      k_mpool_dealloc(MPID_IRAM2, ptr)
