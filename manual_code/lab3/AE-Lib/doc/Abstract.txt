@@ -43,7 +43,7 @@ IMPORTANT
         * AE
         * AE-dummy-tasks
         * AE-active
-    - exclude the following troup in the build
+    - exclude the following groups in the build
         * AE-public
         * AE-stu
         
