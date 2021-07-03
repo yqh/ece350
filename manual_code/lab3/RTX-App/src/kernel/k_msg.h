@@ -41,7 +41,7 @@
 
 #include "k_inc.h"
 
-int k_mbx_create    (size_t msgsize, size_t maxmsg);
+int k_mbx_create    (size_t size);
 int k_send_msg      (task_t receiver_tid, const void *buf);
 int k_send_msg_nb   (task_t receiver_tid, const void *buf);
 int k_recv_msg      (void *buf, size_t len);

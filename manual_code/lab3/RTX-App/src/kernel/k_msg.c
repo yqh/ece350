@@ -39,9 +39,9 @@
 #include "k_msg.h"
 
 
-int k_mbx_create(size_t msgsize, size_t maxmsg) {
+int k_mbx_create(size_t size) {
 #ifdef DEBUG_0
-    printf("k_mbx_create: msgsize = %u, maxmsg = %u\r\n", msgsize, maxmsg);
+    printf("k_mbx_create: size = %u\r\n", size);
 #endif /* DEBUG_0 */
     return 0;
 }

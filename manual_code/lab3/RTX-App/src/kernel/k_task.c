@@ -167,7 +167,7 @@ void SVC_Handler(void)
             ret = k_tsk_ls((task_t *) args[0], (size_t) args[1]);
             break;
         case SVC_MBX_CREATE:
-            ret = k_mbx_create((size_t) args[0], (size_t) args[1]);
+            ret = k_mbx_create((size_t) args[0]);
             break;
         case SVC_MBX_SEND:
             ret = k_send_msg((task_t) args[0], (const void *) args[1]);
