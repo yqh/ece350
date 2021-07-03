@@ -47,7 +47,7 @@
 #include "printf.h"
 #include "ae.h"
 
-#define NUM_INIT_TASKS 2
+//#define NUM_INIT_TASKS 2
 
 /**************************************************************************//**
  * @brief   	main routine
@@ -58,7 +58,9 @@ int main()
 {   
     /* initial tasks */
     static RTX_SYS_INFO sys;
-    static TASK_INIT tasks[NUM_INIT_TASKS];
+    //static TASK_INIT tasks[NUM_INIT_TASKS];
+    static TASK_INIT *p_tasks = NULL;
+    static int num = 0;
     
     /* CMSIS system initialization */
     SystemInit();   
@@ -82,11 +84,13 @@ int main()
     
     /* initialize the third-party testing framework */
     //ae_init(&sys, tasks , NUM_INIT_TASKS, &k_pre_rtx_init, NULL);   
-    ae_init(&sys, tasks , NUM_INIT_TASKS, &k_pre_rtx_init, &sys);
+    //ae_init(&sys, tasks , NUM_INIT_TASKS, &k_pre_rtx_init, &sys);
+    ae_init_new(&sys, &p_tasks, &num, &k_pre_rtx_init, &sys);
     __set_CONTROL(__get_CONTROL() | BIT(1));
     __isb(15); // see https://www.keil.com/support/man/docs/armcc/armcc_chr1435075770601.htm#:~:text=This%20intrinsic%20inserts%20an%20ISB,is%20also%20an%20optimization%20barrier.
     /* start the RTX */
-    rtx_init(&sys, tasks, NUM_INIT_TASKS);
+    //rtx_init(&sys, tasks, NUM_INIT_TASKS);
+    rtx_init(&sys, p_tasks, num);
 
    
     /* We should never reach here!!! */

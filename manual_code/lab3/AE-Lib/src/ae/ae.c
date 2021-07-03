@@ -38,6 +38,28 @@
 #include "ae.h"
 
 /**************************************************************************//**
+ * @brief   	ae_init_new
+ * @return		RTX_OK on success and RTX_ERR on failure
+ * @param[out]  sys_info system initialization struct AE writes to
+ * @param[out]	task_info boot-time tasks struct array AE writes to
+ *
+ *****************************************************************************/
+
+int	ae_init_new(RTX_SYS_INFO *sys_info, 
+                TASK_INIT    **tasks, 
+                int          *num_tasks, 
+                int          (*cb_func) (void *(arg)), 
+                void         *arg)
+{
+	if ( ae_set_sys_info(sys_info) != RTX_OK ) {
+		return RTX_ERR;
+	}
+    cb_func(arg);
+	ae_set_init_tasks_info(tasks, num_tasks);
+	return RTX_OK;
+}
+
+/**************************************************************************//**
  * @brief   	ae_init
  * @return		RTX_OK on success and RTX_ERR on failure
  * @param[out]  sys_info system initialization struct AE writes to
@@ -90,6 +112,16 @@ void ae_set_task_info(TASK_INIT *tasks, int num_tasks)
 		return;
 	}
     set_ae_tasks(tasks, num_tasks);
+    return;
+}
+
+void ae_set_init_tasks_info (TASK_INIT **pp_tasks, int *p_num_tasks)
+{
+    if (pp_tasks == NULL) {
+		return;
+	}
+    set_ae_init_tasks(pp_tasks, p_num_tasks);
+    
     return;
 }
 

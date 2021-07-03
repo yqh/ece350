@@ -44,10 +44,11 @@
 #include "ae_util.h"
 #include "ae_tasks_util.h"
 
-#define BUF_LEN         128
-#define MAXMSG          4
-#define MY_MSG_TYPE     100     // some customized message type, better move it to common_ext.h
+#define     BUF_LEN         128
+#define     MY_MSG_TYPE     100     // some customized message type, better move it to common_ext.h
+#define     NUM_INIT_TASKS  2       // number of tasks during initialization
 
+TASK_INIT   g_init_tasks[NUM_INIT_TASKS];
 /* The following arrays can also be dynamic allocated to reduce ZI-data size
  *  They do not have to be global buffers (provided the memory allocator has no bugs)
  */
@@ -55,6 +56,13 @@
 U8 g_buf1[BUF_LEN];
 U8 g_buf2[BUF_LEN];
 task_t g_tasks[MAX_TASKS];
+
+void set_ae_init_tasks (TASK_INIT **pp_tasks, int *p_num)
+{
+    *p_num = NUM_INIT_TASKS;
+    *pp_tasks = g_init_tasks;
+    set_ae_tasks(*pp_tasks, *p_num);
+}
 
 void set_ae_tasks(TASK_INIT *tasks, int num)
 {
@@ -94,7 +102,7 @@ void priv_task1(void)
     printf("priv_task1: TID =%d\r\n", tid);
     
     buf = mem_alloc(BUF_LEN);
-    mbx_id = mbx_create(BUF_LEN, MAXMSG);  // create a mailbox for itself
+    mbx_id = mbx_create(BUF_LEN);  // create a mailbox for itself
     
     if ( mbx_id >= 0 ) {
         dump_mbx_info(tid);
@@ -175,7 +183,7 @@ void task1(void)
     U8  *buf = &g_buf1[0];                  // buffer is allocated by the caller */
     struct rtx_msg_hdr *ptr = (void *)buf;
     
-    mbx_create(BUF_LEN, MAXMSG);                    // create a mailbox for itself
+    mbx_create(BUF_LEN);                    // create a mailbox for itself
     ptr->length = msg_hdr_size + 1;         // set the message length
     ptr->type = KCD_REG;                    // set message type
     ptr->sender_tid = tid;                  // set sender id 
@@ -222,7 +230,7 @@ void task2(void)
     
     uart1_put_string("task2: entering \n\r");
     
-    ret_val = mbx_create(BUF_LEN, MAXMSG);
+    ret_val = mbx_create(BUF_LEN);
     if ( ret_val == RTX_OK ) {
         ret_val = recv_msg(buf, BUF_LEN);  // blocking receive    
     }
