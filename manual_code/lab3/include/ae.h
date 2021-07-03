@@ -43,20 +43,27 @@
  *                            FUNCTION PROTOTYPES
  *===========================================================================
  */
+int	ae_init_new             (RTX_SYS_INFO *sys_info, 
+                             TASK_INIT    **tasks, 
+                             int          *num_tasks, 
+                             int          (*cb_func) (void *(arg)), 
+                             void         *arg);            // NEW function
 
-int ae_init             (RTX_SYS_INFO *sys_info, \
-                         TASK_INIT    *tasks, \
-                         int          num_tasks, \
-                         int          (*cb_func) (void *(arg)), \
-                         void         *arg);
+int ae_init                 (RTX_SYS_INFO *sys_info, \
+                            TASK_INIT    *tasks, \
+                            int          num_tasks, \
+                            int          (*cb_func) (void *(arg)), \
+                            void         *arg);
                             
-int  ae_set_sys_info    (RTX_SYS_INFO *sys_info);
-void ae_set_task_info   (TASK_INIT *tasks, int num_tasks);
-
+int  ae_set_sys_info        (RTX_SYS_INFO *sys_info);
+void ae_set_task_info       (TASK_INIT *tasks, int num_tasks);
+void ae_set_init_tasks_info (TASK_INIT **pp_tasks, int *p_num_tasks); // NEW function                            
+                            
 #ifdef AE_LAB1                         
 int  ae_start           (void);
 extern int test_mem     (void);
 #else
+void set_ae_init_tasks      (TASK_INIT **tasks, int *num);  // NEW function
 void set_ae_tasks(TASK_INIT *task, int num);
 #endif
                          

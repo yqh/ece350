@@ -72,7 +72,7 @@ __svc(SVC_TSK_SET_PRIO) int     tsk_set_prio(task_t task_id, U8 prio);
 __svc(SVC_TSK_GET)      int     tsk_get(task_t task_id, RTX_TASK_INFO *buffer);
 __svc(SVC_TSK_GETTID)   task_t  tsk_gettid(void);
 __svc(SVC_TSK_LS)       int     tsk_ls(task_t *buf, size_t count);
-__svc(SVC_MBX_CREATE)   int     mbx_create(size_t msgsize, size_t maxmsg);
+__svc(SVC_MBX_CREATE)   int     mbx_create(size_t size);
 __svc(SVC_MBX_SEND)     int     send_msg(task_t tid, const void* buf);
 __svc(SVC_MBX_SEND_NB)  int     send_msg_nb(task_t tid, const void* buf);
 __svc(SVC_MBX_RECV)     int     recv_msg(void *buf, size_t len);
