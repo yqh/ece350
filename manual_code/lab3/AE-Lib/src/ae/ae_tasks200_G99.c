@@ -49,14 +49,15 @@
  *===========================================================================
  */
     
-#define NUM_TESTS   2           // number of tests
-
+#define NUM_TESTS       2       // number of tests
+#define NUM_INIT_TASKS  2       // number of tasks during initialization
 /*
  *===========================================================================
  *                             GLOBAL VARIABLES 
  *===========================================================================
  */
- 
+
+TASK_INIT   g_init_tasks[NUM_INIT_TASKS];
 const char   PREFIX[]      = "G99-TS200";
 const char   PREFIX_LOG[]  = "G99-TS200-LOG";
 const char   PREFIX_LOG2[] = "G99-TS200-LOG2";
@@ -64,6 +65,13 @@ const char   PREFIX_LOG2[] = "G99-TS200-LOG2";
 AE_XTEST     g_ae_xtest;                // test data, re-use for each test
 AE_CASE      g_ae_cases[NUM_TESTS];
 AE_CASE_TSK  g_tsk_cases[NUM_TESTS];
+
+void set_ae_init_tasks (TASK_INIT **pp_tasks, int *p_num)
+{
+    *p_num = NUM_INIT_TASKS;
+    *pp_tasks = g_init_tasks;
+    set_ae_tasks(*pp_tasks, *p_num);
+}
 
 // initial task configuration
 void set_ae_tasks(TASK_INIT *tasks, int num)
