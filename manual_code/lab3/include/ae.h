@@ -16,6 +16,7 @@
 #include "uart_polling.h"
 #include "printf.h"
 #include "rtx.h"
+#include "rtx_errno.h"
 
  /*
   *===========================================================================
