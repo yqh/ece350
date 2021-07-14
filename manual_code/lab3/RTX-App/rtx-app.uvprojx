@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>DEBUG_0 DEBUG_1</Define>
+              <Define>DEBUG_0_ DEBUG_1_</Define>
               <Undefine></Undefine>
               <IncludePath>..\include;..\include\bsp\LPC1768;.\src\kernel</IncludePath>
             </VariousControls>
@@ -828,7 +828,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>DEBUG_0 DEBUG_1</Define>
+              <Define>DEBUG_0_ DEBUG_1_</Define>
               <Undefine></Undefine>
               <IncludePath>..\include;..\include\bsp\LPC1768;.\src\kernel</IncludePath>
             </VariousControls>

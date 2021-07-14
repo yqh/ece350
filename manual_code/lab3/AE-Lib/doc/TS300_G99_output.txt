@@ -1,0 +1,76 @@
+G99-TS300: START
+task0: TID =1 entering
+G99-TS300-LOG: Test[0]-[0]: task0: creating a HIGH prio task that runs task1 function.
+G99-TS300-LOG: Test[0]-[0]: result = 1.
+G99-TS300-LOG: Test[0]-[1]: task0: creating a HIGH prio task that runs task2 function.
+G99-TS300-LOG: Test[0]-[1]: result = 1.
+G99-TS300-LOG: Test[0]-[2]: task0: creating a mailbox of size 128 Bytes.
+G99-TS300-LOG: Test[0]-[2]: result = 1.
+G99-TS300-LOG2: TID = 1, task0: calling tsk_yield()
+G99-TS300-LOG2: TID = 2, task1: entering
+G99-TS300-LOG: Test[0]-[3]: task1: creating a mailbox of size 128 Bytes.
+G99-TS300-LOG: Test[0]-[3]: result = 1.
+G99-TS300-LOG2: TID = 2, task1: yielding cpu 
+G99-TS300-LOG2: TID = 3, task2: entering
+G99-TS300-LOG: Test[0]-[4]: task2: creating a mailbox of size 128 Bytes.
+G99-TS300-LOG: Test[0]-[4]: result = 1.
+G99-TS300-LOG2: TID = 3, task2: caling recv_msg_nb
+G99-TS300-LOG2: TID = 3, task2: calling tsk_yield
+G99-TS300-LOG: Test[0]-[5]: task0: send_msg_nb to tid(3).
+G99-TS300-LOG: Test[0]-[5]: result = 1.
+G99-TS300-LOG2: TID = 1, task0: calling tsk_yield()
+G99-TS300-LOG2: TID = 2, task1: yielding cpu 
+G99-TS300-LOG2: TID = 3, task2: caling recv_msg_nb
+G99-TS300-LOG: Test[0]-[6]: task2: sending message back to sender.
+G99-TS300-LOG: Test[0]-[6]: result = 1.
+G99-TS300-LOG2: TID = 3, task2: caling recv_msg_nb
+G99-TS300-LOG: Test[0]-[7]: task2: sending message back to sender.
+G99-TS300-LOG: Test[0]-[7]: result = 1.
+G99-TS300-LOG2: TID = 3, task2: calling mem_dealloc
+G99-TS300-LOG2: TID = 3, task2: exiting...
+G99-TS300-LOG2: TID = 1, task0: allocating recv buffer
+G99-TS300-LOG: Test[0]-[8]: task0: checking received message length and type from task3.
+G99-TS300-LOG: Test[0]-[8]: result = 1.
+G99-TS300-LOG2: TID = 1, task0: calling tsk_yield()
+G99-TS300-LOG: Test[0]-[9]: task1: test received message type and sender.
+G99-TS300-LOG: Test[0]-[9]: result = 1.
+G99-TS300-LOG: Test[0]-[10]: task1: test received message length.
+G99-TS300-LOG: Test[0]-[10]: result = 1.
+G99-TS300-LOG: Test[0]-[11]: task1: test received message data.
+G99-TS300-LOG: Test[0]-[11]: result = 1.
+G99-TS300-LOG2: TID = 2, task1: yielding cpu after calling recvv_msg_nb()
+G99-TS300-LOG: real exec order: 1 -> 2 -> 3 -> 1 -> 2 -> 3 -> 1 -> 2 -> 1 -> NIL
+G99-TS300-LOG: expt exec order: 1 -> 2 -> 3 -> 1 -> 2 -> 3 -> 1 -> 2 -> 1 -> NIL
+G99-TS300-LOG: Test[1]-[0]: checking execution shortfalls.
+G99-TS300-LOG: Test[1]-[0]: result = 1.
+G99-TS300-LOG: Test[1]-[1]: checking unexpected execution once.
+G99-TS300-LOG: Test[1]-[1]: result = 1.
+G99-TS300-LOG: Test[1]-[2]: checking unexpected execution twice.
+G99-TS300-LOG: Test[1]-[2]: result = 1.
+G99-TS300-LOG: Test[1]-[3]: checking correct number of executions.
+G99-TS300-LOG: Test[1]-[3]: result = 1.
+G99-TS300-LOG: Test[1]-[4]: checking execution sequence @ 0.
+G99-TS300-LOG: Test[1]-[4]: result = 1.
+G99-TS300-LOG: Test[1]-[5]: checking execution sequence @ 1.
+G99-TS300-LOG: Test[1]-[5]: result = 1.
+G99-TS300-LOG: Test[1]-[6]: checking execution sequence @ 2.
+G99-TS300-LOG: Test[1]-[6]: result = 1.
+G99-TS300-LOG: Test[1]-[7]: checking execution sequence @ 3.
+G99-TS300-LOG: Test[1]-[7]: result = 1.
+G99-TS300-LOG: Test[1]-[8]: checking execution sequence @ 4.
+G99-TS300-LOG: Test[1]-[8]: result = 1.
+G99-TS300-LOG: Test[1]-[9]: checking execution sequence @ 5.
+G99-TS300-LOG: Test[1]-[9]: result = 1.
+G99-TS300-LOG: Test[1]-[10]: checking execution sequence @ 6.
+G99-TS300-LOG: Test[1]-[10]: result = 1.
+G99-TS300-LOG: Test[1]-[11]: checking execution sequence @ 7.
+G99-TS300-LOG: Test[1]-[11]: result = 1.
+G99-TS300-LOG: Test[1]-[12]: checking execution sequence @ 8.
+G99-TS300-LOG: Test[1]-[12]: result = 1.
+G99-TS300: FINISHED
+G99-TS300-LOG: Test 0: 12/12 PASSED. Expected = 0xFFF, result = 0xFFF
+G99-TS300-LOG: Test 1: 13/13 PASSED. Expected = 0x1FFF, result = 0x1FFF
+G99-TS300: 2/2 test function(s) COMPLETED.
+G99-TS300: 25/25 tests PASSED.
+G99-TS300: 0/25 tests FAILED.
+G99-TS300: END

@@ -60,6 +60,7 @@
 void set_ae_init_tasks  (TASK_INIT **tasks, int *num);  // NEW function
 void set_ae_tasks       (TASK_INIT *tasks, int num);  
 void priv_task1         (void);
+void task0              (void);
 void task1              (void);
 void task2              (void);
 void task3              (void);
