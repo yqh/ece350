@@ -180,25 +180,29 @@ ARM Macro Assembler    Page 3
   112 000000CC         
   113 000000CC         
   114 000000CC                 IF               :LNOT::DEF:NO_CRP
-  117                          ENDIF
-  118 000000CC         
-  119 000000CC         
-  120 000000CC                 AREA             |.text|, CODE, READONLY
+  115 000000CC                 AREA             |.ARM.__at_0x02FC|, CODE, READO
+NLY
+  116 00000000 FFFFFFFF 
+                       CRP_Key DCD              0xFFFFFFFF
+  117 00000004                 ENDIF
+  118 00000004         
+  119 00000004         
+  120 00000004                 AREA             |.text|, CODE, READONLY
   121 00000000         
   122 00000000         
   123 00000000         ; Reset Handler
   124 00000000         
   125 00000000         Reset_Handler
-                               PROC
-  126 00000000                 EXPORT           Reset_Handler             [WEAK
-]
-  127 00000000                 IMPORT           SystemInit
 
 
 
 ARM Macro Assembler    Page 4 
 
 
+                               PROC
+  126 00000000                 EXPORT           Reset_Handler             [WEAK
+]
+  127 00000000                 IMPORT           SystemInit
   128 00000000                 IMPORT           __main
   129 00000000 4809            LDR              R0, =SystemInit
   130 00000002 4780            BLX              R0
@@ -254,16 +258,16 @@ ARM Macro Assembler    Page 4
   170 00000016                 ENDP
   171 00000016         PendSV_Handler
                                PROC
-  172 00000016                 EXPORT           PendSV_Handler            [WEAK
-]
-  173 00000016 E7FE            B                .
-  174 00000018                 ENDP
 
 
 
 ARM Macro Assembler    Page 5 
 
 
+  172 00000016                 EXPORT           PendSV_Handler            [WEAK
+]
+  173 00000016 E7FE            B                .
+  174 00000018                 ENDP
   175 00000018         SysTick_Handler
                                PROC
   176 00000018                 EXPORT           SysTick_Handler           [WEAK
@@ -319,16 +323,16 @@ ARM Macro Assembler    Page 5
   203 0000001A                 EXPORT           EINT3_IRQHandler          [WEAK
 ]
   204 0000001A                 EXPORT           ADC_IRQHandler            [WEAK
-]
-  205 0000001A                 EXPORT           BOD_IRQHandler            [WEAK
-]
-  206 0000001A                 EXPORT           USB_IRQHandler            [WEAK
 
 
 
 ARM Macro Assembler    Page 6 
 
 
+]
+  205 0000001A                 EXPORT           BOD_IRQHandler            [WEAK
+]
+  206 0000001A                 EXPORT           USB_IRQHandler            [WEAK
 ]
   207 0000001A                 EXPORT           CAN_IRQHandler            [WEAK
 ]
@@ -384,16 +388,16 @@ ARM Macro Assembler    Page 6
   248 0000001A         MCPWM_IRQHandler
   249 0000001A         QEI_IRQHandler
   250 0000001A         PLL1_IRQHandler
-  251 0000001A         USBActivity_IRQHandler
-  252 0000001A         CANActivity_IRQHandler
-  253 0000001A         
-  254 0000001A E7FE            B                .
 
 
 
 ARM Macro Assembler    Page 7 
 
 
+  251 0000001A         USBActivity_IRQHandler
+  252 0000001A         CANActivity_IRQHandler
+  253 0000001A         
+  254 0000001A E7FE            B                .
   255 0000001C         
   256 0000001C                 ENDP
   257 0000001C         
@@ -427,13 +431,13 @@ ARM Macro Assembler    Page 7
               00000200 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
-ork --depend=.\objects\ram\startup_lpc17xx.d -o.\objects\ram\startup_lpc17xx.o 
--I.\RTE\Device\LPC1768 -I.\RTE\_RTX_App_RAM -IC:\opt\Keil5\Arm\Pack\ARM\CMSIS\5
-.7.0\CMSIS\Core\Include -IC:\opt\Keil5\Arm\Pack\Keil\LPC1700_DFP\2.6.0\Device\I
-nclude --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 530" --p
-redefine="_RTE_ SETA 1" --predefine="LPC175x_6x SETA 1" --predefine="_RTE_ SETA
- 1" --predefine="NO_CRP SETA 1" --list=.\listings\startup_lpc17xx.lst RTE\Devic
-e\LPC1768\startup_LPC17xx.s
+ork --depend=.\objects\sim\startup_lpc17xx.d -o.\objects\sim\startup_lpc17xx.o 
+-I.\RTE\Device\LPC1768 -I.\RTE\_RTX_App_FLASH -IC:\opt\Keil5\Arm\Pack\ARM\CMSIS
+\5.7.0\CMSIS\Core\Include -IC:\opt\Keil5\Arm\Pack\Keil\LPC1700_DFP\2.6.0\Device
+\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 530" -
+-predefine="_RTE_ SETA 1" --predefine="LPC175x_6x SETA 1" --predefine="_RTE_ SE
+TA 1" --list=.\listings\startup_lpc17xx.lst RTE\Device\LPC1768\startup_LPC17xx.
+s
 
 
 
@@ -528,6 +532,29 @@ Symbol: __Vectors
    Uses
       At line 57 in file RTE\Device\LPC1768\startup_LPC17xx.s
 Comment: __Vectors used once
+2 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+.ARM.__at_0x02FC 00000000
+
+Symbol: .ARM.__at_0x02FC
+   Definitions
+      At line 115 in file RTE\Device\LPC1768\startup_LPC17xx.s
+   Uses
+      None
+Comment: .ARM.__at_0x02FC unused
+CRP_Key 00000000
+
+Symbol: CRP_Key
+   Definitions
+      At line 116 in file RTE\Device\LPC1768\startup_LPC17xx.s
+   Uses
+      None
+Comment: CRP_Key unused
 2 symbols
 
 
@@ -1063,4 +1090,4 @@ Symbol: __use_two_region_memory
       None
 Comment: __use_two_region_memory unused
 3 symbols
-401 symbols in table
+404 symbols in table

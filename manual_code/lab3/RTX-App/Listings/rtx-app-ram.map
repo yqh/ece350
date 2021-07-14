@@ -828,152 +828,152 @@ Memory Map of the image
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x10000000   0x10000000   0x000000cc   Data   RO          617    RESET               startup_lpc17xx.o
-    0x100000cc   0x100000cc   0x00000008   Code   RO          664  * !!!main             c_w.l(__main.o)
-    0x100000d4   0x100000d4   0x00000034   Code   RO         1098    !!!scatter          c_w.l(__scatter.o)
-    0x10000108   0x10000108   0x0000001a   Code   RO         1100    !!handler_copy      c_w.l(__scatter_copy.o)
+    0x10000000   0x10000000   0x000000cc   Data   RO          660    RESET               startup_lpc17xx.o
+    0x100000cc   0x100000cc   0x00000008   Code   RO          707  * !!!main             c_w.l(__main.o)
+    0x100000d4   0x100000d4   0x00000034   Code   RO         1141    !!!scatter          c_w.l(__scatter.o)
+    0x10000108   0x10000108   0x0000001a   Code   RO         1143    !!handler_copy      c_w.l(__scatter_copy.o)
     0x10000122   0x10000122   0x00000002   PAD
-    0x10000124   0x10000124   0x0000001c   Code   RO         1102    !!handler_zi        c_w.l(__scatter_zi.o)
-    0x10000140   0x10000140   0x00000002   Code   RO          761    .ARM.Collect$$libinit$$00000000  c_w.l(libinit.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          816    .ARM.Collect$$libinit$$00000002  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          818    .ARM.Collect$$libinit$$00000004  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          821    .ARM.Collect$$libinit$$0000000A  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          823    .ARM.Collect$$libinit$$0000000C  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          825    .ARM.Collect$$libinit$$0000000E  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          828    .ARM.Collect$$libinit$$00000011  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          830    .ARM.Collect$$libinit$$00000013  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          832    .ARM.Collect$$libinit$$00000015  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          834    .ARM.Collect$$libinit$$00000017  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          836    .ARM.Collect$$libinit$$00000019  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          838    .ARM.Collect$$libinit$$0000001B  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          840    .ARM.Collect$$libinit$$0000001D  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          842    .ARM.Collect$$libinit$$0000001F  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          844    .ARM.Collect$$libinit$$00000021  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          846    .ARM.Collect$$libinit$$00000023  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          848    .ARM.Collect$$libinit$$00000025  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          852    .ARM.Collect$$libinit$$0000002C  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          854    .ARM.Collect$$libinit$$0000002E  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          856    .ARM.Collect$$libinit$$00000030  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000000   Code   RO          858    .ARM.Collect$$libinit$$00000032  c_w.l(libinit2.o)
-    0x10000142   0x10000142   0x00000002   Code   RO          859    .ARM.Collect$$libinit$$00000033  c_w.l(libinit2.o)
-    0x10000144   0x10000144   0x00000002   Code   RO         1055    .ARM.Collect$$libshutdown$$00000000  c_w.l(libshutdown.o)
-    0x10000146   0x10000146   0x00000000   Code   RO         1081    .ARM.Collect$$libshutdown$$00000002  c_w.l(libshutdown2.o)
-    0x10000146   0x10000146   0x00000000   Code   RO         1083    .ARM.Collect$$libshutdown$$00000004  c_w.l(libshutdown2.o)
-    0x10000146   0x10000146   0x00000000   Code   RO         1086    .ARM.Collect$$libshutdown$$00000007  c_w.l(libshutdown2.o)
-    0x10000146   0x10000146   0x00000000   Code   RO         1089    .ARM.Collect$$libshutdown$$0000000A  c_w.l(libshutdown2.o)
-    0x10000146   0x10000146   0x00000000   Code   RO         1091    .ARM.Collect$$libshutdown$$0000000C  c_w.l(libshutdown2.o)
-    0x10000146   0x10000146   0x00000000   Code   RO         1094    .ARM.Collect$$libshutdown$$0000000F  c_w.l(libshutdown2.o)
-    0x10000146   0x10000146   0x00000002   Code   RO         1095    .ARM.Collect$$libshutdown$$00000010  c_w.l(libshutdown2.o)
-    0x10000148   0x10000148   0x00000000   Code   RO          666    .ARM.Collect$$rtentry$$00000000  c_w.l(__rtentry.o)
-    0x10000148   0x10000148   0x00000000   Code   RO          672    .ARM.Collect$$rtentry$$00000002  c_w.l(__rtentry2.o)
-    0x10000148   0x10000148   0x00000006   Code   RO          684    .ARM.Collect$$rtentry$$00000004  c_w.l(__rtentry4.o)
-    0x1000014e   0x1000014e   0x00000000   Code   RO          674    .ARM.Collect$$rtentry$$00000009  c_w.l(__rtentry2.o)
-    0x1000014e   0x1000014e   0x00000004   Code   RO          675    .ARM.Collect$$rtentry$$0000000A  c_w.l(__rtentry2.o)
-    0x10000152   0x10000152   0x00000000   Code   RO          677    .ARM.Collect$$rtentry$$0000000C  c_w.l(__rtentry2.o)
-    0x10000152   0x10000152   0x00000008   Code   RO          678    .ARM.Collect$$rtentry$$0000000D  c_w.l(__rtentry2.o)
-    0x1000015a   0x1000015a   0x00000002   Code   RO          807    .ARM.Collect$$rtexit$$00000000  c_w.l(rtexit.o)
-    0x1000015c   0x1000015c   0x00000000   Code   RO          958    .ARM.Collect$$rtexit$$00000002  c_w.l(rtexit2.o)
-    0x1000015c   0x1000015c   0x00000004   Code   RO          959    .ARM.Collect$$rtexit$$00000003  c_w.l(rtexit2.o)
-    0x10000160   0x10000160   0x00000006   Code   RO          960    .ARM.Collect$$rtexit$$00000004  c_w.l(rtexit2.o)
+    0x10000124   0x10000124   0x0000001c   Code   RO         1145    !!handler_zi        c_w.l(__scatter_zi.o)
+    0x10000140   0x10000140   0x00000002   Code   RO          804    .ARM.Collect$$libinit$$00000000  c_w.l(libinit.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          859    .ARM.Collect$$libinit$$00000002  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          861    .ARM.Collect$$libinit$$00000004  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          864    .ARM.Collect$$libinit$$0000000A  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          866    .ARM.Collect$$libinit$$0000000C  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          868    .ARM.Collect$$libinit$$0000000E  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          871    .ARM.Collect$$libinit$$00000011  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          873    .ARM.Collect$$libinit$$00000013  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          875    .ARM.Collect$$libinit$$00000015  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          877    .ARM.Collect$$libinit$$00000017  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          879    .ARM.Collect$$libinit$$00000019  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          881    .ARM.Collect$$libinit$$0000001B  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          883    .ARM.Collect$$libinit$$0000001D  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          885    .ARM.Collect$$libinit$$0000001F  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          887    .ARM.Collect$$libinit$$00000021  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          889    .ARM.Collect$$libinit$$00000023  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          891    .ARM.Collect$$libinit$$00000025  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          895    .ARM.Collect$$libinit$$0000002C  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          897    .ARM.Collect$$libinit$$0000002E  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          899    .ARM.Collect$$libinit$$00000030  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000000   Code   RO          901    .ARM.Collect$$libinit$$00000032  c_w.l(libinit2.o)
+    0x10000142   0x10000142   0x00000002   Code   RO          902    .ARM.Collect$$libinit$$00000033  c_w.l(libinit2.o)
+    0x10000144   0x10000144   0x00000002   Code   RO         1098    .ARM.Collect$$libshutdown$$00000000  c_w.l(libshutdown.o)
+    0x10000146   0x10000146   0x00000000   Code   RO         1124    .ARM.Collect$$libshutdown$$00000002  c_w.l(libshutdown2.o)
+    0x10000146   0x10000146   0x00000000   Code   RO         1126    .ARM.Collect$$libshutdown$$00000004  c_w.l(libshutdown2.o)
+    0x10000146   0x10000146   0x00000000   Code   RO         1129    .ARM.Collect$$libshutdown$$00000007  c_w.l(libshutdown2.o)
+    0x10000146   0x10000146   0x00000000   Code   RO         1132    .ARM.Collect$$libshutdown$$0000000A  c_w.l(libshutdown2.o)
+    0x10000146   0x10000146   0x00000000   Code   RO         1134    .ARM.Collect$$libshutdown$$0000000C  c_w.l(libshutdown2.o)
+    0x10000146   0x10000146   0x00000000   Code   RO         1137    .ARM.Collect$$libshutdown$$0000000F  c_w.l(libshutdown2.o)
+    0x10000146   0x10000146   0x00000002   Code   RO         1138    .ARM.Collect$$libshutdown$$00000010  c_w.l(libshutdown2.o)
+    0x10000148   0x10000148   0x00000000   Code   RO          709    .ARM.Collect$$rtentry$$00000000  c_w.l(__rtentry.o)
+    0x10000148   0x10000148   0x00000000   Code   RO          715    .ARM.Collect$$rtentry$$00000002  c_w.l(__rtentry2.o)
+    0x10000148   0x10000148   0x00000006   Code   RO          727    .ARM.Collect$$rtentry$$00000004  c_w.l(__rtentry4.o)
+    0x1000014e   0x1000014e   0x00000000   Code   RO          717    .ARM.Collect$$rtentry$$00000009  c_w.l(__rtentry2.o)
+    0x1000014e   0x1000014e   0x00000004   Code   RO          718    .ARM.Collect$$rtentry$$0000000A  c_w.l(__rtentry2.o)
+    0x10000152   0x10000152   0x00000000   Code   RO          720    .ARM.Collect$$rtentry$$0000000C  c_w.l(__rtentry2.o)
+    0x10000152   0x10000152   0x00000008   Code   RO          721    .ARM.Collect$$rtentry$$0000000D  c_w.l(__rtentry2.o)
+    0x1000015a   0x1000015a   0x00000002   Code   RO          850    .ARM.Collect$$rtexit$$00000000  c_w.l(rtexit.o)
+    0x1000015c   0x1000015c   0x00000000   Code   RO         1001    .ARM.Collect$$rtexit$$00000002  c_w.l(rtexit2.o)
+    0x1000015c   0x1000015c   0x00000004   Code   RO         1002    .ARM.Collect$$rtexit$$00000003  c_w.l(rtexit2.o)
+    0x10000160   0x10000160   0x00000006   Code   RO         1003    .ARM.Collect$$rtexit$$00000004  c_w.l(rtexit2.o)
     0x10000166   0x10000166   0x00000002   PAD
     0x10000168   0x10000168   0x00000008   Code   RO          174    .emb_text           hal.o
-    0x10000170   0x10000170   0x00000032   Code   RO          392    .emb_text           k_task.o
+    0x10000170   0x10000170   0x00000032   Code   RO          435    .emb_text           k_task.o
     0x100001a2   0x100001a2   0x00000002   PAD
-    0x100001a4   0x100001a4   0x0000003c   Code   RO          618    .text               startup_lpc17xx.o
-    0x100001e0   0x100001e0   0x00000006   Code   RO          662    .text               c_w.l(heapauxi.o)
-    0x100001e6   0x100001e6   0x0000004a   Code   RO          748    .text               c_w.l(sys_stackheap_outer.o)
-    0x10000230   0x10000230   0x00000012   Code   RO          750    .text               c_w.l(exit.o)
+    0x100001a4   0x100001a4   0x0000003c   Code   RO          661    .text               startup_lpc17xx.o
+    0x100001e0   0x100001e0   0x00000006   Code   RO          705    .text               c_w.l(heapauxi.o)
+    0x100001e6   0x100001e6   0x0000004a   Code   RO          791    .text               c_w.l(sys_stackheap_outer.o)
+    0x10000230   0x10000230   0x00000012   Code   RO          793    .text               c_w.l(exit.o)
     0x10000242   0x10000242   0x00000002   PAD
-    0x10000244   0x10000244   0x00000008   Code   RO          804    .text               c_w.l(libspace.o)
-    0x1000024c   0x1000024c   0x0000000c   Code   RO          955    .text               c_w.l(sys_exit.o)
-    0x10000258   0x10000258   0x00000002   Code   RO         1044    .text               c_w.l(use_no_semi.o)
-    0x1000025a   0x1000025a   0x00000000   Code   RO         1046    .text               c_w.l(indicate_semi.o)
+    0x10000244   0x10000244   0x00000008   Code   RO          847    .text               c_w.l(libspace.o)
+    0x1000024c   0x1000024c   0x0000000c   Code   RO          998    .text               c_w.l(sys_exit.o)
+    0x10000258   0x10000258   0x00000002   Code   RO         1087    .text               c_w.l(use_no_semi.o)
+    0x1000025a   0x1000025a   0x00000000   Code   RO         1089    .text               c_w.l(indicate_semi.o)
     0x1000025a   0x1000025a   0x00000002   PAD
-    0x1000025c   0x1000025c   0x0000002c   Code   RO          972    i.HardFault_Handler  ae-lib-ram.lib(ae_util.o)
-    0x10000288   0x10000288   0x00000106   Code   RO          393    i.SVC_Handler       k_task.o
+    0x1000025c   0x1000025c   0x0000002c   Code   RO         1015    i.HardFault_Handler  ae-lib-ram.lib(ae_util.o)
+    0x10000288   0x10000288   0x00000106   Code   RO          436    i.SVC_Handler       k_task.o
     0x1000038e   0x1000038e   0x00000002   PAD
-    0x10000390   0x10000390   0x00000140   Code   RO          626    i.SystemInit        system_lpc17xx.o
+    0x10000390   0x10000390   0x00000140   Code   RO          669    i.SystemInit        system_lpc17xx.o
     0x100004d0   0x100004d0   0x000000ac   Code   RO           87    i.UART0_IRQHandler  uart_irq.o
     0x1000057c   0x1000057c   0x00000022   Code   RO           88    i.__NVIC_EnableIRQ  uart_irq.o
-    0x1000059e   0x1000059e   0x00000032   Code   RO          501    i.a2d               printf.o
-    0x100005d0   0x100005d0   0x0000003a   Code   RO          502    i.a2i               printf.o
-    0x1000060a   0x1000060a   0x00000004   Code   RO          973    i.ae_exit           ae-lib-ram.lib(ae_util.o)
-    0x1000060e   0x1000060e   0x00000030   Code   RO          763    i.ae_init_new       ae-lib-ram.lib(ae.o)
-    0x1000063e   0x1000063e   0x00000016   Code   RO          764    i.ae_set_init_tasks_info  ae-lib-ram.lib(ae.o)
-    0x10000654   0x10000654   0x00000016   Code   RO          765    i.ae_set_sys_info   ae-lib-ram.lib(ae.o)
-    0x1000066a   0x1000066a   0x00000012   Code   RO          974    i.count_set_bits    ae-lib-ram.lib(ae_util.o)
-    0x1000067c   0x1000067c   0x0000004c   Code   RO          860    i.gen_req0          ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x100006c8   0x100006c8   0x00000048   Code   RO          861    i.gen_req1          ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x10000710   0x10000710   0x00000020   Code   RO          503    i.i2a               printf.o
-    0x10000730   0x10000730   0x0000007c   Code   RO          862    i.init_ae_tsk_test  ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x100007ac   0x100007ac   0x00000014   Code   RO          504    i.init_printf       printf.o
-    0x100007c0   0x100007c0   0x00000030   Code   RO          219    i.k_alloc_k_stack   k_mem.o
-    0x100007f0   0x100007f0   0x0000002c   Code   RO          220    i.k_alloc_p_stack   k_mem.o
-    0x1000081c   0x1000081c   0x00000006   Code   RO          287    i.k_mbx_create      k_msg.o
-    0x10000822   0x10000822   0x00000006   Code   RO          288    i.k_mbx_get         k_msg.o
-    0x10000828   0x10000828   0x00000006   Code   RO          289    i.k_mbx_ls          k_msg.o
+    0x1000059e   0x1000059e   0x00000032   Code   RO          544    i.a2d               printf.o
+    0x100005d0   0x100005d0   0x0000003a   Code   RO          545    i.a2i               printf.o
+    0x1000060a   0x1000060a   0x00000004   Code   RO         1016    i.ae_exit           ae-lib-ram.lib(ae_util.o)
+    0x1000060e   0x1000060e   0x00000030   Code   RO          806    i.ae_init_new       ae-lib-ram.lib(ae.o)
+    0x1000063e   0x1000063e   0x00000016   Code   RO          807    i.ae_set_init_tasks_info  ae-lib-ram.lib(ae.o)
+    0x10000654   0x10000654   0x00000016   Code   RO          808    i.ae_set_sys_info   ae-lib-ram.lib(ae.o)
+    0x1000066a   0x1000066a   0x00000012   Code   RO         1017    i.count_set_bits    ae-lib-ram.lib(ae_util.o)
+    0x1000067c   0x1000067c   0x0000004c   Code   RO          903    i.gen_req0          ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x100006c8   0x100006c8   0x00000048   Code   RO          904    i.gen_req1          ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10000710   0x10000710   0x00000020   Code   RO          546    i.i2a               printf.o
+    0x10000730   0x10000730   0x0000007c   Code   RO          905    i.init_ae_tsk_test  ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x100007ac   0x100007ac   0x00000014   Code   RO          547    i.init_printf       printf.o
+    0x100007c0   0x100007c0   0x00000030   Code   RO          239    i.k_alloc_k_stack   k_mem.o
+    0x100007f0   0x100007f0   0x0000002c   Code   RO          240    i.k_alloc_p_stack   k_mem.o
+    0x1000081c   0x1000081c   0x00000006   Code   RO          307    i.k_mbx_create      k_msg.o
+    0x10000822   0x10000822   0x00000006   Code   RO          308    i.k_mbx_get         k_msg.o
+    0x10000828   0x10000828   0x00000006   Code   RO          309    i.k_mbx_ls          k_msg.o
     0x1000082e   0x1000082e   0x00000002   PAD
-    0x10000830   0x10000830   0x00000040   Code   RO          221    i.k_mem_init        k_mem.o
-    0x10000870   0x10000870   0x0000000c   Code   RO          222    i.k_mpool_alloc     k_mem.o
-    0x1000087c   0x1000087c   0x00000044   Code   RO          223    i.k_mpool_create    k_mem.o
-    0x100008c0   0x100008c0   0x00000006   Code   RO          224    i.k_mpool_dealloc   k_mem.o
-    0x100008c6   0x100008c6   0x00000006   Code   RO          225    i.k_mpool_dump      k_mem.o
-    0x100008cc   0x100008cc   0x00000024   Code   RO          348    i.k_pre_rtx_init    k_rtx_init.o
-    0x100008f0   0x100008f0   0x00000006   Code   RO          290    i.k_recv_msg        k_msg.o
-    0x100008f6   0x100008f6   0x00000006   Code   RO          291    i.k_recv_msg_nb     k_msg.o
-    0x100008fc   0x100008fc   0x00000038   Code   RO          349    i.k_rtx_init        k_rtx_init.o
-    0x10000934   0x10000934   0x00000006   Code   RO          292    i.k_send_msg        k_msg.o
-    0x1000093a   0x1000093a   0x00000006   Code   RO          293    i.k_send_msg_nb     k_msg.o
-    0x10000940   0x10000940   0x00000008   Code   RO          394    i.k_tsk_create      k_task.o
-    0x10000948   0x10000948   0x000000bc   Code   RO          395    i.k_tsk_create_new  k_task.o
-    0x10000a04   0x10000a04   0x00000002   Code   RO          396    i.k_tsk_exit        k_task.o
+    0x10000830   0x10000830   0x00000040   Code   RO          241    i.k_mem_init        k_mem.o
+    0x10000870   0x10000870   0x0000000c   Code   RO          242    i.k_mpool_alloc     k_mem.o
+    0x1000087c   0x1000087c   0x00000044   Code   RO          243    i.k_mpool_create    k_mem.o
+    0x100008c0   0x100008c0   0x00000006   Code   RO          244    i.k_mpool_dealloc   k_mem.o
+    0x100008c6   0x100008c6   0x00000006   Code   RO          245    i.k_mpool_dump      k_mem.o
+    0x100008cc   0x100008cc   0x00000024   Code   RO          368    i.k_pre_rtx_init    k_rtx_init.o
+    0x100008f0   0x100008f0   0x00000006   Code   RO          310    i.k_recv_msg        k_msg.o
+    0x100008f6   0x100008f6   0x00000006   Code   RO          311    i.k_recv_msg_nb     k_msg.o
+    0x100008fc   0x100008fc   0x00000038   Code   RO          369    i.k_rtx_init        k_rtx_init.o
+    0x10000934   0x10000934   0x00000006   Code   RO          312    i.k_send_msg        k_msg.o
+    0x1000093a   0x1000093a   0x00000006   Code   RO          313    i.k_send_msg_nb     k_msg.o
+    0x10000940   0x10000940   0x00000008   Code   RO          437    i.k_tsk_create      k_task.o
+    0x10000948   0x10000948   0x000000bc   Code   RO          438    i.k_tsk_create_new  k_task.o
+    0x10000a04   0x10000a04   0x00000002   Code   RO          439    i.k_tsk_exit        k_task.o
     0x10000a06   0x10000a06   0x00000002   PAD
-    0x10000a08   0x10000a08   0x00000044   Code   RO          397    i.k_tsk_get         k_task.o
-    0x10000a4c   0x10000a4c   0x0000000c   Code   RO          398    i.k_tsk_gettid      k_task.o
-    0x10000a58   0x10000a58   0x0000007c   Code   RO          399    i.k_tsk_init        k_task.o
-    0x10000ad4   0x10000ad4   0x0000001c   Code   RO          400    i.k_tsk_init_first  k_task.o
-    0x10000af0   0x10000af0   0x00000006   Code   RO          401    i.k_tsk_ls          k_task.o
+    0x10000a08   0x10000a08   0x00000044   Code   RO          440    i.k_tsk_get         k_task.o
+    0x10000a4c   0x10000a4c   0x0000000c   Code   RO          441    i.k_tsk_gettid      k_task.o
+    0x10000a58   0x10000a58   0x0000007c   Code   RO          442    i.k_tsk_init        k_task.o
+    0x10000ad4   0x10000ad4   0x0000001c   Code   RO          443    i.k_tsk_init_first  k_task.o
+    0x10000af0   0x10000af0   0x00000006   Code   RO          444    i.k_tsk_ls          k_task.o
     0x10000af6   0x10000af6   0x00000002   PAD
-    0x10000af8   0x10000af8   0x0000004c   Code   RO          402    i.k_tsk_run_new     k_task.o
-    0x10000b44   0x10000b44   0x00000006   Code   RO          403    i.k_tsk_set_prio    k_task.o
-    0x10000b4a   0x10000b4a   0x00000008   Code   RO          404    i.k_tsk_yield       k_task.o
+    0x10000af8   0x10000af8   0x0000004c   Code   RO          445    i.k_tsk_run_new     k_task.o
+    0x10000b44   0x10000b44   0x00000006   Code   RO          446    i.k_tsk_set_prio    k_task.o
+    0x10000b4a   0x10000b4a   0x00000008   Code   RO          447    i.k_tsk_yield       k_task.o
     0x10000b52   0x10000b52   0x00000002   PAD
-    0x10000b54   0x10000b54   0x00000068   Code   RO          690    i.main              ae-lib-ram.lib(main.o)
-    0x10000bbc   0x10000bbc   0x00000070   Code   RO          975    i.print_log         ae-lib-ram.lib(ae_util.o)
-    0x10000c2c   0x10000c2c   0x00000120   Code   RO          976    i.print_results     ae-lib-ram.lib(ae_util.o)
-    0x10000d4c   0x10000d4c   0x00000028   Code   RO          977    i.print_summary     ae-lib-ram.lib(ae_util.o)
-    0x10000d74   0x10000d74   0x00000038   Code   RO          978    i.process_sub_result  ae-lib-ram.lib(ae_util.o)
+    0x10000b54   0x10000b54   0x00000068   Code   RO          733    i.main              ae-lib-ram.lib(main.o)
+    0x10000bbc   0x10000bbc   0x00000070   Code   RO         1018    i.print_log         ae-lib-ram.lib(ae_util.o)
+    0x10000c2c   0x10000c2c   0x00000120   Code   RO         1019    i.print_results     ae-lib-ram.lib(ae_util.o)
+    0x10000d4c   0x10000d4c   0x00000028   Code   RO         1020    i.print_summary     ae-lib-ram.lib(ae_util.o)
+    0x10000d74   0x10000d74   0x00000038   Code   RO         1021    i.process_sub_result  ae-lib-ram.lib(ae_util.o)
     0x10000dac   0x10000dac   0x00000044   Code   RO            4    i.putc              uart_polling.o
-    0x10000df0   0x10000df0   0x00000052   Code   RO          505    i.putchw            printf.o
-    0x10000e42   0x10000e42   0x0000000a   Code   RO          506    i.putcp             printf.o
-    0x10000e4c   0x10000e4c   0x0000002c   Code   RO          405    i.scheduler         k_task.o
-    0x10000e78   0x10000e78   0x0000001c   Code   RO          863    i.set_ae_init_tasks  ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x10000e94   0x10000e94   0x00000044   Code   RO          864    i.set_ae_tasks      ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x10000ed8   0x10000ed8   0x00000020   Code   RO          979    i.strcpy            ae-lib-ram.lib(ae_util.o)
-    0x10000ef8   0x10000ef8   0x0000029c   Code   RO          865    i.task0             ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x10001194   0x10001194   0x00000280   Code   RO          866    i.task1             ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x10001414   0x10001414   0x00000244   Code   RO          867    i.task2             ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x10001658   0x10001658   0x00000006   Code   RO          584    i.task_null         null_task.o
+    0x10000df0   0x10000df0   0x00000052   Code   RO          548    i.putchw            printf.o
+    0x10000e42   0x10000e42   0x0000000a   Code   RO          549    i.putcp             printf.o
+    0x10000e4c   0x10000e4c   0x0000002c   Code   RO          448    i.scheduler         k_task.o
+    0x10000e78   0x10000e78   0x0000001c   Code   RO          906    i.set_ae_init_tasks  ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10000e94   0x10000e94   0x00000044   Code   RO          907    i.set_ae_tasks      ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10000ed8   0x10000ed8   0x00000020   Code   RO         1022    i.strcpy            ae-lib-ram.lib(ae_util.o)
+    0x10000ef8   0x10000ef8   0x0000029c   Code   RO          908    i.task0             ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10001194   0x10001194   0x00000280   Code   RO          909    i.task1             ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10001414   0x10001414   0x00000244   Code   RO          910    i.task2             ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10001658   0x10001658   0x00000006   Code   RO          627    i.task_null         null_task.o
     0x1000165e   0x1000165e   0x00000002   PAD
-    0x10001660   0x10001660   0x000001c0   Code   RO          868    i.test0_start       ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x10001820   0x10001820   0x00000274   Code   RO          869    i.test1_start       ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x10001a94   0x10001a94   0x0000006c   Code   RO          980    i.test_abort        ae-lib-ram.lib(ae_util.o)
-    0x10001b00   0x10001b00   0x00000020   Code   RO          981    i.test_exit         ae-lib-ram.lib(ae_util.o)
-    0x10001b20   0x10001b20   0x00000128   Code   RO          507    i.tfp_format        printf.o
-    0x10001c48   0x10001c48   0x0000002c   Code   RO          508    i.tfp_printf        printf.o
-    0x10001c74   0x10001c74   0x0000002c   Code   RO          509    i.tfp_sprintf       printf.o
+    0x10001660   0x10001660   0x000001c0   Code   RO          911    i.test0_start       ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10001820   0x10001820   0x00000274   Code   RO          912    i.test1_start       ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10001a94   0x10001a94   0x0000006c   Code   RO         1023    i.test_abort        ae-lib-ram.lib(ae_util.o)
+    0x10001b00   0x10001b00   0x00000020   Code   RO         1024    i.test_exit         ae-lib-ram.lib(ae_util.o)
+    0x10001b20   0x10001b20   0x00000128   Code   RO          550    i.tfp_format        printf.o
+    0x10001c48   0x10001c48   0x0000002c   Code   RO          551    i.tfp_printf        printf.o
+    0x10001c74   0x10001c74   0x0000002c   Code   RO          552    i.tfp_sprintf       printf.o
     0x10001ca0   0x10001ca0   0x0000006c   Code   RO            6    i.uart_init         uart_polling.o
     0x10001d0c   0x10001d0c   0x000000bc   Code   RO           89    i.uart_irq_init     uart_irq.o
     0x10001dc8   0x10001dc8   0x00000034   Code   RO            7    i.uart_put_char     uart_polling.o
     0x10001dfc   0x10001dfc   0x00000026   Code   RO            8    i.uart_put_string   uart_polling.o
-    0x10001e22   0x10001e22   0x00000056   Code   RO          510    i.ui2a              printf.o
-    0x10001e78   0x10001e78   0x00000018   Code   RO          870    i.update_ae_xtest   ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x10001e90   0x10001e90   0x00000044   Code   RO          871    i.update_exec_seq   ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x10001ed4   0x10001ed4   0x00000027   Data   RO          873    .constdata          ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10001e22   0x10001e22   0x00000056   Code   RO          553    i.ui2a              printf.o
+    0x10001e78   0x10001e78   0x00000018   Code   RO          913    i.update_ae_xtest   ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10001e90   0x10001e90   0x00000044   Code   RO          914    i.update_exec_seq   ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10001ed4   0x10001ed4   0x00000027   Data   RO          916    .constdata          ae-lib-ram.lib(ae_tasks300_g99.o)
     0x10001efb   0x10001efb   0x00000001   PAD
-    0x10001efc   0x10001efc   0x000000cd   Data   RO          874    .conststring        ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x10001efc   0x10001efc   0x000000cd   Data   RO          917    .conststring        ae-lib-ram.lib(ae_tasks300_g99.o)
     0x10001fc9   0x10001fc9   0x00000003   PAD
-    0x10001fcc   0x10001fcc   0x00000020   Data   RO         1096    Region$$Table       anon$$obj.o
+    0x10001fcc   0x10001fcc   0x00000020   Data   RO         1139    Region$$Table       anon$$obj.o
 
 
     Execution Region RW_IRAM1 (Exec base: 0x10003000, Load base: 0x10001fec, Size: 0x00003bf0, Max: 0x00004000, ABSOLUTE)
@@ -981,17 +981,17 @@ Memory Map of the image
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x10003000   0x10001fec   0x00000018   Data   RW           90    .data               uart_irq.o
-    0x10003018   0x10002004   0x00000004   Data   RW          350    .data               k_rtx_init.o
-    0x1000301c   0x10002008   0x00000008   Data   RW          407    .data               k_task.o
-    0x10003024   0x10002010   0x00000008   Data   RW          511    .data               printf.o
-    0x1000302c   0x10002018   0x00000010   Data   RW          691    .data               ae-lib-ram.lib(main.o)
+    0x10003018   0x10002004   0x00000004   Data   RW          370    .data               k_rtx_init.o
+    0x1000301c   0x10002008   0x00000008   Data   RW          450    .data               k_task.o
+    0x10003024   0x10002010   0x00000008   Data   RW          554    .data               printf.o
+    0x1000302c   0x10002018   0x00000010   Data   RW          734    .data               ae-lib-ram.lib(main.o)
     0x1000303c   0x10002028   0x00000004   PAD
-    0x10003040        -       0x00003600   Zero   RW          226    .bss                k_mem.o
-    0x10006640        -       0x00000100   Zero   RW          406    .bss                k_task.o
-    0x10006740        -       0x00000060   Zero   RW          805    .bss                c_w.l(libspace.o)
-    0x100067a0        -       0x00000250   Zero   RW          872    .bss                ae-lib-ram.lib(ae_tasks300_g99.o)
-    0x100069f0        -       0x00000000   Zero   RW          616    HEAP                startup_lpc17xx.o
-    0x100069f0        -       0x00000200   Zero   RW          615    STACK               startup_lpc17xx.o
+    0x10003040        -       0x00003600   Zero   RW          246    .bss                k_mem.o
+    0x10006640        -       0x00000100   Zero   RW          449    .bss                k_task.o
+    0x10006740        -       0x00000060   Zero   RW          848    .bss                c_w.l(libspace.o)
+    0x100067a0        -       0x00000250   Zero   RW          915    .bss                ae-lib-ram.lib(ae_tasks300_g99.o)
+    0x100069f0        -       0x00000000   Zero   RW          659    HEAP                startup_lpc17xx.o
+    0x100069f0        -       0x00000200   Zero   RW          658    STACK               startup_lpc17xx.o
 
 
 ==============================================================================
@@ -1001,20 +1001,20 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-         8          2          0          0          0        352   hal.o
+         8          2          0          0          0       2576   hal.o
        248         52          0          0      13824       4889   k_mem.o
         42          0          0          0          0       4120   k_msg.o
-        92          6          0          4          0       5698   k_rtx_init.o
+        92          6          0          4          0       5586   k_rtx_init.o
        882         78          0          8        256      13747   k_task.o
          6          0          0          0          0        440   null_task.o
        722         26          0          8          0       6922   printf.o
         60         22        204          0        512        832   startup_lpc17xx.o
        320         18          0          0          0        617   system_lpc17xx.o
-       394         50          0         24          0      32074   uart_irq.o
+       394         50          0         24          0      31898   uart_irq.o
        266         62          0          0          0      24317   uart_polling.o
 
     ----------------------------------------------------------------------
-      3054        316        236         44      14592      94008   Object Totals
+      3054        316        236         44      14592      95944   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         14          0          0          0          0          0   (incl. Padding)
 
@@ -1068,8 +1068,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      7688       2174        484         60      15284     116092   Grand Totals
-      7688       2174        484         60      15284     116092   ELF Image Totals
+      7688       2174        484         60      15284     118028   Grand Totals
+      7688       2174        484         60      15284     118028   ELF Image Totals
       7688       2174        484         60          0          0   ROM Totals
 
 ==============================================================================
