@@ -75,12 +75,12 @@
       <OPTFL>
         <tvExp>1</tvExp>
         <tvExpOptDlg>0</tvExpOptDlg>
-        <IsCurrentTarget>0</IsCurrentTarget>
+        <IsCurrentTarget>1</IsCurrentTarget>
       </OPTFL>
       <CpuCode>8</CpuCode>
       <DebugOpt>
-        <uSim>0</uSim>
-        <uTrg>1</uTrg>
+        <uSim>1</uSim>
+        <uTrg>0</uTrg>
         <sLdApp>1</sLdApp>
         <sGomain>1</sGomain>
         <sRbreak>1</sRbreak>
@@ -497,7 +497,7 @@
       <OPTFL>
         <tvExp>1</tvExp>
         <tvExpOptDlg>0</tvExpOptDlg>
-        <IsCurrentTarget>1</IsCurrentTarget>
+        <IsCurrentTarget>0</IsCurrentTarget>
       </OPTFL>
       <CpuCode>8</CpuCode>
       <DebugOpt>
@@ -510,7 +510,7 @@
         <sRmem>1</sRmem>
         <sRfunc>1</sRfunc>
         <sRbox>1</sRbox>
-        <tLdApp>0</tLdApp>
+        <tLdApp>1</tLdApp>
         <tGomain>1</tGomain>
         <tRbreak>1</tRbreak>
         <tRwatch>1</tRwatch>
@@ -535,7 +535,7 @@
         <tDllPa></tDllPa>
         <tDlgDll></tDlgDll>
         <tDlgPa></tDlgPa>
-        <tIfile>.\FLASH.ini</tIfile>
+        <tIfile></tIfile>
         <pMon>BIN\UL2CM3.DLL</pMon>
       </DebugOpt>
       <TargetDriverDllRegistry>
@@ -567,10 +567,43 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>UL2CM3</Key>
-          <Name>-UAny -O206 -S8 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO65554 -TC10000000 -TT10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD10000000 -FCFE0 -FN1 -FF0LPC_IAP_512.FLM -FS00 -FL080000 -FP0($$Device:LPC1768$Flash\LPC_IAP_512.FLM)</Name>
+          <Name>-UAny -O206 -S8 -C0 -P00 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO65554 -TC10000000 -TT10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO15 -FD10000000 -FCFE0 -FN1 -FF0LPC_IAP_512.FLM -FS00 -FL080000 -FP0($$Device:LPC1768$Flash\LPC_IAP_512.FLM)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>225</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>6250</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>&lt;1&gt;.\src\ae\ae_tasks300_G99.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\rtx_app_sim\src/ae/ae_tasks300_G99.c\225</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>230</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>6294</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>&lt;1&gt;.\src\ae\ae_tasks300_G99.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\rtx_app_sim\src/ae/ae_tasks300_G99.c\230</Expression>
+        </Bp>
+      </Breakpoint>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>

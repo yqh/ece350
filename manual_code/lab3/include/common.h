@@ -141,6 +141,9 @@
 #define CON_MBX_SIZE        0x80    /* consolde display mailbox size */
 #define UART_MBX_SIZE       0x80    /* UART interrupt handler mailbox size */
 
+/* System Task Macros */
+#define KCD_CMD_BUF_SIZE    0x40    /* max command length bufferred by KCD */
+
 /* Time Macros */
 #define MIN_RTX_QTM         100     /* minimum time granularity of RTX in microseconds */
 

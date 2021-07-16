@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>LPC1768</Device>
           <Vendor>NXP</Vendor>
-          <PackID>Keil.LPC1700_DFP.2.6.0</PackID>
+          <PackID>Keil.LPC1700_DFP.2.7.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x10000000,0x8000) IRAM2(0x2007C000,0x8000) IROM(0x00000000,0x80000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -507,7 +507,7 @@
         <TargetCommonOption>
           <Device>LPC1768</Device>
           <Vendor>NXP</Vendor>
-          <PackID>Keil.LPC1700_DFP.2.6.0</PackID>
+          <PackID>Keil.LPC1700_DFP.2.7.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x10000000,0x8000) IRAM2(0x2007C000,0x8000) IROM(0x00000000,0x80000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -998,7 +998,7 @@
         <TargetCommonOption>
           <Device>LPC1768</Device>
           <Vendor>NXP</Vendor>
-          <PackID>Keil.LPC1700_DFP.2.6.0</PackID>
+          <PackID>Keil.LPC1700_DFP.2.7.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x10000000,0x8000) IRAM2(0x2007C000,0x8000) IROM(0x00000000,0x80000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -1505,7 +1505,7 @@
       <file attr="config" category="header" condition="LPC1700 CMSIS Device" name="RTE_Driver\Config\RTE_Device.h" version="2.4.1">
         <instance index="0">RTE\Device\LPC1768\RTE_Device.h</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.6.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
         <targetInfos>
           <targetInfo name="RTX App FLASH"/>
           <targetInfo name="RTX App RAM"/>
@@ -1515,7 +1515,7 @@
       <file attr="config" category="source" condition="LPC176x" name="Device\Source\ARM\startup_LPC17xx.s" version="1.0.0">
         <instance index="0">RTE\Device\LPC1768\startup_LPC17xx.s</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.6.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
         <targetInfos>
           <targetInfo name="RTX App FLASH"/>
           <targetInfo name="RTX App RAM"/>
@@ -1525,7 +1525,7 @@
       <file attr="config" category="source" condition="LPC176x" name="Device\Source\system_LPC17xx.c" version="1.0.0">
         <instance index="0">RTE\Device\LPC1768\system_LPC17xx.c</instance>
         <component Cclass="Device" Cgroup="Startup" Cvendor="Keil" Cversion="1.0.0" condition="LPC17xx CMSIS Device ARMCC"/>
-        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.6.0"/>
+        <package name="LPC1700_DFP" schemaVersion="1.2" url="http://www.keil.com/pack/" vendor="Keil" version="2.7.0"/>
         <targetInfos>
           <targetInfo name="RTX App FLASH"/>
           <targetInfo name="RTX App RAM"/>
