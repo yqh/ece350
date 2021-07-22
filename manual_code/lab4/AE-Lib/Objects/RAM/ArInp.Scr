@@ -1,0 +1,6 @@
+--create .\Objects\RAM\ae-lib-ram.lib
+.\objects\ram\ae.o
+.\objects\ram\ae_util.o
+.\objects\ram\ae_tasks_util.o
+.\objects\ram\main.o
+.\objects\ram\ae_tasks.o

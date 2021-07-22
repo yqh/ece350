@@ -1,0 +1,49 @@
+The AE-Lib has the following source Groups:
+
+AE:     
+    It contains auto-tester general purpose routines. 
+    You may change the implementation as long as you keep the interface of functions unchanged. 
+    The files are:    
+    - ae.c: the auto-tester initialization routines
+    - ae_util.c: the auto-tester utility functions
+    - ae_tasks_util.c: the auto-tester task tests related utility function
+    - main.c the main.c used by the auto-tester. One should exclude main from rtx-app project when using AE-Lib
+
+AE-dummy-tasks
+    It contains ae_tasks.c which is the initial dummy test suite written by lab teaching team to get starter code working
+    By default, this source group is included from the build.
+    When you want to use test suites in AE-public or AE-stu source groups, then you need to exclude this folder from the build
+    and include the test suite source file you want to use in the build. 
+    An easy way is to drag the corresponding test suite file to the AE-active soruce group.
+
+AE-public: 
+    It contains public testing suites released by lab staff. By default, this source group is excluded from the build.
+    The public testing cases takes the Group ID number of 99 in the file name. 
+    The naming convention of the public testing stuie is ae_tasks<suite ID>_Group99.c 
+    For example:
+    ae_tasks200_G99.c is Test Suite 200 by Group 99, which is the lab teaching team.
+
+AE-stu:
+    It contains students' testing suites. Each testing suit is in a separate .c file. 
+    The naming convention is ae_tasks<suite ID>_G<group id>.c.  For example
+    ae_tasks1_Gxx.c is the Test Suite 1 from Group xx, where xx is the group ID number.
+    By default, this source group is excluded from the build.
+    
+AE-active:
+    It contains the active testing suite that you want to use.
+    By default it is empty.
+    To use a student's test suite .c file, 
+    - Activate the Project ae-lib in the workspace 
+    - Exclude the AE-public folder from the build.
+    - Drag the corresponding student's testing suite file to the AE-active folder.
+IMPORTANT    
+    When submit, you should 
+    - leave the AE-active folder empty
+    - include the following groups in the build
+        * AE
+        * AE-dummy-tasks
+        * AE-active
+    - exclude the following groups in the build
+        * AE-public
+        * AE-stu
+        

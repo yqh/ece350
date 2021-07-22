@@ -1,0 +1,7 @@
+--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork 
+-I.\RTE\Device\LPC1768
+-I.\RTE\_RTX_App_RAM
+-IC:\opt\Keil5\Arm\Pack\ARM\CMSIS\5.7.0\CMSIS\Core\Include
+-IC:\opt\Keil5\Arm\Pack\Keil\LPC1700_DFP\2.7.0\Device\Include
+--pd "__UVISION_VERSION SETA 530" --pd "_RTE_ SETA 1" --pd "LPC175x_6x SETA 1" --pd "_RTE_ SETA 1" --pd "NO_CRP SETA 1"
+--list .\listings\startup_lpc17xx.lst --xref -o .\objects\ram\startup_lpc17xx.o --depend .\objects\ram\startup_lpc17xx.d "RTE\Device\LPC1768\startup_LPC17xx.s"

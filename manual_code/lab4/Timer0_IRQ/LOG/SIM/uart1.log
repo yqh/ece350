@@ -1,0 +1,5 @@
+
+Timer0 IRQ fires every 500 microseconds.
+Timer1 is a free running timer. PC increments very 10 nsec and TC increments every 1 sec.
+0: TC = 0, PC = 99975011
+1: TC = 1, PC = 99975029
