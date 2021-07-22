@@ -211,7 +211,7 @@ uint32_t timer_freerun_init(uint8_t n_timer)
     * TC increments every (MR0 + 1) * (PR + 1) PCLK cycles 
     *------------------------------------------------------------------------*/
      
-    pTimer->PR = 100000000 - 1; /* increment timer counter every 1*10^9 PCLK ticks, which is 1 sec */ 
+    pTimer->PR = 100000000 - 1; /* increment timer counter every 1*10^8 PCLK ticks, which is 1 sec */ 
 
    /*------------------------------------------------------------------------* 
     * Step 2: MR setting, see section 21.6.7 on pg496 of LPC17xx_UM.
