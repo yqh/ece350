@@ -11,4 +11,4 @@ The Timer0_IRQ program is available in different targets:
      (may be used for target debugging)
 
 Expected behavior: 
-Prints to COM1 0-9, one digit a time every second by polling. The program loops around when 9 is reached.
+Prints to COM1 0, 1, 2, ..., every second by polling. 

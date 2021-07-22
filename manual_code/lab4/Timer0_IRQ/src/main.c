@@ -29,7 +29,7 @@
 /**************************************************************************//**
  * @file        main.c
  * @brief       Timer0 interrupt main driver code
- *              Prints 0-9 every second. Loops around when 9 is reached. 
+ *              Prints 0,1,2 ... every second. 
  *              Outputs Timer1 TC and PC register values
  *              
  * @version     V1.2021.07
