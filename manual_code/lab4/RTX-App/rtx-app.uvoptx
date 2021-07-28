@@ -154,7 +154,7 @@
           <Type>0</Type>
           <LineNumber>106</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>2798</Address>
+          <Address>2802</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -170,7 +170,7 @@
           <Type>0</Type>
           <LineNumber>118</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>2802</Address>
+          <Address>2806</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -765,7 +765,7 @@
       <GroupNumber>2</GroupNumber>
       <FileNumber>8</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\kernel\k_task.c</PathWithFileName>

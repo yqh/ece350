@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\SIM\rtx-app-sim.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\SIM\rtx-app-sim.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Thu Jul 22 10:06:25 2021
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Wed Jul 28 09:34:13 2021
 <BR><P>
 <H3>Maximum Stack Usage =        168 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -466,15 +466,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[66]"></a>k_rt_tsk_susp</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, k_task.o(i.k_rt_tsk_susp))
+<P><STRONG><a name="[66]"></a>k_rt_tsk_susp</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, k_task.o(i.k_rt_tsk_susp))
 <BR><BR>[Called By]<UL><LI><a href="#[a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SVC_Handler
 </UL>
 
-<P><STRONG><a name="[58]"></a>k_tsk_exit</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, k_task.o(i.k_tsk_exit))
-<BR><BR>[Called By]<UL><LI><a href="#[a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SVC_Handler
-</UL>
-
-<P><STRONG><a name="[a]"></a>SVC_Handler</STRONG> (Thumb, 294 bytes, Stack size 24 bytes, k_task.o(i.SVC_Handler))
+<P><STRONG><a name="[a]"></a>SVC_Handler</STRONG> (Thumb, 296 bytes, Stack size 24 bytes, k_task.o(i.SVC_Handler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96 + Unknown Stack Size
 <LI>Call Chain = SVC_Handler &rArr; k_rtx_init &rArr; k_tsk_init &rArr; k_tsk_create_new
 </UL>
@@ -633,6 +629,10 @@ Global Symbols
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;k_alloc_k_stack
 </UL>
 <BR>[Called By]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;k_tsk_init
+</UL>
+
+<P><STRONG><a name="[58]"></a>k_tsk_exit</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, k_task.o(i.k_tsk_exit))
+<BR><BR>[Called By]<UL><LI><a href="#[a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SVC_Handler
 </UL>
 
 <P><STRONG><a name="[5b]"></a>k_tsk_get</STRONG> (Thumb, 56 bytes, Stack size 0 bytes, k_task.o(i.k_tsk_get))

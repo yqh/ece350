@@ -191,7 +191,7 @@ void SVC_Handler(void)
             ret = k_rt_tsk_set((TIMEVAL*) args[0]);
             break;
         case SVC_RT_TSK_SUSP:
-            k_rt_tsk_susp();
+            ret = k_rt_tsk_susp();
             break;
         case SVC_RT_TSK_GET:
             ret = k_rt_tsk_get((task_t) args[0], (TIMEVAL *) args[1]);
@@ -569,11 +569,12 @@ int k_rt_tsk_set(TIMEVAL *p_tv)
     return RTX_OK;   
 }
 
-void k_rt_tsk_susp(void)
+int k_rt_tsk_susp(void)
 {
 #ifdef DEBUG_0
     printf("k_rt_tsk_susp: entering\r\n");
 #endif /* DEBUG_0 */
+    return RTX_OK;
 }
 
 int k_rt_tsk_get(task_t tid, TIMEVAL *buffer)
