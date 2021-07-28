@@ -157,7 +157,7 @@ void task1(void)
     ptr->type = KCD_REG;                    // set message type
     ptr->sender_tid = tid;                  // set sender id 
     buf += MSG_HDR_SIZE;                        
-    *buf = 'p';                             // set message data
+    *buf = 'G';                             // set message data
     send_msg(TID_KCD, (void *)ptr);         // blocking send
 
     // create two tasks;
