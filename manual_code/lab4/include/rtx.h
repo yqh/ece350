@@ -81,7 +81,7 @@ __svc(SVC_MBX_LS)       int     mbx_ls(task_t *buf, size_t count);
 __svc(SVC_MBX_GET)      int     mbx_get(task_t tid);
 __svc(SVC_RT_TSK_SET)   int     rt_tsk_set(TIMEVAL *p_tv);
 __svc(SVC_RT_TSK_SUSP)  int     rt_tsk_susp(void);
-__svc(SVC_TSK_GET)      int     rt_tsk_get(task_t task_id, TIMEVAL *buffer);
+__svc(SVC_RT_TSK_GET)   int     rt_tsk_get(task_t task_id, TIMEVAL *buffer);
 #endif // !_RTX_H_
 
 /*
