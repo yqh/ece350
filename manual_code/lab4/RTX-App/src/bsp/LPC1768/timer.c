@@ -196,8 +196,8 @@ uint32_t timer_freerun_init(uint8_t n_timer)
             * See Tables 41 and 42 on page 56 of LPC17xx user's manual
             *------------------------------------------------------------------------*/
             
-            LPC_SC->PCLKSEL0 |= BIT(12);
-            LPC_SC->PCLKSEL0 &= ~BIT(13);
+            LPC_SC->PCLKSEL1 |= BIT(12);
+            LPC_SC->PCLKSEL1 &= ~BIT(13);
             break;
         default:
             return 1;
