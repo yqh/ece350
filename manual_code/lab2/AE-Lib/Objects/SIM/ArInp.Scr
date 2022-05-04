@@ -1,3 +1,0 @@
---create .\Objects\SIM\ae-lib-sim.lib
-.\objects\sim\ae.o
-.\objects\sim\ae_tasks.o
