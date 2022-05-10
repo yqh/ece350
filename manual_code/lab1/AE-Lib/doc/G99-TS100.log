@@ -1,0 +1,30 @@
+G99-TS100: START
+G99-TS100-LOG2: priv_task1: basic memory test on IRAM2
+G99-TS100-LOG : Test[0]-[0]: Allocating the first half of the RAM, check non-NULL return.
+G99-TS100-LOG : Test[0]-[0]: result = 1.
+G99-TS100-LOG : Test[0]-[1]: Allocating the second half of the RAM, check not null, not the same as p[0].
+G99-TS100-LOG : Test[0]-[1]: result = 1.
+G99-TS100-LOG : Test[0]-[2]: Allocating when there is no free memory, check NULL return .
+G99-TS100-LOG : Test[0]-[2]: result = 1.
+0 free memory block(s) found
+G99-TS100-LOG : Test[0]-[3]: Check mem2_dump return value is zero.
+G99-TS100-LOG : Test[0]-[3]: result = 1.
+0x2007c000: 0x4000
+1 free memory block(s) found
+G99-TS100-LOG : Test[0]-[4]: Free p[0], checking mem2_dump return val.
+G99-TS100-LOG : Test[0]-[4]: result = 1.
+0x2007e000: 0x2000
+1 free memory block(s) found
+G99-TS100-LOG : Test[0]-[5]: Allocated a quarter RAM to p[0], checking mem2_dump return val.
+G99-TS100-LOG : Test[0]-[5]: result = 1.
+0 free memory block(s) found
+G99-TS100-LOG : Test[0]-[6]: Allocated (a quarter RAM - 2B) to p[2], checking mem2_dump return val.
+G99-TS100-LOG : Test[0]-[6]: result = 1.
+G99-TS100-LOG : Test[0]-[7]: Check inequality of p[0] and p[2].
+G99-TS100-LOG : Test[0]-[7]: result = 1.
+G99-TS100: FINISHED
+G99-TS100-LOG : Test 0: 8/8 PASSED. Expected = 0xFF, result = 0xFF
+G99-TS100: 1/1 test function(s) COMPLETED.
+G99-TS100: 8/8 tests PASSED.
+G99-TS100: 0/8 tests FAILED.
+G99-TS100: END

@@ -1,0 +1,8 @@
+ECE350 P1 Skeleton Files
+
+AE-Lib/  The automated testing framework library uVision project.
+inlcude/ The RTX API, board support package, and automated testing suite header files folder. 
+RTX-APP/ The RTX application skelton project which includes the kernel.
+
+lab1_report.csv: Lab1 report template file.
+rtx.uvmpw: the multi-project workspace profile that contains both the AE-Lib and RTX-App projects. 

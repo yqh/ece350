@@ -1,0 +1,55 @@
+The AE-Lib has the following source Groups:
+
+Documentation:
+    It contains the following files:
+    - Abstract.txt: this file
+    - G99-TS100.log: the expected output from ae_tasks100_G99.c test suite    
+AE:     
+    It contains auto-tester general purpose routines. 
+    You may change the implementation as long as you keep the interface of functions unchanged. 
+    The files are:    
+    - ae.c: the auto-tester initialization routines
+    - ae_util.c: the auto-tester utility functions
+    - ae_tasks_util.c: the auto-tester task tests related utility function
+    - main.c the main.c used by the auto-tester. 
+
+AE-inactive-staff: 
+    It contains testing suites released by lab staff. By default, this source group is excluded from the build.
+    The staff written testing cases takes the Group ID number of 99 in the file name. 
+    The naming convention of the staff written testing suite is ae_tasks<suite ID>_Group99.c.
+    For example:
+    ae_tasks100_G99.c is Test Suite 100 by Group 99, which is the lab teaching team.
+    The suite IDs in the range [100, 499] are reserved for the teaching team.
+
+AE-inatctive-stu:
+    It contains students' testing suites. Each testing suit is in a separate .c file. 
+    The naming convention is ae_tasks<suite ID>_G<group id>.c.  For example
+    ae_tasks1_Gxx.c is the Test Suite 1 from Group xx, where xx is the group ID number.
+    By default, this source group is excluded from the build.
+    
+    Student test suite ID needs to be in the range of [0, 99] and [500, 0xFFFFFFFF]
+    Note suite IDs in the range [100, 499] are reserved for the teaching team.
+    Students should not use suite IDs in this range.
+    
+    
+AE-active:
+    It contains the active testing suite that you want to use.
+    By default, it contains ae_tasks.c which is the initial dummy test suite written by lab teaching team to get starter code working.
+    When you want to use test suites in AE-public or AE-stu source groups, drag the ae_tasks.c to AE-inactive-public folder and 
+    drag the corresponding test suite file to the AE-active soruce group.
+    By default, this source group is included from the build.
+    
+IMPORTANT    
+    When submit, you should 
+    - Put ae_tasks.c as the only file in AE-active folder 
+    - include the following groups in the build
+        * AE
+        * AE-active
+    - exclude the following groups in the build
+        * AE-inactive-public
+        * AE-inactive-stu
+    - Enable compliation macros as follows:
+        * ECE350_P1: for P1 
+        * ECE350_P2: for P2 
+        * ECE350_P3: for P3 
+        * ECE350_P4: for P4 
