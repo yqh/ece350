@@ -3,7 +3,7 @@
 ####################################################################
 # Summary: Getting tagged submission from git repository
 # Author : yqhuang@uwaterloo.ca
-# Date   : Jan 2022
+# Date   : May 2022
 ####################################################################
 
 if [ $# -ne 2 ]; then
@@ -17,8 +17,8 @@ GROUP_ID="$1"
 PROJ_ID="$2"
 CWD=`pwd`
 
-BASE_URL="https://git.uwaterloo.ca/se350-winter2022/"
-REPO_PRFIX="se350-winter2022-lab-g"
+BASE_URL="https://git.uwaterloo.ca/ece350-spring2022/"
+REPO_PRFIX="ece350-spring2022-lab-g"
 REPO_DIR="${REPO_PRFIX}${GROUP_ID}"
 REPO_URL="${BASE_URL}${REPO_DIR}.git"
 
