@@ -535,7 +535,7 @@ void task2(void)
     /* terminating */
     tsk_exit();
 }
-#el defined(ECE350_P3) || defined(ECE350_P4)
+#elif defined(ECE350_P3) || defined(ECE350_P4)
 /**
  * @brief: a dummy task2
  */
