@@ -1,0 +1,53 @@
+G99-TS200: START
+G99-TS200-LOG2: TID = 1, priv_task1: starting test0
+G99-TS200-LOG: Test[0]-[0]: creating a HIGH prio task that runs task2 function.
+G99-TS200-LOG: Test[0]-[0]: result = 1.
+G99-TS200-LOG: Test[0]-[1]: creating a HIGH prio task that runs task3 function.
+G99-TS200-LOG: Test[0]-[1]: result = 1.
+AAAAA
+G99-TS200-LOG2: TID = 1, priv_task1: yielding cpu
+G99-TS200-LOG2: TID = 3, task2: entering
+G99-TS200-LOG2: TID = 3, task2: yielding cpu 
+G99-TS200-LOG2: TID = 4, task3: entering 
+G99-TS200-LOG2: TID = 4, task3: yielding cpu 
+G99-TS200-LOG: Test[0]-[2]: priv_task1 calling tsk_yield - 1.
+G99-TS200-LOG: Test[0]-[2]: result = 1.
+BBBBB
+G99-TS200-LOG2: TID = 1, priv_task1: yielding cpu
+G99-TS200-LOG: Test[0]-[3]: priv_task1 calling tsk_yield - 2.
+G99-TS200-LOG: Test[0]-[3]: result = 1.
+G99-TS200-LOG: Test[0]-[4]: task2 calling tsk_yield - 1.
+G99-TS200-LOG: Test[0]-[4]: result = 1.
+G99-TS200-LOG2: TID = 3, task2: yielding cpu 
+G99-TS200-LOG: Test[0]-[5]: task3 calling tsk_yield - 1.
+G99-TS200-LOG: Test[0]-[5]: result = 1.
+G99-TS200-LOG2: TID = 4, task3: yielding cpu 
+G99-TS200-LOG: real exec order: 1 -> 3 -> 4 -> 1 -> 3 -> 4 -> NIL
+G99-TS200-LOG: expt exec order: 1 -> 3 -> 4 -> 1 -> 3 -> 4 -> NIL
+G99-TS200-LOG: Test[1]-[0]: checking execution shortfalls.
+G99-TS200-LOG: Test[1]-[0]: result = 1.
+G99-TS200-LOG: Test[1]-[1]: checking unexpected execution once.
+G99-TS200-LOG: Test[1]-[1]: result = 1.
+G99-TS200-LOG: Test[1]-[2]: checking unexpected execution twice.
+G99-TS200-LOG: Test[1]-[2]: result = 1.
+G99-TS200-LOG: Test[1]-[3]: checking correct number of executions.
+G99-TS200-LOG: Test[1]-[3]: result = 1.
+G99-TS200-LOG: Test[1]-[4]: checking execution sequence @ 0.
+G99-TS200-LOG: Test[1]-[4]: result = 1.
+G99-TS200-LOG: Test[1]-[5]: checking execution sequence @ 1.
+G99-TS200-LOG: Test[1]-[5]: result = 1.
+G99-TS200-LOG: Test[1]-[6]: checking execution sequence @ 2.
+G99-TS200-LOG: Test[1]-[6]: result = 1.
+G99-TS200-LOG: Test[1]-[7]: checking execution sequence @ 3.
+G99-TS200-LOG: Test[1]-[7]: result = 1.
+G99-TS200-LOG: Test[1]-[8]: checking execution sequence @ 4.
+G99-TS200-LOG: Test[1]-[8]: result = 1.
+G99-TS200-LOG: Test[1]-[9]: checking execution sequence @ 5.
+G99-TS200-LOG: Test[1]-[9]: result = 1.
+G99-TS200: FINISHED
+G99-TS200-LOG: Test 0: 6/6 PASSED. Expected = 0x3F, result = 0x3F
+G99-TS200-LOG: Test 1: 10/10 PASSED. Expected = 0x3FF, result = 0x3FF
+G99-TS200: 2/2 test function(s) COMPLETED.
+G99-TS200: 16/16 tests PASSED.
+G99-TS200: 0/16 tests FAILED.
+G99-TS200: END

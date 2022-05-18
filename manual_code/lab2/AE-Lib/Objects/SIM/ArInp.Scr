@@ -1,0 +1,9 @@
+--create .\Objects\SIM\ae-lib-sim.lib
+.\doc\TS100_G99_output.log
+.\doc\TS200_G99_output.log
+.\objects\sim\ae.o
+.\objects\sim\ae_tasks_util.o
+.\objects\sim\ae_timer.o
+.\objects\sim\ae_util.o
+.\objects\sim\main.o
+.\objects\sim\ae_tasks.o
