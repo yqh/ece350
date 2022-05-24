@@ -1,0 +1,38 @@
+sizeof(RTX_MSG_HDR) = 6 
+sizeof(struct rtx_msg_hdr) = 6 
+&msg_hdr = 0x10002c30, &(msg_hdr.sender_tid) = 0x10002c34, &(msg_hdr.type) = 0x10002c35
+priv_task1: TID =1
+TID = 1, malbox free bytes = 0.
+AAAAA
+BBBBB
+CCCCC
+DDDDD
+EEEEE
+FFFFF
+priv_task1 before yielding cpu.
+ptr = 0x2007c000
+task1: TID =2
+11111
+22222
+priv_task1 after yielding cpu.
+priv_task1: ret_val=0
+GGGGG
+HHHHH
+33333
+44444
+55555
+IIIII
+JJJJJ
+KKKKK
+LLLLL
+66666
+task1 before yielding cpu.
+priv_task1 before yielding cpu.
+task1 after yielding cpu.
+task1: ret_val=0
+77777
+88888
+99999
+00000
+11111
+

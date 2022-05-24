@@ -1,0 +1,9 @@
+ECE350 P3 Skeleton Files
+
+AE-Lib/      The automated testing framework library uVision project. Requires ECE350_P2 compilation macro definition in all targets.
+inlcude/     The RTX API, board support package, and automated testing suite header files folder. 
+RTX-APP/     The RTX application skelton project which includes the kernel. Requires ECE350_P2 compilation macro definition in all targets.
+UART0_IREQ/  The RTX application project which shows how to echo a key press and print a string to UART by interrupts.
+
+lab3_report.csv: Lab3 report template file.
+rtx.uvmpw: the multi-project workspace profile that contains both the AE-Lib and RTX-App projects. 
