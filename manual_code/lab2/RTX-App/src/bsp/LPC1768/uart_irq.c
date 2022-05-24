@@ -164,8 +164,9 @@ int uart_irq_init(int n_uart) {
     /* enable RBR and RLS interrupts */
     pUart->IER = IER_RBR | IER_RLS; 
     
-    /* Step 6b: set up UART0 IRQ priority */    
+    /* Step 6b: set up UART0/1 IRQ priority */    
     NVIC_SetPriority(UART0_IRQn, 0x10);
+    NVIC_SetPriority(UART1_IRQn, 0x10);
     
     /* Step 6c: enable the UART interrupt from the system level */
     
@@ -176,7 +177,6 @@ int uart_irq_init(int n_uart) {
     } else {
         return 1; /* not supported yet */
     }
-    pUart->THR = '\0';
     return 0;
 }
 
