@@ -71,7 +71,7 @@ The memory map of the OS image may look like the following:
                               |                           |  OS Image
                               |---------------------------|     |
                               |      KERN_STACK_SIZE      |     |                
-     _k_stacks[MAX_TASKS-1]-->|---------------------------|     |
+   g _k_stacks[MAX_TASKS-1]-->|---------------------------|     |
                               |                           |     |
                               |     other kernel stacks   |     |                              
                               |---------------------------|     |
