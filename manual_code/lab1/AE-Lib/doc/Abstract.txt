@@ -13,7 +13,7 @@ AE:
     - ae_tasks_util.c: the auto-tester task tests related utility function
     - main.c the main.c used by the auto-tester. 
 
-AE-inactive-staff: 
+AE-inactive-public: 
     It contains testing suites released by lab staff. By default, this source group is excluded from the build.
     The staff written testing cases takes the Group ID number of 99 in the file name. 
     The naming convention of the staff written testing suite is ae_tasks<suite ID>_Group99.c.
