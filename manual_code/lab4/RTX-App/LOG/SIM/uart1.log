@@ -1,0 +1,27 @@
+priv_task1: TID =1, setting its realtime properties...
+period = 1 sec, 0 usec,
+AAAAA
+BBBBB
+CCCCC
+DDDDD
+EEEEE
+FFFFF
+priv_task1 before calling rt_tsk_susp.
+GGGGG
+HHHHH
+IIIII
+JJJJJ
+KKKKK
+LLLLL
+priv_task1 before calling rt_tsk_susp.
+MMMMM
+NNNNN
+OOOOO
+PPPPP
+QQQQQ
+RRRRR
+priv_task1 before calling rt_tsk_susp.
+SSSSS
+TTTTT
+UUUUU
+
