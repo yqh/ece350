@@ -1,6 +1,6 @@
 ## ECE 350 RTX Project Repository
 
-This repository contains the University of Waterloo ECE 350 Real-Time Opearting Systems Lab materials released to students. It has multiple branches. 
+This repository contains the University of Waterloo ECE 350 Real-Time Operating Systems Lab materials released to students. It has multiple branches. 
 
 ### The master branch.
 It is for the most recent offering. 
